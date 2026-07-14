@@ -49,9 +49,16 @@ app.get('/roles/laborers', (c) => c.html(<LaborersPage />))
 app.get('/book-demo', (c) => c.redirect('/demo', 301))
 app.get('/info', (c) => c.redirect('/', 301))
 
-// The product lives at login.groundwork-crm.com (finalized domain map).
-// Redirect legacy/typo'd paths straight to the real product login.
-app.get('/app', (c) => c.redirect('https://login.groundwork-crm.com/login', 301))
-app.get('/workspace', (c) => c.redirect('https://login.groundwork-crm.com/login', 301))
+// NOTE — interim domain state (see README "Domain status" section):
+// This marketing site is temporarily hosted at groundwork-crm.info because the
+// real product (a separate, live Cloudflare Pages app — repo
+// github.com/AvalonLC/Groundwork-crm) currently occupies the bare
+// groundwork-crm.com domain directly (it has no /login route yet; it's a
+// single-page app gated by a session cookie, entered at the site root).
+// The long-term plan is for the product to move to login.groundwork-crm.com
+// and this marketing site to take over groundwork-crm.com — not done yet.
+// Until that migration happens, send visitors to the real, live product.
+app.get('/app', (c) => c.redirect('https://groundwork-crm.com', 301))
+app.get('/workspace', (c) => c.redirect('https://groundwork-crm.com', 301))
 
 export default app

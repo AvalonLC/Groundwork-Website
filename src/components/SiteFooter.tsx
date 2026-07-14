@@ -99,7 +99,7 @@ export function SiteFooter() {
             <ul>
               <li>
                 <a href="/login" style="font-family: var(--font-mono); font-size: 12px;">
-                  login.groundwork-crm.com
+                  groundwork-crm.com
                 </a>
               </li>
             </ul>
@@ -107,7 +107,7 @@ export function SiteFooter() {
         </div>
         <div class="footer-bottom">
           <div>© 2026 Groundwork CRM · All rights reserved</div>
-          <div class="site-domain">groundwork-crm.com</div>
+          <div class="site-domain">groundwork-crm.info</div>
           <div style="display: flex; gap: 20px;">
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
