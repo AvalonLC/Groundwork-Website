@@ -20,6 +20,19 @@ import { OfficeManagersPage } from './pages/roles/office-managers'
 import { SalesRepsPage } from './pages/roles/sales-reps'
 import { ForemenPage } from './pages/roles/foremen'
 import { LaborersPage } from './pages/roles/laborers'
+import { PricingPage } from './pages/pricing'
+import { CustomersPage } from './pages/customers'
+import { CaseStudiesPage } from './pages/case-studies'
+import { ResourcesPage } from './pages/resources'
+import { FAQPage } from './pages/faq'
+import { SecurityPage } from './pages/security'
+import { AboutPage } from './pages/about'
+import { ContactPage } from './pages/contact'
+import { DemoPage } from './pages/demo'
+import { StartPage } from './pages/start'
+import { SignupPage } from './pages/signup'
+import { LoginPage } from './pages/login'
+import { DownloadPage } from './pages/download'
 
 const app = new Hono()
 
@@ -44,6 +57,19 @@ app.get('/roles/office-managers', (c) => c.html(<OfficeManagersPage />))
 app.get('/roles/sales-reps', (c) => c.html(<SalesRepsPage />))
 app.get('/roles/foremen', (c) => c.html(<ForemenPage />))
 app.get('/roles/laborers', (c) => c.html(<LaborersPage />))
+app.get('/pricing', (c) => c.html(<PricingPage />))
+app.get('/customers', (c) => c.html(<CustomersPage />))
+app.get('/case-studies', (c) => c.html(<CaseStudiesPage />))
+app.get('/resources', (c) => c.html(<ResourcesPage />))
+app.get('/faq', (c) => c.html(<FAQPage />))
+app.get('/security', (c) => c.html(<SecurityPage />))
+app.get('/about', (c) => c.html(<AboutPage />))
+app.get('/contact', (c) => c.html(<ContactPage />))
+app.get('/demo', (c) => c.html(<DemoPage />))
+app.get('/start', (c) => c.html(<StartPage />))
+app.get('/signup', (c) => c.html(<SignupPage />))
+app.get('/login', (c) => c.html(<LoginPage />))
+app.get('/download', (c) => c.html(<DownloadPage />))
 
 // Redirect rules from the design handoff
 app.get('/book-demo', (c) => c.redirect('/demo', 301))

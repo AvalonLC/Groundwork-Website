@@ -6,46 +6,92 @@
 - **Source**: Built from the Genspark Design handoff repo `designer2-c6cfacb8-848c-45ab-9f3d-2f34c3767db6` (30-page hifi design). Recreated in Hono JSX (not the raw prototype HTML), per the handoff's instructions.
 - **Stack**: Hono + TypeScript + Vite, deployed as a Cloudflare Pages/Workers site. No backend data storage needed (static marketing content + mock forms).
 
-## Currently Implemented
+## Domain status (interim)
+This marketing site is being prepared for **`groundwork-crm.info`** temporarily. The bare
+`groundwork-crm.com` domain is currently occupied by the **real, live Groundwork CRM product**
+(a separate application — repo `github.com/AvalonLC/Groundwork-crm`, deployed as its own
+Cloudflare Pages project under a different Cloudflare account). That product is a single-page
+app entered directly at its domain root (session-cookie gated, hash-based client routing) — it
+has no dedicated `/login` path today.
+
+Until the two properties are consolidated, every "Log in" / product link on this marketing site
+points straight to the real, live `https://groundwork-crm.com`. The long-term plan (not yet
+executed) is for the product to move to `login.groundwork-crm.com` and for this marketing site
+to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an aspirational
+`login.groundwork-crm.com` subdomain — it does not exist yet.
+
+## Currently Implemented — all 30 pages built ✅
 
 **Shared system** (in `src/components/` + `src/data/`):
 - `Layout` — page shell: fonts (Newsreader serif / Instrument Sans / JetBrains Mono), meta tags, nav, footer, `site.js`
 - `SiteNav` / mobile menu — desktop CSS-hover dropdowns driven by `src/data/nav.ts` (ported 1:1 from the design's `chrome.js` NAV data), off-canvas mobile panel
-- `SiteFooter` — 5-column footer matching the design
+- `SiteFooter` — 5-column footer matching the design; all links point at real, built routes
 - `Icon` — 40+ inline SVG icons ported from the design's `icons.js`, rendered server-side (see implementation note below)
 - `Button`, `CTABand`, `SubpageHero`, `SectionHead`, `SplitList`, `BentoCard`, `TestimonialCard`, `FAQItem`, `RelatedCards`, `SplitFeature`/`SplitContent`/`MockFrame`, `ProductMock` building blocks (`PM`, `PMSidebar`, `PMStats`, `PMCard`, `PMTask`, etc.), `AccessMatrix`
 - `public/static/styles.css` — the design's full stylesheet (design tokens, responsive breakpoints) copied verbatim, with asset URLs rewritten to `/static/assets/...`
 - `public/static/site.js` — client-side behavior: mobile menu open/close, homepage role-tab switching, anchor smooth-scroll, mock form "✓ Sent" state. FAQ accordions are native `<details>` (no JS needed). Desktop nav dropdowns are pure CSS.
 
-**Pages implemented** (in `src/pages/`):
-- `/` — Homepage: hero w/ "Today" dashboard product mock, trust logo strip, problem section (3 cards), "what is Groundwork" split w/ lead-detail mock, four pillars (Sales/Financial/Operations/Admin), role tabs section (Owner/Office/Sales/Foreman/Laborer, 5 switchable panels), My Day spotlight, bento feature grid (12 cards), testimonials, implementation timeline (4 steps), dark CTA band, 8-item FAQ, final CTA
-- `/product` — Product hub (8-tile bento linking to every module)
-- `/product/my-day` — My Day module page (ritual copy + Today mock, 5-role-lens grid, related cards, CTA)
-- `/product/sales` — Sales module page (pipeline kanban mock, client detail mock, sales resources grid, related cards, CTA)
+**Pages implemented** (in `src/pages/`), all wired as routes in `src/index.tsx`:
 
-**Routes wired in `src/index.tsx`**: `/`, `/product`, `/product/my-day`, `/product/sales`, plus the handoff's stated redirects `/book-demo → /demo` and `/info → /`.
+| Route | Page |
+|---|---|
+| `/` | Homepage — hero w/ "Today" dashboard mock, trust logos, problem section, "what is Groundwork" split, four pillars, role tabs, My Day spotlight, bento feature grid, testimonials, implementation timeline, FAQ, final CTA |
+| `/product` | Product hub (8-tile bento) |
+| `/product/my-day` | My Day module |
+| `/product/sales` | Sales module (pipeline kanban mock, client detail mock) |
+| `/product/financial` | Financial module |
+| `/product/operations` | Operations module |
+| `/product/admin` | Admin & permissions module |
+| `/product/mobile` | Mobile & Field Mode |
+| `/product/platform` | Platform architecture |
+| `/features` | Full feature list |
+| `/solutions` | Solutions hub |
+| `/solutions/landscaping` | Landscaping solution |
+| `/solutions/home-service` | Home service solution |
+| `/solutions/field-service` | Field service solution |
+| `/solutions/multi-crew-teams` | Multi-crew teams solution |
+| `/roles` | Roles hub |
+| `/roles/owners` | Owners role page |
+| `/roles/office-managers` | Office managers role page |
+| `/roles/sales-reps` | Sales reps role page |
+| `/roles/foremen` | Foremen role page |
+| `/roles/laborers` | Laborers role page |
+| `/pricing` | Pricing tiers |
+| `/customers` | Customer testimonials + logos |
+| `/case-studies` | Deeper case studies |
+| `/resources` | Resources hub (Academy/Implementation/Blog/Help/API/FAQ cards) + blog preview |
+| `/faq` | FAQ accordion |
+| `/security` | Security & compliance |
+| `/about` | About / team / principles |
+| `/contact` | Contact channels + message form |
+| `/demo` | Book a demo form |
+| `/start` | "Three doors" — demo / trial / login chooser |
+| `/signup` | Request access (trial) form |
+| `/login` | Log in bridge page — redirects to the real live product at `groundwork-crm.com` |
+| `/download` | Mobile app download (App Store / Google Play) |
 
-## Not Yet Implemented (remaining from the 30-page route map)
-
-The handoff specifies 30 pages total; **4 are built, 26 remain**:
-- Product modules: `/product/financial`, `/product/operations`, `/product/admin`, `/product/mobile`, `/product/platform` (source HTML already reviewed in the design repo — same `SplitFeature`/`ProductMock`/`RelatedCards`/`CTABand` component pattern as Sales/My Day, just needs the page files written)
-- `/features` — full feature list (388-line dense page, one section per pillar)
-- Solutions: `/solutions` hub + `/solutions/landscaping`, `/solutions/home-service`, `/solutions/field-service`, `/solutions/multi-crew-teams`
-- Roles: `/roles` hub + `/roles/owners`, `/roles/office-managers`, `/roles/sales-reps`, `/roles/foremen`, `/roles/laborers`
-- Utility: `/pricing`, `/customers`, `/case-studies`, `/resources`, `/faq`, `/security`, `/about`, `/contact`
-- Conversion: `/demo`, `/start`, `/signup`, `/login`, `/download`
-- The `/app → workspace.groundwork-crm.com/login` redirect and the `login.html` → workspace bridge behavior
-
-All source design HTML for these pages is available at
-`$HOME/sb-git-refs/designer2-c6cfacb8-848c-45ab-9f3d-2f34c3767db6/design_handoff_groundwork_marketing_site/pages/*.html`
-and follows the same patterns already implemented (`SubpageHero`, `SplitFeature`, `ProductMock`, `RelatedCards`, `CTABand`, `BentoCard`). Building them out is mechanical repetition of the established component system — no new architecture needed.
+**Redirects** (from the design handoff + interim domain plan):
+- `/book-demo → /demo` (301)
+- `/info → /` (301)
+- `/app → https://groundwork-crm.com` (301) — interim, see "Domain status" above
+- `/workspace → https://groundwork-crm.com` (301) — interim, see "Domain status" above
 
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
 - Component classes/CSS selectors were kept identical to the design's `styles.css` (e.g. `.pm`, `.bento-card`, `.split-list`) so the ported stylesheet drives visuals unchanged — no Tailwind rewrite was done, matching the "recreate in framework, keep visuals authoritative" instruction from the handoff README.
+- The Cloudflare email-obfuscation markup on the original `security.html` (`/cdn-cgi/l/email-protection`) was replaced with a plain `mailto:security@groundwork-crm.com` link — that obfuscation script only works when served through Cloudflare's edge, not from a local Worker.
+- All internal links across every page use root-relative app routes (`/pricing`, `/faq`, etc.), not the design handoff's static `*.html` filenames.
+
+## Not Yet Implemented / Follow-ups
+- Real lead-capture wiring for the Demo/Signup/Contact forms — currently mocked client-side per the handoff spec (`event.preventDefault()` + "✓ Sent" state). Needs a real endpoint (HubSpot, Salesforce Web-to-Lead, or a Cloudflare Worker + email API).
+- Real customer testimonials/case studies/logos — current copy is explicitly marked illustrative ("Real testimonials to be added at launch").
+- Individual blog post pages under `/resources#blog` — currently 3 preview cards link back to the resources page anchor; no long-form post pages exist yet.
+- App Store / Google Play download links on `/download` are placeholder `#` hrefs pending real app store listings.
+- Domain consolidation: moving the real product to `login.groundwork-crm.com` and this marketing site to the bare `groundwork-crm.com` (see "Domain status" above) — not started.
+- Production deployment — not yet deployed; awaiting user review per explicit instruction.
 
 ## Data / Storage
-No database. Purely static marketing content rendered server-side per request via Hono. Demo/signup/contact forms (once built) are mocked client-side per the handoff spec (`event.preventDefault()` + "✓ Sent" state) — wiring to a real lead-capture endpoint (HubSpot, Salesforce Web-to-Lead, or a Cloudflare Worker + email API) is a follow-up task.
+No database. Purely static marketing content rendered server-side per request via Hono.
 
 ## Local Development
 ```
@@ -55,4 +101,4 @@ curl http://localhost:3000/
 ```
 
 ## Deployment
-Not yet deployed. Two Cloudflare deploy paths are available for this project (BYOK vs. Genspark-hosted) — ask the user which one before deploying, per project convention.
+Not yet deployed — pending user review. Two Cloudflare deploy paths are available for this project (BYOK vs. Genspark-hosted) — ask the user which one before deploying, per project convention.
