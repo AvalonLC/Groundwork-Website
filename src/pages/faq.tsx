@@ -52,8 +52,11 @@ export function FAQPage() {
               training, and the first 30 days of dedicated support. We don't do 90-day rollouts.
             </FAQItem>
             <FAQItem question="How is Groundwork priced?">
-              Pricing is per-seat with role-based tiers — Field / View-Only seats are priced significantly lower than
-              full Sales or Admin seats, so you're not paying full price to give crews access. See{' '}
+              Two layers. A <strong>plan</strong> — Core, Growth, Pro, or Enterprise — sets which workspaces your
+              company can use (reporting, automation, client portal). Within that plan, <strong>seats</strong> are
+              priced by role, so a Field or View-Only login costs a fraction of a full Sales or Admin seat. You're
+              never paying full price to give crews access, and you're never buying company-wide features you don't
+              need yet. See{' '}
               <a href="/pricing" style="color: var(--gw-forest-700); text-decoration: underline;">
                 pricing
               </a>
