@@ -95,11 +95,11 @@ export function SiteFooter() {
               <li><a href="/resources#api">API docs</a></li>
               <li><a href="/download">Mobile app</a></li>
             </ul>
-            <h5 style="margin-top: 24px;">Workspace</h5>
+            <h5 style="margin-top: 24px;">Product login</h5>
             <ul>
               <li>
                 <a href="/login" style="font-family: var(--font-mono); font-size: 12px;">
-                  workspace.groundwork-crm.com
+                  login.groundwork-crm.com
                 </a>
               </li>
             </ul>

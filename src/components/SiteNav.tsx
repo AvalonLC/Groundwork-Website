@@ -50,7 +50,7 @@ export function SiteNav({ path }: { path: string }) {
           </div>
           <div class="nav-cta">
             <a href="/login" class="signin">
-              Log in <span class="host">workspace.groundwork-crm.com</span>
+              Log in <span class="host">login.groundwork-crm.com</span>
             </a>
             <a href="/demo" class="btn btn-primary">
               Book a demo <span class="arrow">→</span>
@@ -116,7 +116,7 @@ function MobileMenu() {
           Book a demo <span class="arrow">→</span>
         </a>
         <a href="/login" class="btn btn-secondary">
-          Log in to workspace
+          Log in
         </a>
       </div>
     </div>
