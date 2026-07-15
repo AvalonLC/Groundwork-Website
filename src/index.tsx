@@ -33,8 +33,111 @@ import { StartPage } from './pages/start'
 import { SignupPage } from './pages/signup'
 import { LoginPage } from './pages/login'
 import { DownloadPage } from './pages/download'
+import { sendMail, esc, type Bindings } from './lib/sendgrid'
 
-const app = new Hono()
+const app = new Hono<{ Bindings: Bindings }>()
+
+const NOTIFY_TO = 'tyler@groundwork-crm.com'
+const NOTIFY_FROM = 'notifications@groundwork-crm.com'
+
+// --- Form submission endpoints -------------------------------------------------
+// Both forms post JSON here. We validate required fields, then relay to SendGrid
+// (server-side only — the API key is a Cloudflare secret, never exposed to the browser).
+
+app.post('/api/demo-request', async (c) => {
+  const { env } = c
+  let data: Record<string, unknown>
+  try {
+    data = await c.req.json()
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400)
+  }
+
+  const firstName = esc(data.firstName)
+  const lastName = esc(data.lastName)
+  const email = esc(data.email)
+  const company = esc(data.company)
+  const trade = esc(data.trade)
+  const teamSize = esc(data.teamSize)
+
+  if (!firstName || !lastName || !email || !company || !trade || !teamSize) {
+    return c.json({ ok: false, error: 'Missing required fields' }, 400)
+  }
+
+  const text = [
+    `New demo request from the marketing site.`,
+    ``,
+    `Name: ${firstName} ${lastName}`,
+    `Work email: ${email}`,
+    `Company: ${company}`,
+    `Trade: ${trade}`,
+    `Team size: ${teamSize}`,
+  ].join('\n')
+
+  const result = await sendMail({
+    apiKey: env.SENDGRID_API_KEY,
+    to: NOTIFY_TO,
+    from: NOTIFY_FROM,
+    fromName: 'Groundwork Website',
+    replyTo: email,
+    subject: `New demo request — ${company}`,
+    text,
+  })
+
+  if (!result.ok) {
+    console.error('SendGrid demo-request error', result.status, result.error)
+    return c.json({ ok: false, error: 'Failed to send. Please try again or email tyler@groundwork-crm.com directly.' }, 502)
+  }
+
+  return c.json({ ok: true })
+})
+
+app.post('/api/contact', async (c) => {
+  const { env } = c
+  let data: Record<string, unknown>
+  try {
+    data = await c.req.json()
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400)
+  }
+
+  const name = esc(data.name)
+  const email = esc(data.email)
+  const topic = esc(data.topic)
+  const message = esc(data.message)
+
+  if (!name || !email || !topic || !message) {
+    return c.json({ ok: false, error: 'Missing required fields' }, 400)
+  }
+
+  const text = [
+    `New contact form message from the marketing site.`,
+    ``,
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Topic: ${topic}`,
+    ``,
+    `Message:`,
+    message,
+  ].join('\n')
+
+  const result = await sendMail({
+    apiKey: env.SENDGRID_API_KEY,
+    to: NOTIFY_TO,
+    from: NOTIFY_FROM,
+    fromName: 'Groundwork Website',
+    replyTo: email,
+    subject: `New contact form message — ${name} (${topic})`,
+    text,
+  })
+
+  if (!result.ok) {
+    console.error('SendGrid contact error', result.status, result.error)
+    return c.json({ ok: false, error: 'Failed to send. Please try again or email tyler@groundwork-crm.com directly.' }, 502)
+  }
+
+  return c.json({ ok: true })
+})
 
 app.get('/', (c) => c.html(<HomePage />))
 app.get('/product', (c) => c.html(<ProductHubPage />))

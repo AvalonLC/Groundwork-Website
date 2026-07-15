@@ -64,7 +64,9 @@ export function DemoPage() {
                 A specialist will follow up within one business day to schedule.
               </div>
               <form
-                onsubmit="event.preventDefault(); this.querySelector('button').textContent='✓ Sent — we will reach out';"
+                data-live-submit
+                data-endpoint="/api/demo-request"
+                data-success-text="✓ Sent — we will reach out"
                 style="display: flex; flex-direction: column; gap: 14px;"
               >
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -72,6 +74,7 @@ export function DemoPage() {
                     <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">First name</div>
                     <input
                       type="text"
+                      name="firstName"
                       required
                       style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                     />
@@ -80,6 +83,7 @@ export function DemoPage() {
                     <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Last name</div>
                     <input
                       type="text"
+                      name="lastName"
                       required
                       style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                     />
@@ -89,6 +93,7 @@ export function DemoPage() {
                   <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Work email</div>
                   <input
                     type="email"
+                    name="email"
                     required
                     style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                   />
@@ -97,6 +102,7 @@ export function DemoPage() {
                   <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Company</div>
                   <input
                     type="text"
+                    name="company"
                     required
                     style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                   />
@@ -104,6 +110,7 @@ export function DemoPage() {
                 <label style="display: block;">
                   <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Trade</div>
                   <select
+                    name="trade"
                     required
                     style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                   >
@@ -118,6 +125,7 @@ export function DemoPage() {
                 <label style="display: block;">
                   <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Team size</div>
                   <select
+                    name="teamSize"
                     required
                     style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                   >
@@ -132,6 +140,7 @@ export function DemoPage() {
                 <button type="submit" class="btn btn-primary" style="justify-content: center; margin-top: 8px;">
                   Request demo <span class="arrow">→</span>
                 </button>
+                <div data-form-error style="display: none; font-size: 12.5px; color: #b42318; text-align: center; margin-top: 2px;"></div>
                 <div style="font-size: 12px; color: var(--gw-ink-500); text-align: center; margin-top: 4px;">
                   Prefer to log in?{' '}
                   <a href="/login" style="color: var(--gw-forest-700); text-decoration: underline;">

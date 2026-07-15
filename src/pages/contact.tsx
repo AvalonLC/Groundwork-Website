@@ -68,13 +68,16 @@ export function ContactPage() {
               <div style="background: var(--gw-cream-100); border: 1px solid var(--gw-line); border-radius: var(--r-lg); padding: 32px;">
                 <div style="font-family: var(--font-serif); font-size: 22px; font-weight: 500; margin-bottom: 20px;">Send a message</div>
                 <form
-                  onsubmit="event.preventDefault(); this.querySelector('button').textContent='✓ Sent';"
+                  data-live-submit
+                  data-endpoint="/api/contact"
+                  data-success-text="✓ Sent"
                   style="display: flex; flex-direction: column; gap: 12px;"
                 >
                   <label style="display: block;">
                     <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Your name</div>
                     <input
                       type="text"
+                      name="name"
                       required
                       style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; background: white; font-family: inherit;"
                     />
@@ -83,6 +86,7 @@ export function ContactPage() {
                     <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Email</div>
                     <input
                       type="email"
+                      name="email"
                       required
                       style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; background: white; font-family: inherit;"
                     />
@@ -90,6 +94,7 @@ export function ContactPage() {
                   <label style="display: block;">
                     <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Topic</div>
                     <select
+                      name="topic"
                       required
                       style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; background: white; font-family: inherit;"
                     >
@@ -104,6 +109,7 @@ export function ContactPage() {
                   <label style="display: block;">
                     <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Message</div>
                     <textarea
+                      name="message"
                       rows={5}
                       required
                       style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; background: white; font-family: inherit; resize: vertical;"
@@ -112,6 +118,7 @@ export function ContactPage() {
                   <button type="submit" class="btn btn-primary" style="justify-content: center; margin-top: 6px;">
                     Send message <span class="arrow">→</span>
                   </button>
+                  <div data-form-error style="display: none; font-size: 12.5px; color: #b42318; text-align: center; margin-top: 2px;"></div>
                 </form>
               </div>
             </div>
