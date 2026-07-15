@@ -139,6 +139,54 @@ app.post('/api/contact', async (c) => {
   return c.json({ ok: true })
 })
 
+app.post('/api/signup-request', async (c) => {
+  const { env } = c
+  let data: Record<string, unknown>
+  try {
+    data = await c.req.json()
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400)
+  }
+
+  const firstName = esc(data.firstName)
+  const lastName = esc(data.lastName)
+  const email = esc(data.email)
+  const company = esc(data.company)
+  const role = esc(data.role)
+  const notes = esc(data.notes) // optional
+
+  if (!firstName || !lastName || !email || !company || !role) {
+    return c.json({ ok: false, error: 'Missing required fields' }, 400)
+  }
+
+  const text = [
+    `New pilot access request from the marketing site.`,
+    ``,
+    `Name: ${firstName} ${lastName}`,
+    `Work email: ${email}`,
+    `Company: ${company}`,
+    `Role: ${role}`,
+    ...(notes ? ['', 'Notes:', notes] : []),
+  ].join('\n')
+
+  const result = await sendMail({
+    apiKey: env.SENDGRID_API_KEY,
+    to: NOTIFY_TO,
+    from: NOTIFY_FROM,
+    fromName: 'Groundwork Website',
+    replyTo: email,
+    subject: `New pilot access request — ${company}`,
+    text,
+  })
+
+  if (!result.ok) {
+    console.error('SendGrid signup-request error', result.status, result.error)
+    return c.json({ ok: false, error: 'Failed to send. Please try again or email tyler@groundwork-crm.com directly.' }, 502)
+  }
+
+  return c.json({ ok: true })
+})
+
 app.get('/', (c) => c.html(<HomePage />))
 app.get('/product', (c) => c.html(<ProductHubPage />))
 app.get('/product/my-day', (c) => c.html(<MyDayPage />))

@@ -27,7 +27,9 @@ export function SignupPage() {
               A specialist will provision a sandboxed workspace with your data and reach out within one business day.
             </div>
             <form
-              onsubmit="event.preventDefault(); this.querySelector('button[type=submit]').textContent='✓ Request sent';"
+              data-live-submit
+              data-endpoint="/api/signup-request"
+              data-success-text="✓ Request sent"
               style="display: flex; flex-direction: column; gap: 14px;"
             >
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -35,6 +37,7 @@ export function SignupPage() {
                   <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">First name</div>
                   <input
                     type="text"
+                    name="firstName"
                     required
                     style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                   />
@@ -43,6 +46,7 @@ export function SignupPage() {
                   <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Last name</div>
                   <input
                     type="text"
+                    name="lastName"
                     required
                     style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                   />
@@ -52,6 +56,7 @@ export function SignupPage() {
                 <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Work email</div>
                 <input
                   type="email"
+                  name="email"
                   required
                   style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                 />
@@ -60,6 +65,7 @@ export function SignupPage() {
                 <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Company</div>
                 <input
                   type="text"
+                  name="company"
                   required
                   style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                 />
@@ -67,6 +73,7 @@ export function SignupPage() {
               <label style="display: block;">
                 <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Your role</div>
                 <select
+                  name="role"
                   required
                   style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                 >
@@ -81,6 +88,7 @@ export function SignupPage() {
               <label style="display: block;">
                 <div style="font-size: 12px; font-weight: 600; color: var(--gw-ink-700); margin-bottom: 4px;">Anything else?</div>
                 <textarea
+                  name="notes"
                   rows={3}
                   style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white; resize: vertical;"
                   placeholder="Current tools, team size, biggest headache…"
@@ -89,6 +97,7 @@ export function SignupPage() {
               <button type="submit" class="btn btn-primary" style="justify-content: center; margin-top: 8px;">
                 Request access <span class="arrow">→</span>
               </button>
+              <div data-form-error style="display: none; font-size: 12.5px; color: #b42318; text-align: center; margin-top: 2px;"></div>
             </form>
             <div style="font-size: 12.5px; color: var(--gw-ink-500); text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gw-cream-300);">
               Already have a workspace?{' '}
