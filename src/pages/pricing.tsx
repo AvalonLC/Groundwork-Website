@@ -246,8 +246,9 @@ export function PricingPage() {
               <h3>Same team size, side by side with Jobber.</h3>
               <p>
                 Jobber's plans are priced by user count, capped at a ceiling (5 users, 10 users, 15 users), with
-                extra users at a flat $29/mo add-on. Groundwork prices every seat by role instead of charging one
-                flat rate per login — here's the same headcount on both, at Jobber's published rates.
+                extra users at a flat $29/mo add-on — and no published price at all once you pass 15. Groundwork
+                prices every seat by role instead of charging one flat rate per login — here's the same headcount on
+                both, at Jobber's published rates, all the way up to where Jobber stops publishing a rate.
               </p>
             </div>
             <div class="compare-table">
@@ -271,12 +272,20 @@ export function PricingPage() {
                 <span>Plus — $449–599/mo</span>
                 <span class="compare-gw">Pro — $536.50/mo</span>
               </div>
+              <div class="compare-row">
+                <span>1 owner/estimator + 24 field (25 users)</span>
+                <span>Past 15 users — contact sales, no published rate</span>
+                <span class="compare-gw">Pro — $834/mo</span>
+              </div>
             </div>
             <p class="compare-footnote">
               Jobber's monthly-billed rate shown above; their annual-prepay rate runs lower. Groundwork totals include
               our seat-based field volume discount (6–10 seats at −10%, 11+ at −15%) already applied — no negotiating
               required to get it. Past a Jobber plan's user cap, additional users are a flat $29/mo each regardless of
-              role; every Groundwork seat is priced by what that person actually does in the app.
+              role, and past 15 users Jobber requires a sales call with no published price at all. Groundwork's rate
+              stays fully transparent and self-serve at any headcount — the seat calculator below computes it
+              instantly, and teams that outgrow a per-seat plan entirely can move to Enterprise for multi-location
+              roll-up pricing.
             </p>
           </div>
 
