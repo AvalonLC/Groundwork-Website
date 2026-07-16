@@ -11,8 +11,9 @@ export function PricingPage() {
       startingAt: '$49',
       seats: [
         { label: 'Rep / Estimator', price: '$49/mo', primary: true },
-        { label: 'Field & View-only', price: '$25/mo' },
+        { label: 'Field', price: '$25/mo' },
         { label: 'Office Manager', price: '$89/mo' },
+        { label: 'View-only', price: '1 free, then $10/mo' },
       ],
       minSeats: '3 seat minimum',
       dark: false,
@@ -35,8 +36,9 @@ export function PricingPage() {
       startingAt: '$65',
       seats: [
         { label: 'Rep / Estimator', price: '$65/mo', primary: true },
-        { label: 'Field & View-only', price: '$30/mo' },
+        { label: 'Field', price: '$30/mo' },
         { label: 'Office Manager', price: '$105/mo' },
+        { label: 'View-only', price: '3 free, then $10/mo' },
       ],
       minSeats: '5 seat minimum',
       dark: true,
@@ -58,8 +60,9 @@ export function PricingPage() {
       startingAt: '$85',
       seats: [
         { label: 'Rep / Estimator', price: '$85/mo', primary: true },
-        { label: 'Field & View-only', price: '$38/mo' },
+        { label: 'Field', price: '$35/mo' },
         { label: 'Office Manager', price: '$135/mo' },
+        { label: 'View-only', price: '5 free, then $10/mo' },
       ],
       minSeats: '8 seat minimum',
       dark: false,
@@ -196,6 +199,9 @@ export function PricingPage() {
                         <span>{s.price}</span>
                       </div>
                     ))}
+                    <div class="pricing-seat-footnote">
+                      Field seats 6–10 are 10% off, seats 11+ are 15% off — applied automatically, no negotiating.
+                    </div>
                   </div>
                 )}
 
@@ -228,8 +234,49 @@ export function PricingPage() {
               expensive stuff. We do both. Your <strong>plan</strong> (Core, Growth, Pro, Enterprise) unlocks the
               workspaces your company operates with — reporting, automation, client portal. Your <strong>seats</strong>{' '}
               are priced by what that person actually needs to touch — a laborer clocking in from the truck costs a
-              fraction of an estimator building proposals. Add crew without upgrading your plan. Upgrade your plan
-              without paying more for seats you already have.
+              fraction of an estimator building proposals, and a subcontractor who just needs to see the schedule
+              shouldn't cost anything close to that. Add crew without upgrading your plan. Upgrade your plan without
+              paying more for seats you already have.
+            </p>
+          </div>
+
+          <div class="pricing-compare">
+            <div class="pricing-compare-head">
+              <span class="eyebrow">How this stacks up</span>
+              <h3>Same team size, side by side with Jobber.</h3>
+              <p>
+                Jobber's plans are priced by user count, capped at a ceiling (5 users, 10 users, 15 users), with
+                extra users at a flat $29/mo add-on. Groundwork prices every seat by role instead of charging one
+                flat rate per login — here's the same headcount on both, at Jobber's published rates.
+              </p>
+            </div>
+            <div class="compare-table">
+              <div class="compare-row compare-head-row">
+                <span>Team</span>
+                <span>Jobber</span>
+                <span>Groundwork</span>
+              </div>
+              <div class="compare-row">
+                <span>1 owner/estimator + 4 field (5 users)</span>
+                <span>Connect — $119–169/mo</span>
+                <span class="compare-gw">Core — $149/mo</span>
+              </div>
+              <div class="compare-row">
+                <span>1 owner/estimator + 9 field (10 users)</span>
+                <span>Grow — $199–349/mo</span>
+                <span class="compare-gw">Growth — $323/mo</span>
+              </div>
+              <div class="compare-row">
+                <span>1 owner/estimator + 14 field (15 users)</span>
+                <span>Plus — $449–599/mo</span>
+                <span class="compare-gw">Pro — $536.50/mo</span>
+              </div>
+            </div>
+            <p class="compare-footnote">
+              Jobber's monthly-billed rate shown above; their annual-prepay rate runs lower. Groundwork totals include
+              our seat-based field volume discount (6–10 seats at −10%, 11+ at −15%) already applied — no negotiating
+              required to get it. Past a Jobber plan's user cap, additional users are a flat $29/mo each regardless of
+              role; every Groundwork seat is priced by what that person actually does in the app.
             </p>
           </div>
 
@@ -237,8 +284,21 @@ export function PricingPage() {
             <div class="pricing-faq-head">Pricing questions</div>
             <div class="faq">
               <FAQItem question="Can I mix seat types on the same plan?">
-                Yes — every plan supports any combination of Rep/Estimator, Field & View-only, and Office Manager
+                Yes — every plan supports any combination of Rep/Estimator, Field, Office Manager, and View-only
                 seats. Most teams run a small number of Rep seats alongside a larger pool of Field seats for the crew.
+              </FAQItem>
+              <FAQItem question="What's a View-only seat, and why is it separate from Field?">
+                View-only is read access with no editing — a subcontractor checking the schedule, an investor or
+                accountant who just needs visibility, a client's project manager. It doesn't need Field pricing
+                because it can't touch a job, log time, or update a status. Every plan includes a few free (1 on
+                Core, 3 on Growth, 5 on Pro); additional view-only seats are $10/mo flat, no matter which plan you're
+                on.
+              </FAQItem>
+              <FAQItem question="How does the field-seat volume discount work?">
+                Automatically, on every plan — no need to ask for it. Your first 5 field seats are billed at the
+                standard rate, seats 6 through 10 are 10% off, and seat 11 onward is 15% off. It's graduated like a
+                tax bracket, so adding one more field seat never raises what your existing seats cost — it just
+                keeps the per-seat rate falling as your crew grows.
               </FAQItem>
               <FAQItem question="What happens if my crew size changes mid-month?">
                 Add or remove seats anytime — you're billed for what you actually have active, prorated to the day.
@@ -250,7 +310,8 @@ export function PricingPage() {
               </FAQItem>
               <FAQItem question="Do Owner and Admin seats really cost nothing?">
                 Correct — Owner/Admin seats are free and unlimited on every plan, including Core. You only pay for
-                seats that do estimating, field, or office-manager work.
+                seats that do estimating, field, office-manager, or view-only work past the included free view-only
+                seats.
               </FAQItem>
               <FAQItem question="I'm a solo operator with no employees yet — what do I sign up for?">
                 Starter. It's one seat — you — for $29/mo with no minimum, built for owner-operators doing their own

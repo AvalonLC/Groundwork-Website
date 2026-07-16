@@ -144,10 +144,13 @@
     var calc = document.querySelector('[data-pricing-calc]')
     if (!calc) return
 
+    var viewPrice = parseFloat(calc.dataset.viewPrice) || 10
+
     var inputs = {
       rep: calc.querySelector('[data-calc-input="rep"]'),
       field: calc.querySelector('[data-calc-input="field"]'),
       office: calc.querySelector('[data-calc-input="office"]'),
+      view: calc.querySelector('[data-calc-input="view"]'),
     }
     var results = calc.querySelectorAll('[data-calc-plan]')
 
@@ -158,11 +161,31 @@
       return n
     }
 
+    // Field-seat volume breaks: seats 1-5 at full rate, seats 6-10 at -10%,
+    // seats 11+ at -15% — graduated like a tax bracket, so adding a seat
+    // never makes the total go down. Mirrors the copy on the calculator and
+    // the plan seat tables.
+    function fieldCost(qty, rate) {
+      if (qty <= 0) return 0
+      var tier1 = Math.min(qty, 5)
+      var tier2 = Math.max(0, Math.min(qty, 10) - 5)
+      var tier3 = Math.max(0, qty - 10)
+      return tier1 * rate + tier2 * rate * 0.9 + tier3 * rate * 0.85
+    }
+
+    // View-only seats: first `included` per plan are free, everything past
+    // that bills at the flat view-only rate.
+    function viewCost(qty, included) {
+      var billable = Math.max(0, qty - included)
+      return billable * viewPrice
+    }
+
     function recalc() {
       var rep = clampCount(inputs.rep.value)
       var field = clampCount(inputs.field.value)
       var office = clampCount(inputs.office.value)
-      var totalSeats = rep + field + office
+      var view = inputs.view ? clampCount(inputs.view.value) : 0
+      var totalSeats = rep + field + office + view
 
       var soloHint = calc.querySelector('[data-calc-solo-hint]')
       if (soloHint) {
@@ -173,9 +196,10 @@
         var repPrice = parseFloat(card.dataset.repPrice)
         var fieldPrice = parseFloat(card.dataset.fieldPrice)
         var officePrice = parseFloat(card.dataset.officePrice)
+        var viewIncluded = parseInt(card.dataset.viewIncluded, 10) || 0
         var minSeats = parseInt(card.dataset.minSeats, 10) || 0
 
-        var total = rep * repPrice + field * fieldPrice + office * officePrice
+        var total = rep * repPrice + fieldCost(field, fieldPrice) + office * officePrice + viewCost(view, viewIncluded)
         var totalEl = card.querySelector('[data-calc-total]')
         var noteEl = card.querySelector('[data-calc-note]')
 
@@ -184,10 +208,13 @@
         if (noteEl) {
           if (totalSeats === 0) {
             noteEl.textContent = 'Add your team above to see a total'
-          } else if (totalSeats < minSeats) {
+          } else if (rep + field + office < minSeats) {
             noteEl.textContent = minSeats + ' seat minimum on this plan'
           } else {
-            noteEl.textContent = totalSeats + ' seat' + (totalSeats === 1 ? '' : 's') + ' total'
+            var note = totalSeats + ' seat' + (totalSeats === 1 ? '' : 's') + ' total'
+            if (field > 5) note += ' · field volume discount applied'
+            if (view > 0 && view <= viewIncluded) note += ' · view-only free'
+            noteEl.textContent = note
           }
         }
       })

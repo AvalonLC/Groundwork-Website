@@ -1,8 +1,10 @@
 // Interactive "what would my team pay?" calculator for the pricing page.
-// Purely client-side math (site.js: bindPricingCalculator) — no backend call,
-// since it's just multiplying visible seat rates. Numbers live as data-*
-// attributes on the result cards so the calculator has zero pricing logic
-// duplicated in JS beyond arithmetic.
+// Purely client-side math (site.js: bindPricingCalculator) — no backend call.
+// Numbers live as data-* attributes on the result cards so the calculator has
+// zero pricing logic duplicated in JS beyond arithmetic + the field volume
+// brackets (seats 1-5 full price, 6-10 at -10%, 11+ at -15%, mirrored exactly
+// in bindPricingCalculator's fieldCost() helper) and the view-only overage
+// (first N per plan included free, additional seats at the flat rate below).
 
 interface CalcPlan {
   key: string
@@ -10,19 +12,22 @@ interface CalcPlan {
   repPrice: number
   fieldPrice: number
   officePrice: number
+  viewIncluded: number
   minSeats: number
   badge?: string
 }
 
+const VIEW_ONLY_PRICE = 10
+
 const CALC_PLANS: CalcPlan[] = [
-  { key: 'core', name: 'Core', repPrice: 49, fieldPrice: 25, officePrice: 89, minSeats: 3 },
-  { key: 'growth', name: 'Growth', repPrice: 65, fieldPrice: 30, officePrice: 105, minSeats: 5, badge: 'Most popular' },
-  { key: 'pro', name: 'Pro', repPrice: 85, fieldPrice: 38, officePrice: 135, minSeats: 8 },
+  { key: 'core', name: 'Core', repPrice: 49, fieldPrice: 25, officePrice: 89, viewIncluded: 1, minSeats: 3 },
+  { key: 'growth', name: 'Growth', repPrice: 65, fieldPrice: 30, officePrice: 105, viewIncluded: 3, minSeats: 5, badge: 'Most popular' },
+  { key: 'pro', name: 'Pro', repPrice: 85, fieldPrice: 35, officePrice: 135, viewIncluded: 5, minSeats: 8 },
 ]
 
 export function PricingCalculator() {
   return (
-    <div class="pricing-calc" data-pricing-calc>
+    <div class="pricing-calc" data-pricing-calc data-view-price={VIEW_ONLY_PRICE}>
       <div class="pricing-calc-head">
         <span class="eyebrow">Estimate your price</span>
         <h3>What would your team actually pay?</h3>
@@ -47,7 +52,7 @@ export function PricingCalculator() {
         </label>
         <label class="calc-field">
           <div class="calc-label">
-            Field &amp; View-only
+            Field crew
             <span>Crew, laborers, foremen clocking in</span>
           </div>
           <div class="calc-stepper">
@@ -75,6 +80,27 @@ export function PricingCalculator() {
             </button>
           </div>
         </label>
+        <label class="calc-field">
+          <div class="calc-label">
+            View-only
+            <span>Read-only — subs, investors, accountants</span>
+          </div>
+          <div class="calc-stepper">
+            <button type="button" class="calc-step" data-calc-step="view" data-dir="-1" aria-label="Decrease">
+              −
+            </button>
+            <input type="number" min="0" max="999" value="0" data-calc-input="view" inputmode="numeric" />
+            <button type="button" class="calc-step" data-calc-step="view" data-dir="1" aria-label="Increase">
+              +
+            </button>
+          </div>
+        </label>
+      </div>
+
+      <div class="calc-volume-note">
+        Field pricing already includes volume breaks — seats 6–10 are 10% lower, seats 11+ are 15% lower — and
+        every plan includes a handful of free view-only seats before the $10/mo add-on rate kicks in. Both are
+        baked into the totals below automatically.
       </div>
 
       <div class="calc-solo-hint" data-calc-solo-hint style="display: none;">
@@ -90,6 +116,7 @@ export function PricingCalculator() {
             data-rep-price={p.repPrice}
             data-field-price={p.fieldPrice}
             data-office-price={p.officePrice}
+            data-view-included={p.viewIncluded}
             data-min-seats={p.minSeats}
           >
             {p.badge ? <div class="calc-badge">{p.badge}</div> : <div class="calc-badge-spacer"></div>}
