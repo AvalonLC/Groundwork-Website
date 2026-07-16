@@ -15,9 +15,9 @@ interface CalcPlan {
 }
 
 const CALC_PLANS: CalcPlan[] = [
-  { key: 'core', name: 'Core', repPrice: 49, fieldPrice: 15, officePrice: 79, minSeats: 3 },
-  { key: 'growth', name: 'Growth', repPrice: 65, fieldPrice: 19, officePrice: 95, minSeats: 5, badge: 'Most popular' },
-  { key: 'pro', name: 'Pro', repPrice: 85, fieldPrice: 25, officePrice: 120, minSeats: 8 },
+  { key: 'core', name: 'Core', repPrice: 49, fieldPrice: 25, officePrice: 89, minSeats: 3 },
+  { key: 'growth', name: 'Growth', repPrice: 65, fieldPrice: 30, officePrice: 105, minSeats: 5, badge: 'Most popular' },
+  { key: 'pro', name: 'Pro', repPrice: 85, fieldPrice: 38, officePrice: 135, minSeats: 8 },
 ]
 
 export function PricingCalculator() {

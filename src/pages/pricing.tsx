@@ -11,8 +11,8 @@ export function PricingPage() {
       startingAt: '$49',
       seats: [
         { label: 'Rep / Estimator', price: '$49/mo', primary: true },
-        { label: 'Field & View-only', price: '$15/mo' },
-        { label: 'Office Manager', price: '$79/mo' },
+        { label: 'Field & View-only', price: '$25/mo' },
+        { label: 'Office Manager', price: '$89/mo' },
       ],
       minSeats: '3 seat minimum',
       dark: false,
@@ -35,8 +35,8 @@ export function PricingPage() {
       startingAt: '$65',
       seats: [
         { label: 'Rep / Estimator', price: '$65/mo', primary: true },
-        { label: 'Field & View-only', price: '$19/mo' },
-        { label: 'Office Manager', price: '$95/mo' },
+        { label: 'Field & View-only', price: '$30/mo' },
+        { label: 'Office Manager', price: '$105/mo' },
       ],
       minSeats: '5 seat minimum',
       dark: true,
@@ -58,8 +58,8 @@ export function PricingPage() {
       startingAt: '$85',
       seats: [
         { label: 'Rep / Estimator', price: '$85/mo', primary: true },
-        { label: 'Field & View-only', price: '$25/mo' },
-        { label: 'Office Manager', price: '$120/mo' },
+        { label: 'Field & View-only', price: '$38/mo' },
+        { label: 'Office Manager', price: '$135/mo' },
       ],
       minSeats: '8 seat minimum',
       dark: false,

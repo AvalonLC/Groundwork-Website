@@ -5,15 +5,18 @@ const { chromium } = require('playwright');
   await page.goto('http://localhost:3000/pricing', { waitUntil: 'networkidle' });
 
   // Default values: rep=2, field=6, office=1
-  // Core: 2*49 + 6*15 + 1*79 = 98+90+79 = 267
-  // Growth: 2*65 + 6*19 + 1*95 = 130+114+95 = 339
-  // Pro: 2*85 + 6*25 + 1*120 = 170+150+120 = 440
+  // Core: 2*49 + 6*25 + 1*89 = 98+150+89 = 337
+  // Growth: 2*65 + 6*30 + 1*105 = 130+180+105 = 415
+  // Pro: 2*85 + 6*38 + 1*135 = 170+228+135 = 533
   const coreTotal = await page.locator('[data-calc-plan="core"] [data-calc-total]').textContent();
   const growthTotal = await page.locator('[data-calc-plan="growth"] [data-calc-total]').textContent();
   const proTotal = await page.locator('[data-calc-plan="pro"] [data-calc-total]').textContent();
   console.log('Default — Core:', coreTotal, 'Growth:', growthTotal, 'Pro:', proTotal);
 
   // Change inputs: rep=3, field=10, office=2
+  // Core: 3*49 + 10*25 + 2*89 = 147+250+178 = 575
+  // Growth: 3*65 + 10*30 + 2*105 = 195+300+210 = 705
+  // Pro: 3*85 + 10*38 + 2*135 = 255+380+270 = 905
   await page.fill('[data-calc-input="rep"]', '3');
   await page.fill('[data-calc-input="field"]', '10');
   await page.fill('[data-calc-input="office"]', '2');
