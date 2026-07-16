@@ -128,6 +128,45 @@ export function PricingPage() {
 
       <section class="section" style="padding-top: 24px;">
         <div class="wrap">
+          <div class="pricing-starter-banner" id="starter-plan">
+            <div class="pricing-starter-icon">
+              <Icon name="user" size={22} />
+            </div>
+            <div class="pricing-starter-body">
+              <div class="pricing-starter-eyebrow">Just starting out?</div>
+              <div class="pricing-starter-title">Starter — built for solo owner-operators.</div>
+              <p class="pricing-starter-desc">
+                No crew yet? Starter is one seat — you — running estimates, invoicing, and your pipeline from your
+                phone or laptop. No 3-seat minimum, no team features you don't need. The day you hire your first
+                crew member, upgrade to Core on the same account — your data comes with you, nothing to migrate.
+              </p>
+              <ul class="pricing-starter-features">
+                <li>
+                  <Icon name="check" size={13} /> Pipeline, Leads, Clients &amp; Properties
+                </li>
+                <li>
+                  <Icon name="check" size={13} /> Estimates &amp; proposals
+                </li>
+                <li>
+                  <Icon name="check" size={13} /> Invoices &amp; Payments
+                </li>
+                <li>
+                  <Icon name="check" size={13} /> Field Mode (mobile)
+                </li>
+              </ul>
+            </div>
+            <div class="pricing-starter-price-block">
+              <div class="pricing-starter-price">
+                <span class="pricing-starter-price-num">$29</span>
+                <span class="pricing-starter-price-suffix">/mo</span>
+              </div>
+              <div class="pricing-starter-price-note">1 seat · no minimum</div>
+              <a href="/signup" class="pricing-starter-cta">
+                Start solo <span class="arrow">→</span>
+              </a>
+            </div>
+          </div>
+
           <div class="pricing-grid">
             {plans.map((p) => (
               <div class={`pricing-card${p.dark ? ' dark' : ''}`}>
@@ -212,6 +251,11 @@ export function PricingPage() {
               <FAQItem question="Do Owner and Admin seats really cost nothing?">
                 Correct — Owner/Admin seats are free and unlimited on every plan, including Core. You only pay for
                 seats that do estimating, field, or office-manager work.
+              </FAQItem>
+              <FAQItem question="I'm a solo operator with no employees yet — what do I sign up for?">
+                Starter. It's one seat — you — for $29/mo with no minimum, built for owner-operators doing their own
+                estimating, invoicing, and field work. Skip Core's 3-seat minimum entirely. The moment you hire your
+                first crew member or estimator, upgrade to Core from inside your account — same data, no re-setup.
               </FAQItem>
             </div>
           </div>

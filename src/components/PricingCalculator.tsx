@@ -77,6 +77,11 @@ export function PricingCalculator() {
         </label>
       </div>
 
+      <div class="calc-solo-hint" data-calc-solo-hint style="display: none;">
+        Just you, no crew yet? These plans have seat minimums — <a href="#starter-plan">check out Starter</a> instead,
+        it's built for solo operators.
+      </div>
+
       <div class="pricing-calc-results">
         {CALC_PLANS.map((p) => (
           <div

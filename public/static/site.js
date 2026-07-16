@@ -164,6 +164,11 @@
       var office = clampCount(inputs.office.value)
       var totalSeats = rep + field + office
 
+      var soloHint = calc.querySelector('[data-calc-solo-hint]')
+      if (soloHint) {
+        soloHint.style.display = totalSeats === 0 ? 'block' : 'none'
+      }
+
       results.forEach(function (card) {
         var repPrice = parseFloat(card.dataset.repPrice)
         var fieldPrice = parseFloat(card.dataset.fieldPrice)
