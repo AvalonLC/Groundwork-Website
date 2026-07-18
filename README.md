@@ -120,7 +120,7 @@ The old 4-item "Solutions" nav dropdown (Landscaping / Home service / Field serv
 - App Store / Google Play download links on `/download` are placeholder `#` hrefs pending real app store listings.
 - Domain consolidation: moving the real product to `login.groundwork-crm.com` and this marketing site to the bare `groundwork-crm.com` (see "Domain status" above) — not started.
 - Groundwork AI billing enforcement (usage metering, live tenant usage bar, self-service package upgrades/downgrades, BYOK key storage, DB schema for AI actions) is product/backend work — out of scope for this marketing repo. The `/pricing` page presents the AI pricing model; it does not implement it.
-- Production deployment — not yet deployed; awaiting user review per explicit instruction.
+- Production deployment — ✅ deployed (see "Deployment" below).
 
 ## Data / Storage
 No database. Purely static marketing content rendered server-side per request via Hono.
@@ -133,4 +133,9 @@ curl http://localhost:3000/
 ```
 
 ## Deployment
-Not yet deployed — pending user review. Two Cloudflare deploy paths are available for this project (BYOK vs. Genspark-hosted) — ask the user which one before deploying, per project convention.
+- **Platform**: Cloudflare Pages, deployed via the user's own Cloudflare account (BYOK path, `wrangler pages deploy`).
+- **Status**: ✅ Live.
+- **Cloudflare project**: `groundwork-crm-marketing`
+- **Live URLs**: https://groundwork-crm.info (custom domain) · https://groundwork-crm-marketing.pages.dev (Pages default domain)
+- **Last deployed**: 2026-07-18 — includes the full Trades mega-menu redesign (11-trade nav/hub/pages, footer, demo form dropdown).
+- To redeploy: `npm run build && npx wrangler pages deploy dist --project-name groundwork-crm-marketing --branch main` (requires `setup_cloudflare_api_key` first).
