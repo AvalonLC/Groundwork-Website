@@ -34,6 +34,17 @@ export function PricingCalculator() {
         <p>Owners and admins are always free. Enter everyone else and see a real monthly number per plan.</p>
       </div>
 
+      <div class="calc-owner-row">
+        <div class="calc-owner-info">
+          <span class="calc-owner-count">1</span>
+          <div class="calc-owner-copy">
+            <strong>Owner / Admin seat</strong>
+            <span>You — free, unlimited, on every plan. This is the floor: full access, zero seat cost.</span>
+          </div>
+        </div>
+        <div class="calc-owner-price">$0<small>/mo</small></div>
+      </div>
+
       <div class="pricing-calc-inputs">
         <label class="calc-field">
           <div class="calc-label">

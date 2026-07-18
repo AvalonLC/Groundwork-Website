@@ -87,6 +87,56 @@ Talking points:
   side-by-side — always use the monthly-billed number for the apples-to-apples
   comparison, same as the public page does.
 
+## Housecall Pro talk track (matches the live comparison table on /pricing)
+
+Housecall Pro does **not** run a plain public pricing page — their site
+routes visitors through a quote quiz instead of listing rates. The numbers
+below are our best-effort read of their publicly reported tiers (Basic,
+Essentials, MAX), cross-checked against third-party review/aggregator sites,
+**not** pulled from a live rate card. Treat these as directionally accurate,
+not exact — say so if a prospect pushes on the specific number.
+
+| Team size | Housecall Pro plan & rate | Groundwork |
+|---|---|---|
+| 1 user (owner-operator) | Basic, ~$59/mo | Starter, $29/mo |
+| 5 users (1 owner + 4 field) | Essentials, ~$149/mo | Core, $149/mo |
+| 8 users (1 owner + 7 field) | MAX, ~$299–329/mo | Growth, $269/mo |
+
+Talking points:
+- Lead with the confidence caveat yourself before the prospect asks — "their
+  own site won't tell you the number either, so here's the best public data
+  we could find" builds more trust than presenting it as gospel.
+- Housecall Pro's MAX tier caps around 8 users; past that they're in
+  custom/sales-quote territory too, same pattern as Jobber past 15.
+- Don't lean on this table as hard as the Jobber one in a competitive deal —
+  it's a supporting data point, not a verified head-to-head.
+
+## JobNimbus / ServiceTitan / Buildertrend — no published pricing, don't
+## invent numbers
+
+All three keep pricing off their websites entirely and route every visitor to
+a sales call or "request a quote" form — confirmed by direct crawl, not just
+absence of a marketing page. Third-party estimates exist for all three but
+disagree with each other by roughly 2–3x on the same product, which means
+they're not reliable enough to quote or put in writing anywhere, including on
+a call.
+
+| Competitor | What we found | Rough third-party chatter (do not quote) |
+|---|---|---|
+| JobNimbus | Named tiers exist (Essentials/Pro/Premium/Enterprise by user-count bands: up to 3/10/19/20+) but zero dollar figures published; by-request only. | ~$225–550/mo base + $20–75/user — wide enough spread to be unusable. |
+| ServiceTitan | No pricing anywhere on the site; always a sales conversation, typically quoted per-technician. | ~$245–398/technician/month — again, too wide to state as fact. |
+| Buildertrend | No self-serve pricing at all; entire site funnels to "get your custom quote." | No usable range found. |
+
+Talking points:
+- Don't repeat the third-party numbers above to a prospect as if they're
+  confirmed — frame it as "even the review sites can't agree within 2-3x of
+  each other, which tells you something."
+- The differentiator to lead with is transparency itself: Groundwork's full
+  rate card is published on `/pricing` and the calculator gives an exact
+  number in seconds — no call, no quiz, no waiting on a quote.
+- If a prospect is actively evaluating one of these three, ask what number
+  sales quoted them and compare directly — don't guess on their behalf.
+
 ## Regenerating this table
 
 If seat rates or the discount brackets change, re-run this and paste the
@@ -123,4 +173,5 @@ for label, rep, field, office, view in scenarios:
         print("  " + name + ": $" + format(total, '.2f') + "  [" + min_ok + "]")
 ```
 
-_Last regenerated: 2026-07-16, matching commit `8f3e859` on `main`._
+_Last regenerated: 2026-07-18, matching the Owner/Admin-seat + Housecall Pro
+comparison update on `main`._

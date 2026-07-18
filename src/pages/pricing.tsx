@@ -10,6 +10,7 @@ export function PricingPage() {
       tagline: 'One crew, one office. Everything you need to stop running the business out of a spreadsheet.',
       startingAt: '$49',
       seats: [
+        { label: 'Owner / Admin', price: 'Free, unlimited', free: true },
         { label: 'Rep / Estimator', price: '$49/mo', primary: true },
         { label: 'Field', price: '$25/mo' },
         { label: 'Office Manager', price: '$89/mo' },
@@ -20,7 +21,6 @@ export function PricingPage() {
       badge: undefined as string | undefined,
       cta: 'Request pricing',
       features: [
-        'Unlimited free Owner/Admin seats',
         'Pipeline, Leads, Clients & Properties',
         'Estimates & proposals',
         'Communications & templates',
@@ -35,6 +35,7 @@ export function PricingPage() {
       tagline: 'Multi-crew operations that need real reporting, not gut feel.',
       startingAt: '$65',
       seats: [
+        { label: 'Owner / Admin', price: 'Free, unlimited', free: true },
         { label: 'Rep / Estimator', price: '$65/mo', primary: true },
         { label: 'Field', price: '$30/mo' },
         { label: 'Office Manager', price: '$105/mo' },
@@ -59,6 +60,7 @@ export function PricingPage() {
       tagline: 'Established operators who need automation, audit trails, and a client-facing portal.',
       startingAt: '$85',
       seats: [
+        { label: 'Owner / Admin', price: 'Free, unlimited', free: true },
         { label: 'Rep / Estimator', price: '$85/mo', primary: true },
         { label: 'Field', price: '$35/mo' },
         { label: 'Office Manager', price: '$135/mo' },
@@ -83,7 +85,7 @@ export function PricingPage() {
       name: 'Enterprise',
       tagline: 'Multi-location groups and franchises that need roll-up reporting and a real contract.',
       startingAt: 'Custom',
-      seats: [] as { label: string; price: string; primary?: boolean }[],
+      seats: [] as { label: string; price: string; primary?: boolean; free?: boolean }[],
       minSeats: 'Built around your locations',
       dark: false,
       badge: undefined as string | undefined,
@@ -194,7 +196,7 @@ export function PricingPage() {
                   <div class="pricing-seat-table">
                     <div class="pricing-seat-table-head">Seat pricing by role</div>
                     {p.seats.map((s) => (
-                      <div class={`pricing-seat-row${s.primary ? ' primary' : ''}`}>
+                      <div class={`pricing-seat-row${s.primary ? ' primary' : ''}${s.free ? ' free' : ''}`}>
                         <span>{s.label}</span>
                         <span>{s.price}</span>
                       </div>
@@ -251,7 +253,7 @@ export function PricingPage() {
                 both, at Jobber's published rates, all the way up to where Jobber stops publishing a rate.
               </p>
             </div>
-            <div class="compare-table">
+            <div class="compare-table compare-table-jobber">
               <div class="compare-row compare-head-row">
                 <span>Team</span>
                 <span>Jobber</span>
@@ -286,6 +288,80 @@ export function PricingPage() {
               stays fully transparent and self-serve at any headcount — the seat calculator below computes it
               instantly, and teams that outgrow a per-seat plan entirely can move to Enterprise for multi-location
               roll-up pricing.
+            </p>
+          </div>
+
+          <div class="pricing-compare">
+            <div class="pricing-compare-head">
+              <span class="eyebrow">How this stacks up</span>
+              <h3>Same team size, side by side with Housecall Pro.</h3>
+              <p>
+                Housecall Pro doesn't publish a plain pricing page either — its site routes you through a quote quiz.
+                The figures below are our best-effort reading of its publicly reported tiers (Basic, Essentials, MAX),
+                cross-checked against third-party review sites, not a number we pulled from a live rate card — treat
+                it as directionally accurate rather than exact.
+              </p>
+            </div>
+            <div class="compare-table compare-table-hcp">
+              <div class="compare-row compare-head-row">
+                <span>Team</span>
+                <span>Housecall Pro</span>
+                <span>Groundwork</span>
+              </div>
+              <div class="compare-row">
+                <span>1 owner-operator (1 user)</span>
+                <span>Basic — ~$59/mo</span>
+                <span class="compare-gw">Starter — $29/mo</span>
+              </div>
+              <div class="compare-row">
+                <span>1 owner/estimator + 4 field (5 users)</span>
+                <span>Essentials — ~$149/mo</span>
+                <span class="compare-gw">Core — $149/mo</span>
+              </div>
+              <div class="compare-row">
+                <span>1 owner/estimator + 7 field (8 users)</span>
+                <span>MAX — ~$299–329/mo</span>
+                <span class="compare-gw">Growth — $269/mo</span>
+              </div>
+            </div>
+            <p class="compare-footnote">
+              Housecall Pro's own pricing page is gated behind a sales quiz, so the numbers above come from published
+              third-party reporting (review sites, pricing aggregators) rather than a direct rate card — we're
+              flagging that lower confidence rather than presenting it as exact. Either way, the pattern holds:
+              Groundwork's rate is computed instantly on this page and doesn't require talking to anyone to find out
+              what your team would pay.
+            </p>
+          </div>
+
+          <div class="pricing-compare pricing-compare-opaque">
+            <div class="pricing-compare-head">
+              <span class="eyebrow">The rest of the field</span>
+              <h3>JobNimbus, ServiceTitan, and Buildertrend don't publish pricing at all.</h3>
+              <p>
+                We checked directly — all three explicitly keep pricing off their websites and route every visitor to
+                a sales call or a "request a quote" form. Third-party estimates for these exist, but they vary
+                wildly enough between sources (roughly 2–3x apart on the same product) that publishing a specific
+                number here would be guessing, not reporting. That gap is itself the point:
+              </p>
+            </div>
+            <ul class="compare-opaque-list">
+              <li>
+                <strong>JobNimbus</strong> — publishes named tiers (Essentials, Pro, Premium, Enterprise) but no
+                dollar figures; pricing is by request only.
+              </li>
+              <li>
+                <strong>ServiceTitan</strong> — no published pricing anywhere on its site; every plan requires a
+                sales conversation, typically quoted per-technician.
+              </li>
+              <li>
+                <strong>Buildertrend</strong> — no self-serve pricing; the entire site funnels to "get your custom
+                quote," no ranges given.
+              </li>
+            </ul>
+            <p class="compare-footnote">
+              Groundwork is the outlier here: role-based seat pricing, published in full on this page, with a
+              calculator below that gives you an exact number for your team in seconds — no call required to find
+              out what you'd pay.
             </p>
           </div>
 

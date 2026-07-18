@@ -1071,6 +1071,8 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .pricing-seat-row span:last-child { font-weight: 600; }
 .pricing-seat-row.primary span:last-child { color: var(--gw-forest-700); }
 .pricing-card.dark .pricing-seat-row.primary span:last-child { color: #7CC9A3; }
+.pricing-seat-row.free span:last-child { color: #178A5A; }
+.pricing-card.dark .pricing-seat-row.free span:last-child { color: #7CC9A3; }
 .pricing-seat-footnote {
   font-size: 11px; color: var(--gw-ink-400); padding: 8px 0 10px; border-top: 1px solid var(--gw-line);
   line-height: 1.4;
@@ -1121,6 +1123,16 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .compare-gw { font-weight: 600; color: var(--gw-forest-700); }
 .compare-footnote { font-size: 12px; color: var(--gw-ink-400); margin: 14px 0 0; line-height: 1.5; }
 
+.pricing-compare-opaque { background: var(--gw-cream-100); }
+.compare-opaque-list {
+  list-style: none; margin: 0; padding: 0; display: grid; gap: 12px;
+}
+.compare-opaque-list li {
+  font-size: 14px; color: var(--gw-ink-600); line-height: 1.5; padding: 14px 18px;
+  background: #fff; border: 1px solid var(--gw-line); border-radius: 10px;
+}
+.compare-opaque-list li strong { color: var(--gw-ink-900); font-weight: 600; }
+
 .pricing-faq { margin-top: 40px; }
 .pricing-faq-head {
   font-family: var(--font-serif); font-size: 24px; font-weight: 500; margin-bottom: 8px; text-align: center;
@@ -1141,6 +1153,25 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
   font-family: var(--font-serif); font-weight: 500; font-size: 28px; margin: 14px 0 8px; color: var(--gw-cream-100);
 }
 .pricing-calc-head p { color: #B7CFC1; font-size: 14.5px; margin: 0; }
+
+.calc-owner-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  background: rgba(124,201,163,0.1); border: 1px solid rgba(124,201,163,0.35); border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 18px;
+}
+.calc-owner-info { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.calc-owner-count {
+  flex: none; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  background: rgba(124,201,163,0.18); border: 1px solid rgba(124,201,163,0.4); border-radius: 999px;
+  font-size: 14px; font-weight: 700; color: #7CC9A3;
+}
+.calc-owner-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.calc-owner-copy strong { font-size: 13.5px; font-weight: 600; color: var(--gw-cream-100); }
+.calc-owner-copy span { font-size: 12px; color: #B7CFC1; line-height: 1.4; }
+.calc-owner-price {
+  flex: none; font-family: var(--font-serif); font-size: 22px; font-weight: 500; color: #7CC9A3; white-space: nowrap;
+}
+.calc-owner-price small { font-size: 12px; font-weight: 400; color: #93AFA1; margin-left: 2px; }
 
 .pricing-calc-inputs {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
@@ -1537,6 +1568,8 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .pricing-grid { grid-template-columns: 1fr; }
   .pricing-card { padding: 26px 22px; }
   .pricing-calc { padding: 24px 20px; }
+  .calc-owner-row { flex-wrap: wrap; }
+  .calc-owner-price { margin-left: 48px; }
   .pricing-calc-inputs { grid-template-columns: 1fr; gap: 14px; }
   .pricing-calc-results { grid-template-columns: 1fr; gap: 10px; }
   .pricing-faq-head { font-size: 22px; }
@@ -1548,8 +1581,9 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   }
   .compare-head-row { display: none; }
   .compare-row span:first-child { font-weight: 600; color: var(--gw-ink-700); }
-  .compare-row span:nth-child(2)::before { content: "Jobber: "; color: var(--gw-ink-400); font-weight: 400; }
   .compare-row span:nth-child(3)::before { content: "Groundwork: "; color: var(--gw-ink-400); font-weight: 400; }
+  .compare-table-jobber .compare-row span:nth-child(2)::before { content: "Jobber: "; color: var(--gw-ink-400); font-weight: 400; }
+  .compare-table-hcp .compare-row span:nth-child(2)::before { content: "Housecall Pro: "; color: var(--gw-ink-400); font-weight: 400; }
 
   /* Feature block containers on features.html */
   .split { gap: 32px !important; }
