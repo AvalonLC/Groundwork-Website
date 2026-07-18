@@ -29,7 +29,7 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 - `Icon` — 40+ inline SVG icons ported from the design's `icons.js`, rendered server-side (see implementation note below)
 - `Button`, `CTABand`, `SubpageHero`, `SectionHead`, `SplitList`, `BentoCard`, `TestimonialCard`, `FAQItem`, `RelatedCards`, `SplitFeature`/`SplitContent`/`MockFrame`, `ProductMock` building blocks (`PM`, `PMSidebar`, `PMStats`, `PMCard`, `PMTask`, etc.), `AccessMatrix`
 - `public/static/styles.css` — the design's full stylesheet (design tokens, responsive breakpoints) copied verbatim, with asset URLs rewritten to `/static/assets/...`
-- `public/static/site.js` — client-side behavior: mobile menu open/close, homepage role-tab switching, anchor smooth-scroll, mock form "✓ Sent" state. FAQ accordions are native `<details>` (no JS needed). Desktop nav dropdowns are pure CSS.
+- `public/static/site.js` — client-side behavior: mobile menu open/close, homepage role-tab switching, anchor smooth-scroll, form submission + "✓ Sent" state, pricing calculator (seats + AI selector) recalculation. FAQ accordions are native `<details>` (no JS needed). Desktop nav dropdowns are pure CSS.
 
 **Pages implemented** (in `src/pages/`), all wired as routes in `src/index.tsx`:
 
@@ -56,7 +56,7 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/roles/sales-reps` | Sales reps role page |
 | `/roles/foremen` | Foremen role page |
 | `/roles/laborers` | Laborers role page |
-| `/pricing` | Pricing tiers |
+| `/pricing` | Pricing — plans, role-based seats, and Groundwork AI (allowance + paid packages + BYOK) |
 | `/customers` | Customer testimonials + logos |
 | `/case-studies` | Deeper case studies |
 | `/resources` | Resources hub (Academy/Implementation/Blog/Help/API/FAQ cards) + blog preview |
@@ -76,6 +76,12 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 - `/app → https://groundwork-crm.com` (301) — interim, see "Domain status" above
 - `/workspace → https://groundwork-crm.com` (301) — interim, see "Domain status" above
 
+## Pricing Model
+`/pricing` presents three independent pricing axes:
+- **Plans** — Core, Growth, Pro, Enterprise (+ Starter for solo owner-operators) — gate which workspaces a company can use.
+- **Seats** — priced by role (Owner/Admin free & unlimited, Rep/Estimator, Field with volume breaks, Office Manager, View-only with a free-seat allowance + flat overage).
+- **Groundwork AI** — a shared, company-wide monthly allowance included on every plan (Starter 50 / Core 100 / Growth 250 / Pro 500 / Enterprise custom), with optional paid packages (Essentials $12/500, Plus $29/1,500, Max $59/5,000 actions), a "contact sales" custom tier above 5,000, and a BYOK (bring-your-own-OpenAI-key) escape valve that removes the allowance cap. AI is priced flat per company — never per seat — and is a separate line item from CRM + seats everywhere it's shown (price calculator, Jobber comparison). This is presentation only; no usage metering or billing enforcement lives in this repo (see "Not Yet Implemented").
+
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
 - Component classes/CSS selectors were kept identical to the design's `styles.css` (e.g. `.pm`, `.bento-card`, `.split-list`) so the ported stylesheet drives visuals unchanged — no Tailwind rewrite was done, matching the "recreate in framework, keep visuals authoritative" instruction from the handoff README.
@@ -83,11 +89,11 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 - All internal links across every page use root-relative app routes (`/pricing`, `/faq`, etc.), not the design handoff's static `*.html` filenames.
 
 ## Not Yet Implemented / Follow-ups
-- Real lead-capture wiring for the Demo/Signup/Contact forms — currently mocked client-side per the handoff spec (`event.preventDefault()` + "✓ Sent" state). Needs a real endpoint (HubSpot, Salesforce Web-to-Lead, or a Cloudflare Worker + email API).
 - Real customer testimonials/case studies/logos — current copy is explicitly marked illustrative ("Real testimonials to be added at launch").
 - Individual blog post pages under `/resources#blog` — currently 3 preview cards link back to the resources page anchor; no long-form post pages exist yet.
 - App Store / Google Play download links on `/download` are placeholder `#` hrefs pending real app store listings.
 - Domain consolidation: moving the real product to `login.groundwork-crm.com` and this marketing site to the bare `groundwork-crm.com` (see "Domain status" above) — not started.
+- Groundwork AI billing enforcement (usage metering, live tenant usage bar, self-service package upgrades/downgrades, BYOK key storage, DB schema for AI actions) is product/backend work — out of scope for this marketing repo. The `/pricing` page presents the AI pricing model; it does not implement it.
 - Production deployment — not yet deployed; awaiting user review per explicit instruction.
 
 ## Data / Storage

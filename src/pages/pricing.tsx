@@ -155,7 +155,7 @@ export function PricingPage() {
   return (
     <Layout
       title="Pricing — Groundwork CRM"
-      description="Plans control what your company can do. Seats control who can do it. Role-based per-seat pricing inside every plan."
+      description="Plans control what your company can do. Seats control who can do it. Groundwork AI is a shared, company-wide allowance on every plan. Role-based per-seat pricing throughout."
       path="/pricing"
     >
       <section class="section subpage-hero">
@@ -163,10 +163,11 @@ export function PricingPage() {
           <span class="eyebrow">Pricing</span>
           <h1 style="margin-top: 20px;">Plans for what your company&nbsp;<em style="font-style: italic; color: var(--gw-forest-700);">can do.</em> Seats for who does&nbsp;it.</h1>
           <p class="lede">
-            Groundwork is priced two ways at once, on purpose. A <strong>plan</strong> sets which workspaces your whole
-            company can use — reporting, automation, the client portal. A <strong>seat</strong> is priced by role, so a
-            foreman's login doesn't cost what an estimator's does. You don't pay full price to give your crew access,
-            and you don't buy company-wide features you don't need yet.
+            Groundwork is priced on three axes at once, on purpose. A <strong>plan</strong> sets which workspaces your
+            whole company can use — reporting, automation, the client portal. A <strong>seat</strong> is priced by
+            role, so a foreman's login doesn't cost what an estimator's does. And <strong>Groundwork AI</strong> is a
+            shared, company-wide allowance included on every plan — not billed per seat. You don't pay full price to
+            give your crew access, and you don't buy company-wide features you don't need yet.
           </p>
           <div class="pricing-trust-row">
             <span>

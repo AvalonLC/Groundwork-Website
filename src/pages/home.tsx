@@ -1093,7 +1093,8 @@ export function HomePage() {
             <FAQItem question="How is Groundwork priced?">
               A <strong>plan</strong> (Core, Growth, Pro, Enterprise) sets which workspaces your company can use.
               Within it, <strong>seats</strong> are priced by role — Field / View-Only seats cost a fraction of full
-              Sales or Admin seats. See{' '}
+              Sales or Admin seats. <strong>Groundwork AI</strong> is a shared, company-wide allowance included on
+              every plan, not billed per seat. See{' '}
               <a href="/pricing" style="color: var(--gw-forest-700); text-decoration: underline;">
                 pricing
               </a>

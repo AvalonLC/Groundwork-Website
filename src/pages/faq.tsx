@@ -52,11 +52,13 @@ export function FAQPage() {
               training, and the first 30 days of dedicated support. We don't do 90-day rollouts.
             </FAQItem>
             <FAQItem question="How is Groundwork priced?">
-              Two layers. A <strong>plan</strong> — Core, Growth, Pro, or Enterprise — sets which workspaces your
+              Three axes. A <strong>plan</strong> — Core, Growth, Pro, or Enterprise — sets which workspaces your
               company can use (reporting, automation, client portal). Within that plan, <strong>seats</strong> are
-              priced by role, so a Field or View-Only login costs a fraction of a full Sales or Admin seat. You're
-              never paying full price to give crews access, and you're never buying company-wide features you don't
-              need yet. See{' '}
+              priced by role, so a Field or View-Only login costs a fraction of a full Sales or Admin seat.{' '}
+              <strong>Groundwork AI</strong> is priced separately, at the company level — every plan includes a
+              monthly AI allowance at no extra charge, shared across your whole team rather than billed per seat.
+              You're never paying full price to give crews access, and you're never buying company-wide features you
+              don't need yet. See{' '}
               <a href="/pricing" style="color: var(--gw-forest-700); text-decoration: underline;">
                 pricing
               </a>
