@@ -1126,6 +1126,15 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .pricing-explainer-title { font-family: var(--font-serif); font-size: 20px; font-weight: 500; margin-bottom: 10px; }
 .pricing-explainer p { color: var(--gw-ink-500); font-size: 14.5px; margin: 0; max-width: 780px; }
+.pricing-explainer p.pricing-explainer-intro { margin-bottom: 24px; }
+.pricing-explainer-cols {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+}
+.pricing-explainer-col-label {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+  color: var(--gw-forest-700); margin-bottom: 8px;
+}
+.pricing-explainer-col p { max-width: none; }
 
 /* Jobber comparison table — apples-to-apples by matched team headcount */
 .pricing-compare {
@@ -1149,6 +1158,11 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .compare-gw { font-weight: 600; color: var(--gw-forest-700); }
 .compare-footnote { font-size: 12px; color: var(--gw-ink-400); margin: 14px 0 0; line-height: 1.5; }
+.compare-footnote-ai {
+  margin-top: 10px; padding: 10px 14px; background: var(--gw-green-050); border-radius: 8px;
+  color: var(--gw-forest-700);
+}
+.compare-footnote-ai strong { color: var(--gw-ink-900); }
 
 .pricing-compare-opaque { background: var(--gw-cream-100); }
 .compare-opaque-list {
@@ -1286,6 +1300,121 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .calc-cta:hover { text-decoration: underline; }
 .calc-result-enterprise { opacity: 0.75; }
+
+/* ===========================================================
+   Dedicated Groundwork AI section — sits between the calculator
+   and the "Why plans, seats, and AI usage?" explainer.
+   =========================================================== */
+.ai-section {
+  margin-top: 40px; padding: 40px; background: var(--gw-cream-100);
+  border: 1px solid var(--gw-line); border-radius: var(--r-lg);
+}
+.ai-section-head { max-width: 720px; margin: 0 auto 32px; text-align: center; }
+.ai-section-head .eyebrow { justify-content: center; }
+.ai-section-head h3 {
+  font-family: var(--font-serif); font-size: 28px; font-weight: 500; margin: 14px 0 12px;
+}
+.ai-section-head p { color: var(--gw-ink-500); font-size: 14.5px; margin: 0 auto; max-width: 640px; }
+.ai-trust-strip {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;
+  font-size: 12.5px; font-weight: 500; color: var(--gw-forest-700);
+}
+.ai-trust-strip span { display: flex; align-items: center; gap: 6px; }
+.ai-trust-strip .icon-slot { color: var(--gw-forest-600); flex: none; }
+
+.ai-package-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;
+}
+.ai-package-card {
+  background: var(--gw-cream-050, #fff); border: 1px solid var(--gw-line); border-radius: var(--r-md);
+  padding: 24px 20px; display: flex; flex-direction: column; text-align: left;
+}
+.ai-package-card.popular { border-color: var(--gw-forest-600); box-shadow: 0 0 0 1px var(--gw-forest-600) inset; }
+.ai-package-badge {
+  font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gw-forest-700);
+  font-weight: 600; margin-bottom: 8px;
+}
+.ai-package-badge-spacer { height: 13px; }
+.ai-package-name { font-family: var(--font-serif); font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+.ai-package-price { display: flex; align-items: baseline; gap: 3px; margin-bottom: 2px; }
+.ai-package-price-num { font-family: var(--font-serif); font-size: 26px; font-weight: 500; }
+.ai-package-price-suffix { font-size: 12px; color: var(--gw-ink-500); }
+.ai-package-actions { font-size: 12px; font-weight: 600; color: var(--gw-forest-700); margin-bottom: 14px; }
+.ai-package-features { list-style: none; margin: 0 0 18px; padding: 0; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.ai-package-features li { display: flex; align-items: flex-start; gap: 7px; font-size: 12.5px; color: var(--gw-ink-700); line-height: 1.4; }
+.ai-package-features .icon-slot { color: var(--gw-forest-600); flex: none; margin-top: 2px; }
+.ai-package-cta {
+  text-align: center; font-size: 12.5px; font-weight: 600; padding: 10px 14px; border-radius: 8px;
+  border: 1px solid var(--gw-line-strong); color: var(--gw-ink-900); text-decoration: none; margin-top: auto;
+}
+.ai-package-cta:hover { border-color: var(--gw-ink-700); }
+.ai-package-cta.primary { background: var(--gw-forest-700); color: var(--gw-cream-100); border-color: transparent; }
+.ai-package-cta.primary:hover { background: var(--gw-forest-800); }
+
+.ai-package-cap-note {
+  text-align: center; font-size: 12.5px; color: var(--gw-ink-500); margin-bottom: 32px;
+}
+.ai-package-cap-note a { color: var(--gw-forest-700); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+
+/* "What is an AI action?" definition block */
+.ai-action-def {
+  border-top: 1px solid var(--gw-line); padding-top: 28px; margin-bottom: 32px;
+}
+.ai-action-def-head { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.ai-action-def-head .icon-slot { color: var(--gw-forest-600); }
+.ai-action-def-head h4 { font-family: var(--font-serif); font-size: 19px; font-weight: 500; margin: 0; text-align: center; }
+.ai-action-def-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 780px; margin: 0 auto; }
+.ai-action-def-col {
+  padding: 16px 18px; border-radius: 10px; font-size: 13px; line-height: 1.5;
+}
+.ai-action-def-col p { margin: 0; color: var(--gw-ink-700); }
+.ai-action-def-col-label {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;
+}
+.ai-action-def-yes { background: var(--gw-green-050); }
+.ai-action-def-yes .ai-action-def-col-label { color: var(--gw-forest-700); }
+.ai-action-def-no { background: var(--gw-cream-050, #F5F3EC); }
+.ai-action-def-no .ai-action-def-col-label { color: var(--gw-ink-500); }
+
+/* No-surprise-billing usage bar */
+.ai-usage-bar-block {
+  border-top: 1px solid var(--gw-line); padding-top: 28px; margin-bottom: 32px; max-width: 720px;
+  margin-left: auto; margin-right: auto; text-align: center;
+}
+.ai-usage-bar-headline { font-family: var(--font-serif); font-size: 19px; font-weight: 500; margin-bottom: 8px; }
+.ai-usage-bar-copy { color: var(--gw-ink-500); font-size: 13.5px; margin: 0 auto 20px; max-width: 560px; }
+.ai-usage-bar-track {
+  height: 14px; border-radius: 999px; background: var(--gw-line); overflow: hidden; margin-bottom: 14px;
+}
+.ai-usage-bar-fill { display: flex; height: 100%; }
+.ai-usage-bar-seg { display: block; height: 100%; }
+.ai-usage-bar-seg.normal { background: #4FA37B; }
+.ai-usage-bar-seg.warning { background: #E0A63B; }
+.ai-usage-bar-seg.blocked { background: #D2564A; }
+.ai-usage-bar-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; font-size: 12px; color: var(--gw-ink-500); }
+.ai-usage-bar-legend-item { display: flex; align-items: center; gap: 6px; }
+.ai-usage-bar-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.ai-usage-bar-dot.normal { background: #4FA37B; }
+.ai-usage-bar-dot.warning { background: #E0A63B; }
+.ai-usage-bar-dot.blocked { background: #D2564A; }
+
+/* BYOK — secondary/advanced option, deliberately smaller than the package
+   cards above so it doesn't read as a 5th equal-weight pricing tier. */
+.ai-byok-block {
+  border-top: 1px solid var(--gw-line); padding-top: 24px; display: flex; align-items: center;
+  justify-content: space-between; gap: 24px; max-width: 780px; margin: 0 auto;
+}
+.ai-byok-eyebrow {
+  font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+  color: var(--gw-ink-400); margin-bottom: 4px;
+}
+.ai-byok-copy h5 { font-family: var(--font-serif); font-size: 15.5px; font-weight: 500; margin: 0 0 6px; }
+.ai-byok-copy p { font-size: 12.5px; color: var(--gw-ink-500); margin: 0; max-width: 560px; line-height: 1.5; }
+.ai-byok-cta {
+  flex: none; font-size: 12.5px; font-weight: 600; color: var(--gw-forest-700); text-decoration: none;
+  display: flex; align-items: center; gap: 4px; white-space: nowrap;
+}
+.ai-byok-cta:hover { text-decoration: underline; }
 
 /* ===========================================================
    FAQ
@@ -1507,6 +1636,10 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .pricing-starter-price-block { border-left: none; border-top: 1px solid var(--gw-line); padding: 20px 0 0; text-align: left; }
   .pricing-starter-price, .pricing-starter-cta { justify-content: flex-start; }
   .compare-row { grid-template-columns: 1.8fr 1fr 1fr; font-size: 12.5px; padding: 12px 14px; }
+  .pricing-explainer-cols { grid-template-columns: 1fr; gap: 20px; }
+  .ai-package-grid { grid-template-columns: 1fr 1fr; }
+  .ai-action-def-grid { grid-template-columns: 1fr; }
+  .ai-byok-block { flex-direction: column; align-items: flex-start; }
 }
 
 /* --- Phone & below (≤720px) --- */
@@ -1640,6 +1773,15 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .compare-row span:nth-child(3)::before { content: "Groundwork: "; color: var(--gw-ink-400); font-weight: 400; }
   .compare-table-jobber .compare-row span:nth-child(2)::before { content: "Jobber: "; color: var(--gw-ink-400); font-weight: 400; }
   .compare-table-hcp .compare-row span:nth-child(2)::before { content: "Housecall Pro: "; color: var(--gw-ink-400); font-weight: 400; }
+
+  /* Dedicated Groundwork AI section */
+  .ai-section { padding: 26px 20px; }
+  .ai-section-head h3 { font-size: 23px; }
+  .ai-trust-strip { flex-direction: column; align-items: center; gap: 10px; }
+  .ai-package-grid { grid-template-columns: 1fr; gap: 12px; }
+  .ai-action-def-grid { grid-template-columns: 1fr; }
+  .ai-byok-block { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .pricing-explainer-cols { grid-template-columns: 1fr; gap: 18px; }
 
   /* Feature block containers on features.html */
   .split { gap: 32px !important; }

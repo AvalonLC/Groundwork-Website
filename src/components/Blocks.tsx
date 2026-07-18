@@ -220,9 +220,14 @@ export function TestimonialCard({
   )
 }
 
-export function FAQItem({ question, children, open = false }: PropsWithChildren<{ question: string; open?: boolean }>) {
+export function FAQItem({
+  question,
+  children,
+  open = false,
+  id,
+}: PropsWithChildren<{ question: string; open?: boolean; id?: string }>) {
   return (
-    <details class="faq-item" open={open}>
+    <details class="faq-item" open={open} id={id}>
       <summary>{question}</summary>
       <div class="answer">{children}</div>
     </details>

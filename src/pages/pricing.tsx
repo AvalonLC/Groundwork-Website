@@ -109,6 +109,49 @@ export function PricingPage() {
     },
   ]
 
+  // Company-wide AI packages, shown in the dedicated Groundwork AI section.
+  // Publicly capped at Max (5,000 actions) — heavier usage is scoped as a
+  // custom allowance via sales rather than published as a 5th equal-weight
+  // tier. Mirrors the calculator's AI_PACKAGES in PricingCalculator.tsx.
+  const aiPackages = [
+    {
+      name: 'Included AI',
+      price: '$0',
+      priceSuffix: '/mo',
+      actions: "Your plan's included allowance",
+      features: ['No setup, on by default', 'Shared across the whole company', 'Live usage tracking'],
+      cta: 'Included on your plan',
+      popular: false,
+    },
+    {
+      name: 'AI Essentials',
+      price: '$12',
+      priceSuffix: '/mo',
+      actions: '500 actions/mo',
+      features: ['Stacks on top of your plan allowance', 'Good for one or two busy estimators', 'Cancel or downgrade anytime'],
+      cta: 'Add AI Essentials',
+      popular: false,
+    },
+    {
+      name: 'AI Plus',
+      price: '$29',
+      priceSuffix: '/mo',
+      actions: '1,500 actions/mo',
+      features: ['Best for a full estimating team', 'Covers most Growth-plan companies', 'Live usage bar with heads-up at 80%'],
+      cta: 'Add AI Plus',
+      popular: true,
+    },
+    {
+      name: 'AI Max',
+      price: '$59',
+      priceSuffix: '/mo',
+      actions: '5,000 actions/mo',
+      features: ['Our highest published tier', 'Built for multi-crew, high-volume shops', 'Priority support on AI issues'],
+      cta: 'Add AI Max',
+      popular: false,
+    },
+  ]
+
   return (
     <Layout
       title="Pricing — Groundwork CRM"
@@ -251,20 +294,157 @@ export function PricingPage() {
 
           <PricingCalculator />
 
-          <div class="pricing-explainer">
-            <div class="pricing-explainer-title">
-              Why plans <em style="font-style: italic;">and</em> seats?
+          <div class="ai-section" id="ai-packages">
+            <div class="ai-section-head">
+              <span class="eyebrow">Groundwork AI</span>
+              <h3>Built-in AI, with a bill you can predict.</h3>
+              <p>
+                Groundwork AI drafts proposals, quote descriptions, scopes of work, and follow-up emails — the
+                writing that eats an estimator's afternoon. It's included on every plan as a shared, company-wide
+                allowance, not a per-seat charge. Need more headroom during a busy season? Add a package. There's no
+                metered token bill and no automatic overage — when you hit your limit, generation simply pauses until
+                you upgrade, connect your own API key, or the month resets.
+              </p>
+              <div class="ai-trust-strip">
+                <span>
+                  <Icon name="check-circle" size={14} /> Priced per company, not per user
+                </span>
+                <span>
+                  <Icon name="check-circle" size={14} /> No automatic overage charges
+                </span>
+                <span>
+                  <Icon name="check-circle" size={14} /> Live usage tracking, always visible
+                </span>
+                <span>
+                  <Icon name="check-circle" size={14} /> Change packages anytime
+                </span>
+              </div>
             </div>
-            <p>
-              Most CRMs make you pick one: charge everyone the same per-user fee no matter what they do all day, or
-              sell you a single company-wide "membership" that ignores how few of your logins actually need the
-              expensive stuff. We do both. Your <strong>plan</strong> (Core, Growth, Pro, Enterprise) unlocks the
-              workspaces your company operates with — reporting, automation, client portal. Your <strong>seats</strong>{' '}
-              are priced by what that person actually needs to touch — a laborer clocking in from the truck costs a
-              fraction of an estimator building proposals, and a subcontractor who just needs to see the schedule
-              shouldn't cost anything close to that. Add crew without upgrading your plan. Upgrade your plan without
-              paying more for seats you already have.
+
+            <div class="ai-package-grid">
+              {aiPackages.map((pkg) => (
+                <div class={`ai-package-card${pkg.popular ? ' popular' : ''}`}>
+                  {pkg.popular ? <div class="ai-package-badge">Most popular</div> : <div class="ai-package-badge-spacer"></div>}
+                  <div class="ai-package-name">{pkg.name}</div>
+                  <div class="ai-package-price">
+                    <span class="ai-package-price-num">{pkg.price}</span>
+                    {pkg.priceSuffix && <span class="ai-package-price-suffix">{pkg.priceSuffix}</span>}
+                  </div>
+                  <div class="ai-package-actions">{pkg.actions}</div>
+                  <ul class="ai-package-features">
+                    {pkg.features.map((f) => (
+                      <li>
+                        <Icon name="check" size={13} /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <a href="/demo" class={`ai-package-cta${pkg.popular ? ' primary' : ''}`}>
+                    {pkg.cta}
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            <div class="ai-package-cap-note">
+              Need more than 5,000 actions a month? <a href="/demo">Ask about a custom allowance</a> — we scope those
+              case by case rather than publish a fifth tier that most teams will never touch.
+            </div>
+
+            <div class="ai-action-def" id="what-is-an-ai-action">
+              <div class="ai-action-def-head">
+                <Icon name="bolt" size={16} />
+                <h4>What counts as an AI action?</h4>
+              </div>
+              <div class="ai-action-def-grid">
+                <div class="ai-action-def-col ai-action-def-yes">
+                  <div class="ai-action-def-col-label">Counts as 1 action</div>
+                  <p>
+                    A successful AI generation or substantial rewrite of a proposal, a quote description, a scope of
+                    work, or a follow-up email.
+                  </p>
+                </div>
+                <div class="ai-action-def-col ai-action-def-no">
+                  <div class="ai-action-def-col-label">Counts as 0 actions</div>
+                  <p>A failed request, a system error, or viewing a draft you already generated.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-usage-bar-block">
+              <div class="ai-usage-bar-headline">No hidden token charges. No surprise overages.</div>
+              <p class="ai-usage-bar-copy">
+                Your AI usage bar fills as your company uses its monthly allowance — visible to every admin, in real
+                time. There's no metered per-token bill running in the background.
+              </p>
+              <div class="ai-usage-bar-track">
+                <div class="ai-usage-bar-fill" style="width: 100%;">
+                  <span class="ai-usage-bar-seg normal" style="width: 79%;"></span>
+                  <span class="ai-usage-bar-seg warning" style="width: 20%;"></span>
+                  <span class="ai-usage-bar-seg blocked" style="width: 1%;"></span>
+                </div>
+              </div>
+              <div class="ai-usage-bar-legend">
+                <span class="ai-usage-bar-legend-item">
+                  <span class="ai-usage-bar-dot normal"></span> 0–79% · normal
+                </span>
+                <span class="ai-usage-bar-legend-item">
+                  <span class="ai-usage-bar-dot warning"></span> 80–99% · heads-up
+                </span>
+                <span class="ai-usage-bar-legend-item">
+                  <span class="ai-usage-bar-dot blocked"></span> 100% · paused until upgrade, BYOK, or reset
+                </span>
+              </div>
+            </div>
+
+            <div class="ai-byok-block">
+              <div class="ai-byok-copy">
+                <div class="ai-byok-eyebrow">Advanced option</div>
+                <h5>Already have an OpenAI API account?</h5>
+                <p>
+                  Connect your own OpenAI API key and Groundwork's AI allowance cap no longer applies — your usage
+                  bills directly to your OpenAI account instead. Your CRM subscription fee still applies; this only
+                  replaces the Groundwork-metered AI allowance. Available on every paid plan, not just the higher
+                  tiers.
+                </p>
+              </div>
+              <a href="/demo" class="ai-byok-cta">
+                Learn about connecting your API key <span class="arrow">→</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="pricing-explainer">
+            <div class="pricing-explainer-title">Why plans, seats, and AI usage?</div>
+            <p class="pricing-explainer-intro">
+              Most CRMs make you pick one axis to price by. Groundwork prices on three, on purpose — each tracking a
+              different thing your company actually varies on.
             </p>
+            <div class="pricing-explainer-cols">
+              <div class="pricing-explainer-col">
+                <div class="pricing-explainer-col-label">Plans</div>
+                <p>
+                  Your <strong>plan</strong> (Core, Growth, Pro, Enterprise) sets which workspaces your whole company
+                  can use — reporting, automation, the client portal. It's what your business can do, not who's
+                  logged in.
+                </p>
+              </div>
+              <div class="pricing-explainer-col">
+                <div class="pricing-explainer-col-label">Seats</div>
+                <p>
+                  Your <strong>seats</strong> are priced by what each person actually needs to touch — a laborer
+                  clocking in from the truck costs a fraction of an estimator building proposals. Add crew without
+                  upgrading your plan; upgrade your plan without paying more for seats you already have.
+                </p>
+              </div>
+              <div class="pricing-explainer-col">
+                <div class="pricing-explainer-col-label">AI usage</div>
+                <p>
+                  Your <strong>AI usage</strong> is shared across the whole company, not billed per seat — because how
+                  much your team drafts with AI has nothing to do with headcount. Every plan includes an allowance;
+                  heavier users add a package instead of paying per employee.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div class="pricing-compare">
@@ -310,9 +490,15 @@ export function PricingPage() {
               our seat-based field volume discount (6–10 seats at −10%, 11+ at −15%) already applied — no negotiating
               required to get it. Past a Jobber plan's user cap, additional users are a flat $29/mo each regardless of
               role, and past 15 users Jobber requires a sales call with no published price at all. Groundwork's rate
-              stays fully transparent and self-serve at any headcount — the seat calculator below computes it
+              stays fully transparent and self-serve at any headcount — the seat calculator above computes it
               instantly, and teams that outgrow a per-seat plan entirely can move to Enterprise for multi-location
               roll-up pricing.
+            </p>
+            <p class="compare-footnote compare-footnote-ai">
+              <strong>Note on AI:</strong> the totals above reflect CRM plans and seats only — Groundwork AI is
+              priced separately, at the company level, and isn't folded into this comparison. Every plan already
+              includes a monthly AI allowance at no extra charge; optional higher-volume AI packages are a separate
+              line item, never a hidden cost baked into the number above.
             </p>
           </div>
 
@@ -427,6 +613,41 @@ export function PricingPage() {
                 Starter. It's one seat — you — for $29/mo with no minimum, built for owner-operators doing their own
                 estimating, invoicing, and field work. Skip Core's 3-seat minimum entirely. The moment you hire your
                 first crew member or estimator, upgrade to Core from inside your account — same data, no re-setup.
+              </FAQItem>
+              <FAQItem question="Is Groundwork AI included?" id="faq-ai-included">
+                Yes — every plan includes a monthly AI allowance at no extra charge: 50 actions/mo on Starter, 100 on
+                Core, 250 on Growth, 500 on Pro, and a custom allowance on Enterprise. If you need more than your
+                plan includes, add an AI package or connect your own OpenAI API key — you're never required to pay
+                more just to keep using AI.
+              </FAQItem>
+              <FAQItem question="Is AI charged per employee? Are AI packages priced per user?">
+                No. Groundwork AI is priced per company, not per seat. Your AI allowance and any package you add are
+                shared across your whole team — adding a crew member doesn't add an AI cost, and your AI cost
+                doesn't change based on how many seats you have.
+              </FAQItem>
+              <FAQItem question="What counts as an AI action?">
+                A successful AI generation or substantial rewrite of a proposal, a quote description, a scope of
+                work, or a follow-up email counts as 1 action. A failed request, a system error, or viewing a draft
+                you already generated counts as 0 actions.
+              </FAQItem>
+              <FAQItem question="What happens when we reach our AI allowance?">
+                New AI generations pause until you upgrade your AI package, connect your own API key (BYOK), or your
+                monthly allowance resets. Nothing you've already created is affected, and there's no automatic
+                overage charge — you decide how to proceed.
+              </FAQItem>
+              <FAQItem question="Do unused AI actions roll over?">
+                No. Your AI allowance resets each month and unused actions don't carry over. Packages are sized so
+                most teams have comfortable headroom without needing to bank a surplus.
+              </FAQItem>
+              <FAQItem question="Can I change AI packages?">
+                Yes, anytime. Upgrades take effect immediately, so you get the new allowance right away. Downgrades
+                take effect at your next renewal, so you never lose access to actions you've already paid for that
+                month.
+              </FAQItem>
+              <FAQItem question="Can we use our own OpenAI API key?">
+                Yes — on every paid plan. Connecting your own key (BYOK) removes Groundwork's AI allowance cap
+                entirely; your AI usage bills directly to your OpenAI account instead. Your CRM subscription fee
+                still applies — BYOK replaces the metered AI allowance, not the plan itself.
               </FAQItem>
             </div>
           </div>
