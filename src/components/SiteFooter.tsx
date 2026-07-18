@@ -50,12 +50,14 @@ export function SiteFooter() {
             </ul>
           </div>
           <div class="footer-col">
-            <h5>Solutions</h5>
+            <h5>Trades</h5>
             <ul>
-              <li><a href="/solutions/landscaping">Landscaping</a></li>
-              <li><a href="/solutions/home-service">Home service</a></li>
-              <li><a href="/solutions/field-service">Field service</a></li>
-              <li><a href="/solutions/multi-crew-teams">Multi-crew teams</a></li>
+              <li><a href="/trades/hvac">HVAC</a></li>
+              <li><a href="/trades/plumbing">Plumbing</a></li>
+              <li><a href="/trades/electrical">Electrical</a></li>
+              <li><a href="/trades/roofing">Roofing</a></li>
+              <li><a href="/trades/landscaping">Landscaping</a></li>
+              <li><a href="/trades">View all trades →</a></li>
             </ul>
             <h5 style="margin-top: 24px;">Roles</h5>
             <ul>

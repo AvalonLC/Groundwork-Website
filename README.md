@@ -24,10 +24,11 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 
 **Shared system** (in `src/components/` + `src/data/`):
 - `Layout` — page shell: fonts (Newsreader serif / Instrument Sans / JetBrains Mono), meta tags, nav, footer, `site.js`
-- `SiteNav` / mobile menu — desktop CSS-hover dropdowns driven by `src/data/nav.ts` (ported 1:1 from the design's `chrome.js` NAV data), off-canvas mobile panel
+- `SiteNav` / mobile menu — desktop CSS-hover dropdowns driven by `src/data/nav.ts`. Most nav items use the original label+desc list-style dropdown (ported 1:1 from the design's `chrome.js` NAV data); the Trades item renders as an icon-grid mega-menu (`mega: true` on its `NavItem`) — an 11-tile trade grid plus a "View all" tile, both on desktop (hover panel) and the off-canvas mobile menu.
 - `SiteFooter` — 5-column footer matching the design; all links point at real, built routes
-- `Icon` — 40+ inline SVG icons ported from the design's `icons.js`, rendered server-side (see implementation note below)
+- `Icon` — 50+ inline SVG icons (40+ ported from the design's `icons.js`, plus 11 trade icons added for the Trades redesign — fan, wrench, plug, chimney, roof, garage-door, tank, bug, sprinkler, paint-roller, plus reuse of the existing `plant` icon for landscaping), rendered server-side (see implementation note below)
 - `Button`, `CTABand`, `SubpageHero`, `SectionHead`, `SplitList`, `BentoCard`, `TestimonialCard`, `FAQItem`, `RelatedCards`, `SplitFeature`/`SplitContent`/`MockFrame`, `ProductMock` building blocks (`PM`, `PMSidebar`, `PMStats`, `PMCard`, `PMTask`, etc.), `AccessMatrix`
+- `TradePage` (`src/components/TradePage.tsx`) — shared template component for every `/trades/:slug` page, fed by a per-trade data object from `src/data/trades.ts` (`TRADES: TradeData[]`, one entry per trade with hero copy, split-section copy, mock-frame rows, related cards, and CTA copy). This is a template-driven "one component, many data rows" design rather than N bespoke page files — new trades can be added by appending to `trades.ts` without touching any component code.
 - `public/static/styles.css` — the design's full stylesheet (design tokens, responsive breakpoints) copied verbatim, with asset URLs rewritten to `/static/assets/...`
 - `public/static/site.js` — client-side behavior: mobile menu open/close, homepage role-tab switching, anchor smooth-scroll, form submission + "✓ Sent" state, pricing calculator (seats + AI selector) recalculation. FAQ accordions are native `<details>` (no JS needed). Desktop nav dropdowns are pure CSS.
 
@@ -45,11 +46,19 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/product/mobile` | Mobile & Field Mode |
 | `/product/platform` | Platform architecture |
 | `/features` | Full feature list |
-| `/solutions` | Solutions hub |
-| `/solutions/landscaping` | Landscaping solution |
-| `/solutions/home-service` | Home service solution |
-| `/solutions/field-service` | Field service solution |
-| `/solutions/multi-crew-teams` | Multi-crew teams solution |
+| `/trades` | Trades hub (11-tile icon grid) |
+| `/trades/hvac` | HVAC trade page |
+| `/trades/plumbing` | Plumbing trade page |
+| `/trades/electrical` | Electrical trade page |
+| `/trades/chimney` | Chimney trade page |
+| `/trades/roofing` | Roofing trade page |
+| `/trades/garage-door` | Garage Door trade page |
+| `/trades/septic` | Septic trade page |
+| `/trades/pest-control` | Pest Control trade page |
+| `/trades/irrigation` | Irrigation trade page |
+| `/trades/painting` | Painting trade page |
+| `/trades/landscaping` | Landscaping trade page |
+| `/multi-crew-ops` | Multi-crew / ops-at-scale page (moved out of the trade grid) |
 | `/roles` | Roles hub |
 | `/roles/owners` | Owners role page |
 | `/roles/office-managers` | Office managers role page |
@@ -70,11 +79,18 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/login` | Log in bridge page — redirects to the real live product at `groundwork-crm.com` |
 | `/download` | Mobile app download (App Store / Google Play) |
 
-**Redirects** (from the design handoff + interim domain plan):
+**Redirects** (from the design handoff + interim domain plan, plus the Trades rename):
 - `/book-demo → /demo` (301)
 - `/info → /` (301)
 - `/app → https://groundwork-crm.com` (301) — interim, see "Domain status" above
 - `/workspace → https://groundwork-crm.com` (301) — interim, see "Domain status" above
+- `/solutions → /trades` (301) — old Solutions hub renamed to Trades
+- `/solutions/landscaping → /trades/landscaping` (301)
+- `/solutions/home-service → /trades/hvac` (301) — the combined HVAC/plumbing/electrical page split into individual trade pages; `home-service` redirects to `hvac` as the closest single match
+- `/solutions/field-service → /trades/roofing` (301) — similarly, redirects to `roofing` as the closest single match
+- `/solutions/multi-crew-teams → /multi-crew-ops` (301) — moved out of the trade grid (it's an org-scale concern, not a trade)
+
+Unknown `/trades/:slug` values return a real 404 (`c.notFound()`), not a redirect.
 
 ## Pricing Model
 `/pricing` presents three independent pricing axes:
@@ -82,11 +98,20 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 - **Seats** — priced by role (Owner/Admin free & unlimited, Rep/Estimator, Field with volume breaks, Office Manager, View-only with a free-seat allowance + flat overage).
 - **Groundwork AI** — a shared, company-wide monthly allowance included on every plan (Starter 50 / Core 100 / Growth 250 / Pro 500 / Enterprise custom), with optional paid packages (Essentials $12/500, Plus $29/1,500, Max $59/5,000 actions), a "contact sales" custom tier above 5,000, and a BYOK (bring-your-own-OpenAI-key) escape valve that removes the allowance cap. AI is priced flat per company — never per seat — and is a separate line item from CRM + seats everywhere it's shown (price calculator, Jobber comparison). This is presentation only; no usage metering or billing enforcement lives in this repo (see "Not Yet Implemented").
 
+## Trades Mega-Menu (Nav Redesign)
+The old 4-item "Solutions" nav dropdown (Landscaping / Home service / Field service / Multi-crew teams) was replaced with an 11-trade "Trades" mega-menu so that companies across many different trades — not just the original 4 broad categories — see themselves reflected in the nav: HVAC, Plumbing, Electrical, Chimney, Roofing, Garage Door, Septic, Pest Control, Irrigation, Painting, Landscaping.
+
+- `src/data/nav.ts` — the Trades `NavItem` sets `mega: true` plus `viewAllHref`/`viewAllLabel`; each menu entry carries an `icon` (instead of the `desc` text used by other dropdowns).
+- `src/components/SiteNav.tsx` — branches on `item.mega`: mega items render `<MegaPanel>` (desktop, `.dropdown-panel-mega` / `.mega-grid` / `.mega-tile`, a 4-column icon-tile CSS grid) instead of the standard label+desc `<StandardPanel>`; the mobile off-canvas menu gets a matching `.mm-mega-grid` / `.mm-mega-tile` 3-column (2-column on small phones) icon-tile grid. Both include a "View all" tile that links to `/trades`.
+- `public/static/styles.css` — new `.dropdown-panel-mega`/`.mega-*` (desktop) and `.mm-mega-*` (mobile) rules, plus `.trades-grid`/`.trade-tile` for the `/trades` hub page grid, with responsive column collapses at the existing 960px/720px breakpoints.
+- Trade data lives in `src/data/trades.ts` (`TradeData` interface + `TRADES` array) and is rendered by the single `TradePage` template component — adding a 12th trade means adding one array entry, not a new page file.
+
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
 - Component classes/CSS selectors were kept identical to the design's `styles.css` (e.g. `.pm`, `.bento-card`, `.split-list`) so the ported stylesheet drives visuals unchanged — no Tailwind rewrite was done, matching the "recreate in framework, keep visuals authoritative" instruction from the handoff README.
 - The Cloudflare email-obfuscation markup on the original `security.html` (`/cdn-cgi/l/email-protection`) was replaced with a plain `mailto:security@groundwork-crm.com` link — that obfuscation script only works when served through Cloudflare's edge, not from a local Worker.
 - All internal links across every page use root-relative app routes (`/pricing`, `/faq`, etc.), not the design handoff's static `*.html` filenames.
+- The `/trades/:slug` route is Cloudflare-Workers-friendly: it's a single dynamic Hono route (`app.get('/trades/:slug', ...)`) that looks up the trade in the in-memory `TRADES` array by slug — no filesystem access, no per-trade static route needed.
 
 ## Not Yet Implemented / Follow-ups
 - Real customer testimonials/case studies/logos — current copy is explicitly marked illustrative ("Real testimonials to be added at launch").

@@ -5,6 +5,7 @@ export interface NavLinkItem {
   label: string
   href: string
   desc?: string
+  icon?: string // when set + parent NavItem.mega is true, renders as an icon tile
 }
 
 export interface NavSectionBreak {
@@ -17,6 +18,9 @@ export interface NavItem {
   label: string
   href: string
   menu?: NavMenuEntry[]
+  mega?: boolean // render this item's dropdown as an icon-grid mega-menu (see Trades)
+  viewAllHref?: string
+  viewAllLabel?: string
 }
 
 export function isSection(entry: NavMenuEntry): entry is NavSectionBreak {
@@ -42,14 +46,23 @@ export const NAV: NavItem[] = [
     ],
   },
   {
-    label: 'Solutions',
-    href: '/solutions',
+    label: 'Trades',
+    href: '/trades',
+    mega: true,
+    viewAllHref: '/trades',
+    viewAllLabel: 'View all',
     menu: [
-      { section: 'By trade' },
-      { label: 'Landscaping', href: '/solutions/landscaping', desc: 'Design-build, hardscape, maintenance' },
-      { label: 'Home service', href: '/solutions/home-service', desc: 'HVAC, plumbing, electrical' },
-      { label: 'Field service', href: '/solutions/field-service', desc: 'Restoration, exteriors, roofing' },
-      { label: 'Multi-crew teams', href: '/solutions/multi-crew-teams', desc: 'Multi-role operational scale' },
+      { label: 'HVAC', href: '/trades/hvac', icon: 'fan' },
+      { label: 'Plumbing', href: '/trades/plumbing', icon: 'wrench' },
+      { label: 'Electrical', href: '/trades/electrical', icon: 'plug' },
+      { label: 'Chimney', href: '/trades/chimney', icon: 'chimney' },
+      { label: 'Roofing', href: '/trades/roofing', icon: 'roof' },
+      { label: 'Garage Door', href: '/trades/garage-door', icon: 'garage-door' },
+      { label: 'Septic', href: '/trades/septic', icon: 'tank' },
+      { label: 'Pest Control', href: '/trades/pest-control', icon: 'bug' },
+      { label: 'Irrigation', href: '/trades/irrigation', icon: 'sprinkler' },
+      { label: 'Painting', href: '/trades/painting', icon: 'paint-roller' },
+      { label: 'Landscaping', href: '/trades/landscaping', icon: 'plant' },
     ],
   },
   {

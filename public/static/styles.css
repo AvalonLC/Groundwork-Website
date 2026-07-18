@@ -310,6 +310,83 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .dropdown-link .dl-label { font-size: 14px; font-weight: 500; color: var(--gw-ink-900); }
 .dropdown-link .dl-desc { font-size: 12px; color: var(--gw-ink-500); margin-top: 2px; }
 
+/* Trades mega-menu — icon-grid dropdown variant (desktop).
+   Anchored left (like the standard dropdown) so it extends rightward from
+   the nav item instead of potentially overflowing off the left edge of the
+   viewport for nav items positioned mid-row. */
+.dropdown-panel-mega {
+  left: -12px;
+  min-width: 560px;
+  padding: 14px;
+}
+.mega-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.mega-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  background: transparent;
+}
+.mega-tile:hover { background: var(--gw-cream-200); }
+.mega-tile-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--gw-forest-800);
+  color: white;
+  display: grid;
+  place-items: center;
+}
+.mega-tile-label { font-size: 13px; font-weight: 500; color: var(--gw-ink-900); }
+.mega-tile-viewall {
+  background: var(--gw-cream-200);
+  border: 1px dashed var(--gw-line);
+}
+.mega-tile-viewall .mega-tile-icon { background: var(--gw-forest-600); }
+.mega-tile-viewall:hover { background: var(--gw-cream-300); }
+
+/* Trades hub page — icon-tile grid */
+.trades-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.trade-tile {
+  display: block;
+  text-decoration: none;
+  background: var(--gw-cream-100);
+  border: 1px solid var(--gw-line);
+  border-radius: var(--r-lg);
+  padding: 26px 22px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.trade-tile:hover { border-color: var(--gw-forest-600); transform: translateY(-2px); }
+.trade-tile-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--gw-forest-800);
+  color: white;
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+}
+.trade-tile-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--gw-ink-900);
+  margin-bottom: 6px;
+}
+.trade-tile-desc { font-size: 13px; color: var(--gw-ink-500); }
+
 .footer-col a { display: block; }
 .footer-col ul li { padding: 4px 0; }
 
@@ -1640,6 +1717,11 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .ai-package-grid { grid-template-columns: 1fr 1fr; }
   .ai-action-def-grid { grid-template-columns: 1fr; }
   .ai-byok-block { flex-direction: column; align-items: flex-start; }
+
+  /* Trades hub grid + mega-menu collapse at tablet width */
+  .trades-grid { grid-template-columns: repeat(3, 1fr); }
+  .mega-grid { grid-template-columns: repeat(3, 1fr); }
+  .dropdown-panel-mega { min-width: 460px; }
 }
 
 /* --- Phone & below (≤720px) --- */
@@ -1794,10 +1876,17 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .footer-col h5 { margin-bottom: 12px; }
   .footer-col li { padding: 4px 0; }
 
-  /* Sub-page heroes (product/roles/solutions/etc) */
+  /* Sub-page heroes (product/roles/trades/etc) */
   .subpage-hero { padding: 48px 0 24px; }
   .subpage-hero h1 { font-size: clamp(34px, 8vw, 52px); }
   .subpage-hero .lede { font-size: 17px; }
+
+  /* Trades hub grid — 2 columns on phone */
+  .trades-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .trade-tile { padding: 20px 16px; }
+
+  /* Mobile mega-menu (Trades) — 2 columns */
+  .mm-mega-grid { grid-template-columns: repeat(2, 1fr); }
 
   /* Pricing tier cards — stack */
   .pricing-tiers, .grid-4, .grid-3 { grid-template-columns: 1fr !important; }
@@ -1957,6 +2046,35 @@ body.mobile-menu-open { overflow: hidden; }
   margin-top: 2px;
   display: block;
 }
+.mm-mega-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 8px 0 14px;
+}
+.mm-mega-tile {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 10px !important;
+  border-radius: 8px;
+  background: var(--gw-cream-100);
+  font-size: 13px !important;
+  font-weight: 500;
+  border-bottom: none !important;
+}
+.mm-mega-tile-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--gw-forest-800);
+  color: white;
+  display: grid;
+  place-items: center;
+}
+.mm-mega-tile-viewall { background: var(--gw-cream-200); border: 1px dashed var(--gw-line); }
+.mm-mega-tile-viewall .mm-mega-tile-icon { background: var(--gw-forest-600); }
 .mobile-menu-footer {
   display: flex;
   flex-direction: column;

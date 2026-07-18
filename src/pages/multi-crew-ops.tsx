@@ -1,7 +1,10 @@
-import { Layout } from '../../components/Layout'
-import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
+import { Layout } from '../components/Layout'
+import { SubpageHero, CTABand, SplitList, RelatedCards } from '../components/Blocks'
 
-export function MultiCrewTeamsPage() {
+// Multi-crew / multi-location ops is not a trade — it's an organizational
+// scale concern that cuts across trades. Moved out of /trades/* (formerly
+// /solutions/multi-crew-teams) to its own top-level route.
+export function MultiCrewOpsPage() {
   const reps = [
     { name: 'Tyler', value: '6', tag: '2 od', tagColor: 'var(--gw-red-500)' },
     { name: 'Marcus', value: '21', tag: '3 od', tagColor: 'var(--gw-red-500)' },
@@ -13,12 +16,12 @@ export function MultiCrewTeamsPage() {
 
   return (
     <Layout
-      title="Multi-crew operational teams — Groundwork CRM"
+      title="Multi-crew &amp; multi-location ops — Groundwork CRM"
       description="Multi-role, multi-location teams — Groundwork's role-based structure was designed for exactly this."
-      path="/solutions/multi-crew-teams"
+      path="/multi-crew-ops"
     >
       <SubpageHero
-        eyebrow="Solutions · Multi-crew ops"
+        eyebrow="Multi-crew &amp; ops at scale"
         title={<>Every seat sees their layer of the same&nbsp;<em style="font-style: italic; color: var(--gw-forest-700);">reality.</em></>}
         lede="When you have office managers coordinating sales reps who feed foremen who lead laborers — Groundwork's role-based structure was designed for this. Everyone sees their layer. No one sees more or less than they should."
         primaryLabel="Book an ops-scale demo"
@@ -87,7 +90,7 @@ export function MultiCrewTeamsPage() {
 
       <RelatedCards
         items={[
-          { href: '/solutions', title: 'All solutions', desc: 'See other trades we serve.' },
+          { href: '/trades', title: 'All trades', desc: 'See other trades we serve.' },
           { href: '/product/admin', title: 'Admin', desc: 'The permission model, in detail.' },
           { href: '/roles', title: 'All roles', desc: 'Every seat, explained.' },
           { href: '/product/platform', title: 'Platform architecture', desc: 'How the pieces connect.' },

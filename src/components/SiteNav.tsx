@@ -1,4 +1,5 @@
-import { NAV, isSection } from '../data/nav'
+import { NAV, isSection, type NavItem } from '../data/nav'
+import { Icon } from './Icon'
 
 // <SiteNav /> — recreation of chrome.js renderNav() + renderMobileMenu().
 // Desktop dropdowns use pure CSS :hover / :focus-within (see styles.css),
@@ -6,6 +7,10 @@ import { NAV, isSection } from '../data/nav'
 // hamburger toggle and active-nav-item highlighting are wired via a small
 // inline script in Layout.tsx (site.js), matching the design's stated
 // client state model (mobile menu open / active tab / FAQ open).
+//
+// Nav items with `mega: true` (currently just Trades) render their dropdown
+// as an icon-grid mega-menu instead of the label+desc list style used by
+// Product / Roles / Resources.
 export function SiteNav({ path }: { path: string }) {
   return (
     <>
@@ -28,22 +33,7 @@ export function SiteNav({ path }: { path: string }) {
                   >
                     {item.label}
                   </a>
-                  {item.menu && (
-                    <div class="dropdown-panel">
-                      <div class="dropdown-grid">
-                        {item.menu.map((m) =>
-                          isSection(m) ? (
-                            <div class="dropdown-section">{m.section}</div>
-                          ) : (
-                            <a class="dropdown-link" href={m.href}>
-                              <div class="dl-label">{m.label}</div>
-                              {m.desc && <div class="dl-desc">{m.desc}</div>}
-                            </a>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  {item.menu && (item.mega ? <MegaPanel item={item} /> : <StandardPanel item={item} />)}
                 </div>
               )
             })}
@@ -70,6 +60,51 @@ export function SiteNav({ path }: { path: string }) {
   )
 }
 
+function StandardPanel({ item }: { item: NavItem }) {
+  return (
+    <div class="dropdown-panel">
+      <div class="dropdown-grid">
+        {item.menu!.map((m) =>
+          isSection(m) ? (
+            <div class="dropdown-section">{m.section}</div>
+          ) : (
+            <a class="dropdown-link" href={m.href}>
+              <div class="dl-label">{m.label}</div>
+              {m.desc && <div class="dl-desc">{m.desc}</div>}
+            </a>
+          )
+        )}
+      </div>
+    </div>
+  )
+}
+
+function MegaPanel({ item }: { item: NavItem }) {
+  const tiles = item.menu!.filter((m) => !isSection(m)) as { label: string; href: string; icon?: string }[]
+  return (
+    <div class="dropdown-panel dropdown-panel-mega">
+      <div class="mega-grid">
+        {item.viewAllHref && (
+          <a class="mega-tile mega-tile-viewall" href={item.viewAllHref}>
+            <div class="mega-tile-icon">
+              <Icon name="arrow" size={18} />
+            </div>
+            <div class="mega-tile-label">{item.viewAllLabel || 'View all'}</div>
+          </a>
+        )}
+        {tiles.map((m) => (
+          <a class="mega-tile" href={m.href}>
+            <div class="mega-tile-icon">
+              <Icon name={m.icon || 'tag'} size={18} />
+            </div>
+            <div class="mega-tile-label">{m.label}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function MobileMenu() {
   return (
     <div class="mobile-menu" role="dialog" aria-label="Site navigation">
@@ -92,6 +127,32 @@ function MobileMenu() {
                 <div>{item.label}</div>
               </div>
             </a>
+          </div>
+        ) : item.mega ? (
+          <div class="mobile-menu-section">
+            <div class="mm-label">{item.label}</div>
+            <div class="mm-mega-grid">
+              {item.viewAllHref && (
+                <a class="mm-mega-tile mm-mega-tile-viewall" href={item.viewAllHref}>
+                  <div class="mm-mega-tile-icon">
+                    <Icon name="arrow" size={16} />
+                  </div>
+                  <div>{item.viewAllLabel || 'View all'}</div>
+                </a>
+              )}
+              {item.menu
+                .filter((m) => !isSection(m))
+                .map((m) =>
+                  !isSection(m) ? (
+                    <a class="mm-mega-tile" href={m.href}>
+                      <div class="mm-mega-tile-icon">
+                        <Icon name={m.icon || 'tag'} size={16} />
+                      </div>
+                      <div>{m.label}</div>
+                    </a>
+                  ) : null
+                )}
+            </div>
           </div>
         ) : (
           <div class="mobile-menu-section">

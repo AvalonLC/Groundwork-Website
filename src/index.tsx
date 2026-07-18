@@ -9,11 +9,10 @@ import { AdminPage } from './pages/product/admin'
 import { MobilePage } from './pages/product/mobile'
 import { PlatformPage } from './pages/product/platform'
 import { FeaturesPage } from './pages/features'
-import { SolutionsHubPage } from './pages/solutions/hub'
-import { LandscapingPage } from './pages/solutions/landscaping'
-import { HomeServicePage } from './pages/solutions/home-service'
-import { FieldServicePage } from './pages/solutions/field-service'
-import { MultiCrewTeamsPage } from './pages/solutions/multi-crew-teams'
+import { TradesHubPage } from './pages/trades/hub'
+import { TradePage } from './components/TradePage'
+import { getTradeBySlug } from './data/trades'
+import { MultiCrewOpsPage } from './pages/multi-crew-ops'
 import { RolesHubPage } from './pages/roles/hub'
 import { OwnersPage } from './pages/roles/owners'
 import { OfficeManagersPage } from './pages/roles/office-managers'
@@ -197,11 +196,13 @@ app.get('/product/admin', (c) => c.html(<AdminPage />))
 app.get('/product/mobile', (c) => c.html(<MobilePage />))
 app.get('/product/platform', (c) => c.html(<PlatformPage />))
 app.get('/features', (c) => c.html(<FeaturesPage />))
-app.get('/solutions', (c) => c.html(<SolutionsHubPage />))
-app.get('/solutions/landscaping', (c) => c.html(<LandscapingPage />))
-app.get('/solutions/home-service', (c) => c.html(<HomeServicePage />))
-app.get('/solutions/field-service', (c) => c.html(<FieldServicePage />))
-app.get('/solutions/multi-crew-teams', (c) => c.html(<MultiCrewTeamsPage />))
+app.get('/trades', (c) => c.html(<TradesHubPage />))
+app.get('/trades/:slug', (c) => {
+  const trade = getTradeBySlug(c.req.param('slug'))
+  if (!trade) return c.notFound()
+  return c.html(<TradePage trade={trade} />)
+})
+app.get('/multi-crew-ops', (c) => c.html(<MultiCrewOpsPage />))
 app.get('/roles', (c) => c.html(<RolesHubPage />))
 app.get('/roles/owners', (c) => c.html(<OwnersPage />))
 app.get('/roles/office-managers', (c) => c.html(<OfficeManagersPage />))
@@ -225,6 +226,15 @@ app.get('/download', (c) => c.html(<DownloadPage />))
 // Redirect rules from the design handoff
 app.get('/book-demo', (c) => c.redirect('/demo', 301))
 app.get('/info', (c) => c.redirect('/', 301))
+
+// Redirects from the old /solutions structure (renamed to /trades — see
+// the Trades mega-menu redesign). Multi-crew teams moved out to its own
+// top-level route since it's an org-scale concern, not a trade.
+app.get('/solutions', (c) => c.redirect('/trades', 301))
+app.get('/solutions/landscaping', (c) => c.redirect('/trades/landscaping', 301))
+app.get('/solutions/home-service', (c) => c.redirect('/trades/hvac', 301))
+app.get('/solutions/field-service', (c) => c.redirect('/trades/roofing', 301))
+app.get('/solutions/multi-crew-teams', (c) => c.redirect('/multi-crew-ops', 301))
 
 // NOTE — interim domain state (see README "Domain status" section):
 // This marketing site is temporarily hosted at groundwork-crm.info because the

@@ -1,42 +1,17 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand } from '../../components/Blocks'
+import { Icon } from '../../components/Icon'
+import { TRADES } from '../../data/trades'
 
-export function SolutionsHubPage() {
-  const cards = [
-    {
-      href: '/solutions/landscaping',
-      tag: 'Landscape · Hardscape · Design-build · Maintenance',
-      title: 'Landscaping',
-      desc: 'Design-build firms and maintenance-heavy operations both run on Groundwork — sales pipeline, recurring services, dispatch, and hardscape scope tracking in one system.',
-    },
-    {
-      href: '/solutions/home-service',
-      tag: 'HVAC · Plumbing · Electrical · Handyman',
-      title: 'Home service',
-      desc: 'Volume matters. Groundwork gives you the pipeline discipline of a sales org and the dispatch power of an ops team — same day, same tool.',
-    },
-    {
-      href: '/solutions/field-service',
-      tag: 'Restoration · Roofing · Exteriors · Insurance work',
-      title: 'Field service',
-      desc: 'Insurance-driven work means multi-party workflows: adjuster, homeowner, sales, PM, and crew — all needing different views of the same job.',
-    },
-    {
-      href: '/solutions/multi-crew-teams',
-      tag: 'Multi-role · Multi-location · Franchise · Ops at scale',
-      title: 'Multi-crew operational teams',
-      desc: "When office managers coordinate reps who feed foremen who lead laborers — Groundwork's role-based structure was designed for exactly this.",
-    },
-  ]
-
+export function TradesHubPage() {
   return (
     <Layout
-      title="Solutions — Groundwork CRM"
-      description="Groundwork is built for service businesses: landscape, home service, field service, and multi-crew operations."
-      path="/solutions"
+      title="Trades — Groundwork CRM"
+      description="Groundwork is configured for real trades — HVAC, plumbing, electrical, roofing, landscaping, and more."
+      path="/trades"
     >
       <SubpageHero
-        eyebrow="Solutions"
+        eyebrow="Trades"
         title={<>Built for real trades. Configured for&nbsp;<em style="font-style: italic; color: var(--gw-forest-700);">yours.</em></>}
         lede='Groundwork is not a generic CRM with a "field service" checkbox. It is shaped by how service businesses actually run — and configured to your specific stages, service lines, and workflows during onboarding.'
         secondaryHref="/roles"
@@ -45,22 +20,14 @@ export function SolutionsHubPage() {
 
       <section class="section" style="padding-top: 20px;">
         <div class="wrap">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-            {cards.map((c) => (
-              <a
-                href={c.href}
-                style="text-decoration: none; background: var(--gw-cream-100); border: 1px solid var(--gw-line); border-radius: var(--r-lg); padding: 36px 34px; display: block;"
-              >
-                <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gw-forest-600); font-weight: 600; margin-bottom: 16px;">
-                  {c.tag}
+          <div class="trades-grid">
+            {TRADES.map((t) => (
+              <a href={`/trades/${t.slug}`} class="trade-tile">
+                <div class="trade-tile-icon">
+                  <Icon name={t.icon} size={22} />
                 </div>
-                <div style="font-family: var(--font-serif); font-size: 32px; font-weight: 500; color: var(--gw-ink-900); margin-bottom: 12px;">
-                  {c.title}
-                </div>
-                <div style="font-size: 15px; color: var(--gw-ink-500); margin-bottom: 24px;">{c.desc}</div>
-                <div style="font-size: 12px; color: var(--gw-forest-700); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;">
-                  Explore →
-                </div>
+                <div class="trade-tile-title">{t.name}</div>
+                <div class="trade-tile-desc">{t.navDesc}</div>
               </a>
             ))}
           </div>
@@ -87,6 +54,25 @@ export function SolutionsHubPage() {
                 <p style="color: var(--gw-ink-500); font-size: 15px;">{item.body}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section" style="padding-top: 48px; padding-bottom: 0;">
+        <div class="wrap">
+          <div style="text-decoration: none; background: var(--gw-cream-100); border: 1px solid var(--gw-line); border-radius: var(--r-lg); padding: 36px 34px;">
+            <div style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gw-forest-600); font-weight: 600; margin-bottom: 16px;">
+              Multi-role · Multi-location · Franchise · Ops at scale
+            </div>
+            <div style="font-family: var(--font-serif); font-size: 28px; font-weight: 500; color: var(--gw-ink-900); margin-bottom: 12px;">
+              Running more than one trade, or one crew?
+            </div>
+            <div style="font-size: 15px; color: var(--gw-ink-500); margin-bottom: 24px;">
+              When office managers coordinate reps who feed foremen who lead laborers — see how Groundwork's role-based structure scales across crews, locations, and service lines.
+            </div>
+            <a href="/multi-crew-ops" style="font-size: 12px; color: var(--gw-forest-700); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;">
+              See multi-crew &amp; ops at scale →
+            </a>
           </div>
         </div>
       </section>

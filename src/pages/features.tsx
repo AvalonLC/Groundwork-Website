@@ -337,7 +337,7 @@ export function FeaturesPage() {
         eyebrow="Ready to see it live?"
         title={<>Walk the platform with a specialist who <em>knows your trade.</em></>}
         description="30 minutes, your workflow, no slides."
-        secondaryHref="/solutions"
+        secondaryHref="/trades"
         secondaryLabel="See it for my industry"
       />
     </Layout>
