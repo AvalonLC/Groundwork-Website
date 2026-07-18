@@ -49,17 +49,28 @@ export function SiteFooter() {
               <li><a href="/features">All features</a></li>
             </ul>
           </div>
-          <div class="footer-col">
+          <div class="footer-col footer-col-trades">
             <h5>Trades</h5>
-            <ul>
-              <li><a href="/trades/hvac">HVAC</a></li>
-              <li><a href="/trades/plumbing">Plumbing</a></li>
-              <li><a href="/trades/electrical">Electrical</a></li>
-              <li><a href="/trades/roofing">Roofing</a></li>
-              <li><a href="/trades/landscaping">Landscaping</a></li>
-              <li><a href="/trades">View all trades →</a></li>
-            </ul>
-            <h5 style="margin-top: 24px;">Roles</h5>
+            <div class="footer-trades-cols">
+              <ul>
+                <li><a href="/trades/hvac">HVAC</a></li>
+                <li><a href="/trades/plumbing">Plumbing</a></li>
+                <li><a href="/trades/electrical">Electrical</a></li>
+                <li><a href="/trades/chimney">Chimney</a></li>
+                <li><a href="/trades/roofing">Roofing</a></li>
+                <li><a href="/trades/garage-door">Garage door</a></li>
+              </ul>
+              <ul>
+                <li><a href="/trades/septic">Septic</a></li>
+                <li><a href="/trades/pest-control">Pest control</a></li>
+                <li><a href="/trades/irrigation">Irrigation</a></li>
+                <li><a href="/trades/painting">Painting</a></li>
+                <li><a href="/trades/landscaping">Landscaping</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h5>Roles</h5>
             <ul>
               <li><a href="/roles/owners">Owners</a></li>
               <li><a href="/roles/office-managers">Office managers</a></li>

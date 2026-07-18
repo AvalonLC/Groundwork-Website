@@ -1546,11 +1546,12 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.4fr 0.9fr 1.3fr 0.9fr 0.9fr 0.9fr;
+  gap: 32px;
   padding-bottom: 60px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+.footer-trades-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
 .footer .brand { color: white; font-size: 26px; margin-bottom: 16px; }
 .footer .brand .brand-mark {
   background-color: var(--gw-forest-700);

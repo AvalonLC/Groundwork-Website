@@ -11,7 +11,7 @@ export function DemoPage() {
     {
       icon: 'plant',
       title: 'Configured to your trade',
-      desc: "Landscape? Home service? Restoration? We'll show you the right defaults.",
+      desc: "HVAC? Plumbing? Landscaping? Whatever trade you run, we'll show you the right defaults.",
     },
     {
       icon: 'target',
@@ -115,9 +115,17 @@ export function DemoPage() {
                     style="width: 100%; padding: 10px 12px; border: 1px solid var(--gw-line); border-radius: 8px; font-size: 14px; font-family: inherit; background: white;"
                   >
                     <option value="">Choose one…</option>
-                    <option>Landscape / hardscape</option>
-                    <option>Home service (HVAC, plumbing, electrical)</option>
-                    <option>Restoration / roofing / exteriors</option>
+                    <option>HVAC</option>
+                    <option>Plumbing</option>
+                    <option>Electrical</option>
+                    <option>Chimney</option>
+                    <option>Roofing</option>
+                    <option>Garage door</option>
+                    <option>Septic</option>
+                    <option>Pest control</option>
+                    <option>Irrigation</option>
+                    <option>Painting</option>
+                    <option>Landscaping</option>
                     <option>Multi-service / multi-crew</option>
                     <option>Other service business</option>
                   </select>
