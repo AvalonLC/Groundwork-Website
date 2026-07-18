@@ -153,6 +153,7 @@
       view: calc.querySelector('[data-calc-input="view"]'),
     }
     var results = calc.querySelectorAll('[data-calc-plan]')
+    var aiSelect = calc.querySelector('[data-calc-ai-select]')
 
     function clampCount(v) {
       var n = parseInt(v, 10)
@@ -192,6 +193,14 @@
         soloHint.style.display = totalSeats === 0 ? 'block' : 'none'
       }
 
+      // Company-wide AI add-on: a single flat cost applied once per company,
+      // never multiplied by seat count, and never a factor in the minSeats
+      // check below — AI package choice and seat minimums are independent.
+      var aiOption = aiSelect ? aiSelect.options[aiSelect.selectedIndex] : null
+      var aiPriceRaw = aiOption ? aiOption.getAttribute('data-price') : '0'
+      var aiPrice = aiPriceRaw === '' || aiPriceRaw == null ? null : parseFloat(aiPriceRaw)
+      var aiLineLabel = aiOption ? aiOption.getAttribute('data-line-label') : 'Included AI'
+
       results.forEach(function (card) {
         var repPrice = parseFloat(card.dataset.repPrice)
         var fieldPrice = parseFloat(card.dataset.fieldPrice)
@@ -199,11 +208,30 @@
         var viewIncluded = parseInt(card.dataset.viewIncluded, 10) || 0
         var minSeats = parseInt(card.dataset.minSeats, 10) || 0
 
-        var total = rep * repPrice + fieldCost(field, fieldPrice) + office * officePrice + viewCost(view, viewIncluded)
+        // CRM/seats subtotal — unaffected by the AI selector.
+        var crmSubtotal = rep * repPrice + fieldCost(field, fieldPrice) + office * officePrice + viewCost(view, viewIncluded)
+
+        var crmSubtotalEl = card.querySelector('[data-calc-crm-subtotal]')
+        var aiLineEl = card.querySelector('[data-calc-ai-line]')
+        var aiLineLabelEl = card.querySelector('[data-calc-ai-line-label]')
         var totalEl = card.querySelector('[data-calc-total]')
         var noteEl = card.querySelector('[data-calc-note]')
 
-        if (totalEl) totalEl.textContent = '$' + Math.round(total).toLocaleString()
+        if (crmSubtotalEl) crmSubtotalEl.textContent = '$' + Math.round(crmSubtotal).toLocaleString() + '/mo'
+        if (aiLineLabelEl && aiLineLabel) aiLineLabelEl.textContent = aiLineLabel
+
+        // Grand total keeps CRM/seats and AI as clearly separate line items —
+        // never silently merged into one unexplained number.
+        var grandTotal = crmSubtotal
+        if (aiPrice === null) {
+          // "Custom" AI package — price unknown, always shown as its own line.
+          if (aiLineEl) aiLineEl.textContent = 'Contact sales'
+        } else {
+          grandTotal = crmSubtotal + aiPrice
+          if (aiLineEl) aiLineEl.textContent = '$' + Math.round(aiPrice).toLocaleString() + '/mo'
+        }
+
+        if (totalEl) totalEl.textContent = '$' + Math.round(grandTotal).toLocaleString() + (aiPrice === null ? ' + AI' : '')
 
         if (noteEl) {
           if (totalSeats === 0) {
@@ -226,6 +254,10 @@
       input.addEventListener('input', recalc)
       input.addEventListener('change', recalc)
     })
+
+    if (aiSelect) {
+      aiSelect.addEventListener('change', recalc)
+    }
 
     calc.querySelectorAll('[data-calc-step]').forEach(function (btn) {
       btn.addEventListener('click', function () {

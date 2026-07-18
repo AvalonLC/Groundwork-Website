@@ -961,6 +961,21 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .pricing-trust-row span { display: flex; align-items: center; gap: 7px; }
 .pricing-trust-row .icon-slot { color: var(--gw-forest-600); flex: none; }
 
+/* Compact AI availability strip — sits directly under the trust row, tells
+   visitors about the AI billing model (shared allowance, no overages)
+   before they even reach the plan cards. */
+.pricing-ai-strip {
+  display: flex; align-items: flex-start; gap: 12px; margin-top: 20px; max-width: 780px;
+  padding: 14px 18px; background: var(--gw-green-050); border: 1px solid var(--gw-line-strong);
+  border-radius: 10px;
+}
+.pricing-ai-strip-icon {
+  flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--gw-forest-700);
+  color: var(--gw-cream-100); display: grid; place-items: center; margin-top: 1px;
+}
+.pricing-ai-strip-copy { font-size: 13.5px; color: var(--gw-ink-700); line-height: 1.5; }
+.pricing-ai-strip-copy strong { color: var(--gw-ink-900); }
+
 /* Starter banner — solo owner-operator plan, called out above the
    4-tier grid rather than competing as a 5th card (different persona:
    "just me" vs a team choosing between Core/Growth/Pro). */
@@ -993,7 +1008,11 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .pricing-starter-price { display: flex; align-items: baseline; justify-content: center; gap: 4px; }
 .pricing-starter-price-num { font-family: var(--font-serif); font-size: 34px; font-weight: 500; letter-spacing: -0.02em; }
 .pricing-starter-price-suffix { font-size: 13px; color: var(--gw-ink-500); }
-.pricing-starter-price-note { font-size: 11.5px; color: var(--gw-ink-500); margin: 2px 0 14px; white-space: nowrap; }
+.pricing-starter-price-note { font-size: 11.5px; color: var(--gw-ink-500); margin: 2px 0 6px; white-space: nowrap; }
+.pricing-starter-ai-note {
+  font-size: 11px; color: var(--gw-forest-700); font-weight: 600; margin: 0 0 12px; white-space: nowrap;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+}
 .pricing-starter-cta {
   display: inline-block; padding: 10px 20px; border-radius: 999px; background: var(--gw-forest-800);
   color: var(--gw-cream-100); font-size: 13.5px; font-weight: 500; text-decoration: none; white-space: nowrap;
@@ -1041,10 +1060,18 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .pricing-startingat-suffix { font-size: 13px; color: var(--gw-ink-500); }
 .pricing-card.dark .pricing-startingat-suffix { color: #93AFA1; }
 .pricing-minseats {
-  font-size: 11.5px; font-weight: 500; margin: 6px 0 18px;
+  font-size: 11.5px; font-weight: 500; margin: 6px 0 8px;
   color: var(--gw-forest-700);
 }
 .pricing-card.dark .pricing-minseats { color: #7CC9A3; }
+.pricing-ai-allowance {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+  color: var(--gw-forest-700); background: var(--gw-green-050); border-radius: 999px; padding: 4px 10px;
+  margin: 0 0 18px;
+}
+.pricing-ai-allowance .icon-slot { color: var(--gw-forest-600); flex: none; }
+.pricing-card.dark .pricing-ai-allowance { color: #D7E5DC; background: rgba(255,255,255,0.08); }
+.pricing-card.dark .pricing-ai-allowance .icon-slot { color: #7CC9A3; }
 
 /* Unified seat-pricing table — equal visual weight per role, no more
    "one big number + fine-print footnotes" ambiguity. */
@@ -1210,6 +1237,19 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .calc-solo-hint a { color: #7CC9A3; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 
+.calc-field-ai {
+  display: block; max-width: 420px; margin: 0 auto 22px;
+}
+.calc-ai-select {
+  width: 100%; height: 44px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px; color: var(--gw-cream-100); font-size: 13.5px; font-weight: 600; font-family: inherit;
+  padding: 0 14px; cursor: pointer; -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3e%3cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237CC9A3' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+.calc-ai-select:focus { outline: none; border-color: rgba(124,201,163,0.5); }
+.calc-ai-select option { background: var(--gw-forest-800); color: var(--gw-cream-100); }
+
 .pricing-calc-results { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .calc-result {
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
@@ -1221,7 +1261,23 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .calc-badge-spacer { height: 15px; }
 .calc-plan-name { font-family: var(--font-serif); font-size: 17px; font-weight: 500; margin-bottom: 10px; }
-.calc-total { font-family: var(--font-serif); font-size: 30px; font-weight: 500; margin-bottom: 6px; }
+
+.calc-line-items {
+  border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 10px 0; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px;
+}
+.calc-line {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  font-size: 11.5px; color: #B7CFC1;
+}
+.calc-line span:last-child { font-weight: 600; color: var(--gw-cream-100); }
+.calc-line-ai span:first-child { color: #7CC9A3; }
+
+.calc-total { font-family: var(--font-serif); font-size: 30px; font-weight: 500; margin-bottom: 2px; }
+.calc-total-label {
+  display: block; font-family: var(--font-sans); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #93AFA1; margin-bottom: 4px;
+}
 .calc-total small { font-size: 13px; font-weight: 400; color: #93AFA1; margin-left: 2px; }
 .calc-note { font-size: 11.5px; color: #93AFA1; min-height: 28px; margin-bottom: 14px; line-height: 1.35; }
 .calc-cta {

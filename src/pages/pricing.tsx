@@ -17,6 +17,7 @@ export function PricingPage() {
         { label: 'View-only', price: '1 free, then $10/mo' },
       ],
       minSeats: '3 seat minimum',
+      aiAllowance: '100 AI actions/mo',
       dark: false,
       badge: undefined as string | undefined,
       cta: 'Request pricing',
@@ -28,6 +29,7 @@ export function PricingPage() {
         'Work Orders & Time Tracker',
         'Invoices & Payments',
         'Field Mode (mobile)',
+        'AI drafting tools — 100 included monthly actions',
       ],
     },
     {
@@ -42,6 +44,7 @@ export function PricingPage() {
         { label: 'View-only', price: '3 free, then $10/mo' },
       ],
       minSeats: '5 seat minimum',
+      aiAllowance: '250 AI actions/mo',
       dark: true,
       badge: 'Most popular',
       cta: 'Request pricing',
@@ -52,7 +55,7 @@ export function PricingPage() {
         'Deposits & statements',
         'Approval queue',
         'Academy — role-based training',
-        'AI Assistant',
+        'Advanced AI drafting tools — 250 included monthly actions',
       ],
     },
     {
@@ -67,6 +70,7 @@ export function PricingPage() {
         { label: 'View-only', price: '5 free, then $10/mo' },
       ],
       minSeats: '8 seat minimum',
+      aiAllowance: '500 AI actions/mo',
       dark: false,
       badge: undefined as string | undefined,
       cta: 'Request pricing',
@@ -79,6 +83,8 @@ export function PricingPage() {
         'SSO / SAML',
         'API access',
         'Dedicated success manager',
+        'Advanced AI drafting tools — 500 included monthly actions',
+        'Bring your own OpenAI API key available',
       ],
     },
     {
@@ -87,6 +93,7 @@ export function PricingPage() {
       startingAt: 'Custom',
       seats: [] as { label: string; price: string; primary?: boolean; free?: boolean }[],
       minSeats: 'Built around your locations',
+      aiAllowance: 'Custom AI allowance',
       dark: false,
       badge: undefined as string | undefined,
       cta: 'Talk to sales',
@@ -97,6 +104,7 @@ export function PricingPage() {
         'Custom contract & SLA',
         'Dedicated implementation architect',
         'Custom integrations',
+        'Custom AI allowances, billing controls & model configuration',
       ],
     },
   ]
@@ -128,6 +136,16 @@ export function PricingPage() {
               <Icon name="check-circle" size={15} /> Cancel anytime, no lock-in contract
             </span>
           </div>
+          <div class="pricing-ai-strip">
+            <span class="pricing-ai-strip-icon">
+              <Icon name="bolt" size={16} />
+            </span>
+            <div class="pricing-ai-strip-copy">
+              <strong>Groundwork AI is available on every plan.</strong> Each subscription includes a monthly AI
+              allowance, shared across your whole company — not charged per employee. Need more? Add a company-wide
+              package anytime. No automatic overages, no hidden token charges.
+            </div>
+          </div>
         </div>
       </section>
 
@@ -158,6 +176,9 @@ export function PricingPage() {
                 <li>
                   <Icon name="check" size={13} /> Field Mode (mobile)
                 </li>
+                <li>
+                  <Icon name="check" size={13} /> AI drafting tools — 50 included monthly actions
+                </li>
               </ul>
             </div>
             <div class="pricing-starter-price-block">
@@ -166,6 +187,7 @@ export function PricingPage() {
                 <span class="pricing-starter-price-suffix">/mo</span>
               </div>
               <div class="pricing-starter-price-note">1 seat · no minimum</div>
+              <div class="pricing-starter-ai-note">Includes 50 AI actions/mo</div>
               <a href="/signup" class="pricing-starter-cta">
                 Start solo <span class="arrow">→</span>
               </a>
@@ -191,6 +213,9 @@ export function PricingPage() {
                   )}
                 </div>
                 <div class="pricing-minseats">{p.minSeats}</div>
+                <div class="pricing-ai-allowance">
+                  <Icon name="bolt" size={12} /> {p.aiAllowance}
+                </div>
 
                 {p.seats.length > 0 && (
                   <div class="pricing-seat-table">

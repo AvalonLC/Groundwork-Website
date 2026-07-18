@@ -17,12 +17,33 @@ interface CalcPlan {
   badge?: string
 }
 
+interface AiPackage {
+  key: string
+  label: string
+  optionText: string
+  price: number | null // null = not a fixed number (Custom / contact sales)
+  lineLabel: string // shown in the per-plan AI line item
+}
+
 const VIEW_ONLY_PRICE = 10
 
 const CALC_PLANS: CalcPlan[] = [
   { key: 'core', name: 'Core', repPrice: 49, fieldPrice: 25, officePrice: 89, viewIncluded: 1, minSeats: 3 },
   { key: 'growth', name: 'Growth', repPrice: 65, fieldPrice: 30, officePrice: 105, viewIncluded: 3, minSeats: 5, badge: 'Most popular' },
   { key: 'pro', name: 'Pro', repPrice: 85, fieldPrice: 35, officePrice: 135, viewIncluded: 5, minSeats: 8 },
+]
+
+// Company-wide AI add-on, priced flat per company (never multiplied by seat
+// count, never counted toward minSeats). "Included" is the $0 default that
+// every plan already ships with; the rest are optional packages layered on
+// top. Mirrors the dedicated Groundwork AI section below the calculator.
+const AI_PACKAGES: AiPackage[] = [
+  { key: 'included', label: 'Included AI', optionText: 'Included AI — $0/mo (plan allowance)', price: 0, lineLabel: 'Included AI' },
+  { key: 'essentials', label: 'AI Essentials', optionText: 'AI Essentials — $12/mo (500 actions)', price: 12, lineLabel: 'AI Essentials' },
+  { key: 'plus', label: 'AI Plus', optionText: 'AI Plus — $29/mo (1,500 actions)', price: 29, lineLabel: 'AI Plus' },
+  { key: 'max', label: 'AI Max', optionText: 'AI Max — $59/mo (5,000 actions)', price: 59, lineLabel: 'AI Max' },
+  { key: 'byok', label: 'Use my own API key', optionText: 'Use my own API key — $0 Groundwork charge', price: 0, lineLabel: 'Your API key (BYOK)' },
+  { key: 'custom', label: 'Custom', optionText: 'Custom — contact sales', price: null, lineLabel: 'Custom' },
 ]
 
 export function PricingCalculator() {
@@ -114,6 +135,20 @@ export function PricingCalculator() {
         baked into the totals below automatically.
       </div>
 
+      <label class="calc-field calc-field-ai">
+        <div class="calc-label">
+          Add company-wide AI
+          <span>One allowance for the whole company — not billed per seat</span>
+        </div>
+        <select data-calc-ai-select class="calc-ai-select">
+          {AI_PACKAGES.map((pkg) => (
+            <option value={pkg.key} data-price={pkg.price === null ? '' : pkg.price} data-line-label={pkg.lineLabel} selected={pkg.key === 'included'}>
+              {pkg.optionText}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <div class="calc-solo-hint" data-calc-solo-hint style="display: none;">
         Just you, no crew yet? These plans have seat minimums — <a href="#starter-plan">check out Starter</a> instead,
         it's built for solo operators.
@@ -132,7 +167,20 @@ export function PricingCalculator() {
           >
             {p.badge ? <div class="calc-badge">{p.badge}</div> : <div class="calc-badge-spacer"></div>}
             <div class="calc-plan-name">{p.name}</div>
+
+            <div class="calc-line-items">
+              <div class="calc-line">
+                <span>CRM and seats</span>
+                <span data-calc-crm-subtotal>$0/mo</span>
+              </div>
+              <div class="calc-line calc-line-ai" data-calc-ai-line-row>
+                <span data-calc-ai-line-label>Included AI</span>
+                <span data-calc-ai-line>$0/mo</span>
+              </div>
+            </div>
+
             <div class="calc-total">
+              <span class="calc-total-label">Estimated total</span>
               <span data-calc-total>$0</span>
               <small>/mo</small>
             </div>
@@ -148,7 +196,7 @@ export function PricingCalculator() {
           <div class="calc-total">
             <span>Custom</span>
           </div>
-          <div class="calc-note">Multi-location roll-up &amp; volume pricing</div>
+          <div class="calc-note">Multi-location roll-up &amp; volume pricing, plus a custom AI allowance</div>
           <a href="/demo" class="calc-cta">
             Talk to sales →
           </a>
