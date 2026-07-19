@@ -65,7 +65,7 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/roles/sales-reps` | Sales reps role page |
 | `/roles/foremen` | Foremen role page |
 | `/roles/laborers` | Laborers role page |
-| `/pricing` | Pricing — plans, role-based seats, and Groundwork AI (allowance + paid packages + BYOK) |
+| `/pricing` | Pricing — plans (each incl. 1 user) + flat per-user rate, and Groundwork AI (allowance + paid packages + BYOK) |
 | `/customers` | Customer testimonials + logos |
 | `/case-studies` | Deeper case studies |
 | `/resources` | Resources hub (Academy/Implementation/Blog/Help/API/FAQ cards) + blog preview |
@@ -93,10 +93,12 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 Unknown `/trades/:slug` values return a real 404 (`c.notFound()`), not a redirect.
 
 ## Pricing Model
-`/pricing` presents three independent pricing axes:
-- **Plans** — Core, Growth, Pro, Enterprise (+ Starter for solo owner-operators) — gate which workspaces a company can use.
-- **Seats** — priced by role (Owner/Admin free & unlimited, Rep/Estimator, Field with volume breaks, Office Manager, View-only with a free-seat allowance + flat overage).
-- **Groundwork AI** — a shared, company-wide monthly allowance included on every plan (Starter 50 / Core 100 / Growth 250 / Pro 500 / Enterprise custom), with optional paid packages (Essentials $12/500, Plus $29/1,500, Max $59/5,000 actions), a "contact sales" custom tier above 5,000, and a BYOK (bring-your-own-OpenAI-key) escape valve that removes the allowance cap. AI is priced flat per company — never per seat — and is a separate line item from CRM + seats everywhere it's shown (price calculator, Jobber comparison). This is presentation only; no usage metering or billing enforcement lives in this repo (see "Not Yet Implemented").
+`/pricing` presents two independent pricing axes (revised 2026-07-19 — the former role-based-seat model has been fully replaced):
+- **Plans** — Core ($259/mo), Growth ($359/mo), Pro ($459/mo), Enterprise (custom, for 25+ users or multi-location access). The Solo/Starter plan has been removed. Each plan's base fee includes exactly **1 internal user**.
+- **Additional internal users** — a flat **$29/mo per additional user**, the same rate on every plan, regardless of role or permission level (owner, admin, rep, field, or office). No seat minimums, no volume-discount brackets, no free/unlimited Owner or Admin seats. Customer-portal and other external users are free and never count toward this number.
+- **Groundwork AI** — unchanged: a shared, company-wide monthly allowance included on every plan (Core 100 / Growth 250 / Pro 500 / Enterprise custom), with optional paid packages (Essentials $12/500, Plus $29/1,500, Max $59/5,000 actions), a "contact sales" custom tier above 5,000, and a BYOK (bring-your-own-OpenAI-key) escape valve that removes the allowance cap. AI is priced flat per company — never per seat — and is a separate line item from the plan + user pricing everywhere it's shown (price calculator, Jobber/Housecall Pro comparisons).
+
+The pricing calculator (`src/components/PricingCalculator.tsx` + `bindPricingCalculator()` in `public/static/site.js`) shows the total as: **Base platform fee + additional users + AI add-ons = estimated monthly total**. The sales cheat sheet at `docs/sales-pricing-cheatsheet.md` mirrors this same formula (`total = base_fee + max(0, users - included) * 29`) for quoting and competitive talk tracks. This is presentation only; no usage metering or billing enforcement lives in this repo (see "Not Yet Implemented").
 
 ## Trades Mega-Menu (Nav Redesign)
 The old 4-item "Solutions" nav dropdown (Landscaping / Home service / Field service / Multi-crew teams) was replaced with an 11-trade "Trades" mega-menu so that companies across many different trades — not just the original 4 broad categories — see themselves reflected in the nav: HVAC, Plumbing, Electrical, Chimney, Roofing, Garage Door, Septic, Pest Control, Irrigation, Painting, Landscaping.
@@ -137,5 +139,5 @@ curl http://localhost:3000/
 - **Status**: ✅ Live.
 - **Cloudflare project**: `groundwork-crm-marketing`
 - **Live URLs**: https://groundwork-crm.info (custom domain) · https://groundwork-crm-marketing.pages.dev (Pages default domain)
-- **Last deployed**: 2026-07-18 — includes the full Trades mega-menu redesign (11-trade nav/hub/pages, footer, demo form dropdown).
+- **Last deployed**: 2026-07-19 — pricing model overhaul: removed the Solo plan, moved to 3 plans (Core $259 / Growth $359 / Pro $459) each including 1 user, flat $29/mo per additional internal user regardless of role, removed role-based seat pricing/seat minimums/volume brackets/free-Owner-Admin seats, added "25+ users or multi-location" Enterprise callout. Updated pricing page, calculator, comparison tables, FAQ, and sales cheat sheet for consistency. AI allowances/add-ons unchanged. (Prior deploy 2026-07-18 — Trades mega-menu redesign.)
 - To redeploy: `npm run build && npx wrangler pages deploy dist --project-name groundwork-crm-marketing --branch main` (requires `setup_cloudflare_api_key` first).
