@@ -1,60 +1,58 @@
 # Sales pricing cheat sheet — internal use only
 
 **Do not publish this file or send it to prospects.** It exists so a rep can
-quote in real time on a demo call without doing bracket math by hand. The
+quote in real time on a demo call without doing math by hand. The
 public-facing version of this logic is the live calculator on
 `https://groundwork-crm.info/pricing` — when in doubt, drive the prospect to
-that page and adjust the seat counts live, or just plug the numbers in there
+that page and adjust the user count live, or just plug the numbers in there
 yourself while on the call.
 
-Everything below is derived from the same formulas that ship in
-`public/static/site.js` (`fieldCost()` / `viewCost()`) and are documented in
+Everything below is derived from the same formula that ships in
+`public/static/site.js` (`bindPricingCalculator`) and is documented in
 `src/components/PricingCalculator.tsx`. If those change, this file is stale —
 regenerate it (see script at the bottom).
 
 ## The model in one paragraph
 
-- **Owner/Admin seats are free**, unlimited, every plan.
-- **Rep/Estimator** and **Office Manager** are billed flat per seat at the
-  plan's rate — no volume discount on these two roles.
-- **Field** seats get a graduated volume discount: seats 1–5 at full rate,
-  seats 6–10 at −10%, seats 11+ at −15%. It's a bracket, not a cliff — the
-  discount only applies to the seats *in* that tier, same as a tax bracket.
-- **View-only** seats are free up to the plan's included quota (Core=1,
-  Growth=3, Pro=5), then $10/mo flat per seat above that, same rate on every
-  plan.
-- **Seat minimums** count Rep + Field + Office only — View-only seats never
-  count toward or against a plan's minimum.
+- Every plan has a **flat monthly base fee** that includes **1 internal
+  user**.
+- **Every additional internal user is $29/mo flat** — no matter their role
+  or permission level. Owner, admin, rep, estimator, field, office: all the
+  same rate.
+- **No seat minimums.** A true solo operator on Core just pays the $259 base
+  fee with zero additional users.
+- **No volume-discount brackets.** The $29/mo rate doesn't change as
+  headcount grows.
+- **Customer-portal and other external users are free** and never count
+  toward the paid internal-user total. Only people who log in to run the
+  business (not clients checking their own job status) count.
+- AI allowances and AI add-on packages are unchanged and priced separately,
+  per company — see the AI section below.
 
 ## Plan rates
 
-| | Core | Growth | Pro |
+| | Core | Growth | Pro | Enterprise |
+|---|---|---|---|---|
+| Base platform fee | $259/mo | $359/mo | $459/mo | Custom |
+| Included users | 1 | 1 | 1 | Built around your locations |
+| Each additional user | $29/mo | $29/mo | $29/mo | Custom |
+| AI allowance | 100 actions/mo | 250 actions/mo | 500 actions/mo | Custom |
+
+## Quick-quote table (pre-computed, common team sizes)
+
+Formula: `total = base_fee + max(0, users - 1) * 29`. There's no "below
+minimum" case anymore — every headcount from 1 up is quotable on every plan.
+
+| Users | Core | Growth | Pro |
 |---|---|---|---|
-| Rep / Estimator | $49/mo | $65/mo | $85/mo |
-| Field (base rate, seats 1–5) | $25/mo | $30/mo | $35/mo |
-| Office Manager | $89/mo | $105/mo | $135/mo |
-| View-only included free | 1 | 3 | 5 |
-| View-only overage | $10/mo | $10/mo | $10/mo |
-| Seat minimum (Rep+Field+Office) | 3 | 5 | 8 |
-
-## Quick-quote table (pre-computed, common team shapes)
-
-All totals below are monthly, verified against the live calculator formula.
-"BELOW MIN" means that plan's seat minimum isn't met at that headcount —
-don't quote that plan/scenario combo; point them at the next plan down or up.
-
-| Team | Core | Growth | Pro |
-|---|---|---|---|
-| 1 rep + 2 field | **$99** | below min (5) | below min (8) |
-| 1 rep + 4 field | **$149** | **$185** | below min (8) |
-| 1 rep + 4 field + 1 office | **$238** | **$290** | below min (8) |
-| 1 rep + 9 field + 1 office | **$353** | **$428** | **$521** |
-| 2 rep + 8 field + 1 office | **$379.50** | **$466** | **$574.50** |
-| 1 rep + 14 field + 1 office | **$460.50** | **$557** | **$671.50** |
-| 2 rep + 12 field + 2 office | **$556** | **$676** | **$832** |
-| 1 rep + 24 field + 1 office | **$673** | **$812** | **$969** |
-| 1 rep + 5 field + 1 office + 2 view-only | **$273** | **$320** | below min (8) |
-| 1 rep + 5 field + 1 office + 6 view-only | **$313** | **$350** | below min (8) |
+| 1 | **$259** | **$359** | **$459** |
+| 3 | **$317** | **$417** | **$517** |
+| 5 | **$375** | **$475** | **$575** |
+| 8 | **$462** | **$562** | **$662** |
+| 10 | **$520** | **$620** | **$720** |
+| 15 | **$665** | **$765** | **$865** |
+| 20 | **$810** | **$910** | **$1,010** |
+| 25 | **$955** | **$1,055** | **$1,155** — at 25+, point them to Enterprise |
 
 Anything not on this list: plug it into the calculator on `/pricing` — it's
 the same formula, live, with a UI. Faster than re-deriving it by hand.
@@ -66,23 +64,31 @@ quoting if it's been more than a few months — Jobber does change pricing):
 
 | Team size | Jobber plan & rate | Groundwork |
 |---|---|---|
-| 5 users (1 owner + 4 field) | Connect, $119–169/mo | Core, $149/mo |
-| 10 users (1 owner + 9 field) | Grow, $199–349/mo | Growth, $323/mo |
-| 15 users (1 owner + 14 field) | Plus, $449–599/mo | Pro, $536.50/mo |
-| 25 users (1 owner + 24 field) | **No published rate — Jobber requires a sales call past 15 users** | Pro, $834/mo |
+| 5 users | Connect, $119–169/mo | Core, $375/mo |
+| 10 users | Grow, $199–349/mo | Growth, $620/mo |
+| 15 users | Plus, $449–599/mo | Pro, $865/mo |
+| 25 users | **No published rate — Jobber requires a sales call past 15 users** | Enterprise — contact us for custom pricing |
 
-Talking points:
-- Jobber's "user" is one flat rate regardless of role — a laborer costs the
-  same as an admin. Groundwork's Field rate is a fraction of Rep/Office
-  because that's what the role actually needs.
+**Important positioning shift:** Groundwork's per-user add-on ($29/mo) is now
+the *same flat rate Jobber charges* past its plan caps. Don't lead with "we
+price by role, they don't" anymore — that differentiator is gone. Lead with
+these instead:
+
+- **Simple, predictable pricing.** One number to remember: the base fee, plus
+  $29/mo per person. No brackets, no minimums, no negotiating.
+- **The operational value of Groundwork CRM.** The comparison isn't really
+  about the per-user add-on (it's identical) — it's about what the base fee
+  unlocks: reporting, automation, a client portal, and built-in AI that
+  Jobber doesn't bundle the same way. Steer the conversation to what the
+  team can *do* with each plan, not just what a login costs.
 - Jobber's published range at every tier is a *spread* ($119–169, not a
-  single number) — that's monthly vs. annual-prepay, not a negotiation range.
-  Groundwork's number is exact and doesn't depend on prepaying a year up
-  front to get the good rate.
+  single number) — that's monthly vs. annual-prepay, not a negotiation
+  range. Groundwork's number is exact and doesn't depend on prepaying a
+  year up front to get the good rate.
 - Past 15 users, Jobber has no self-serve price at all — you have to talk to
   their sales team and negotiate. Groundwork keeps computing a transparent
-  number all the way up; that's a real differentiator for growing teams and
-  worth leading with if the prospect is at or near that 15-person mark.
+  number up to that same point, then moves cleanly to a custom Enterprise
+  quote (25+ users or multi-location) instead of an opaque one.
 - Don't quote Jobber's annual-prepay low end as if it's their real price in a
   side-by-side — always use the monthly-billed number for the apples-to-apples
   comparison, same as the public page does.
@@ -98,9 +104,9 @@ not exact — say so if a prospect pushes on the specific number.
 
 | Team size | Housecall Pro plan & rate | Groundwork |
 |---|---|---|
-| 1 user (owner-operator) | Basic, ~$59/mo | Starter, $29/mo |
-| 5 users (1 owner + 4 field) | Essentials, ~$149/mo | Core, $149/mo |
-| 8 users (1 owner + 7 field) | MAX, ~$299–329/mo | Growth, $269/mo |
+| 1 user (owner-operator) | Basic, ~$59/mo | Core, $259/mo |
+| 5 users | Essentials, ~$149/mo | Core, $375/mo |
+| 8 users | MAX, ~$299–329/mo | Growth, $562/mo |
 
 Talking points:
 - Lead with the confidence caveat yourself before the prospect asks — "their
@@ -108,6 +114,10 @@ Talking points:
   we could find" builds more trust than presenting it as gospel.
 - Housecall Pro's MAX tier caps around 8 users; past that they're in
   custom/sales-quote territory too, same pattern as Jobber past 15.
+- The Groundwork number at 1 user looks higher than Housecall's Basic — that's
+  expected and fine to acknowledge. The pitch there is what the base fee buys
+  (a full operations platform, not just a per-user login), not a race to the
+  cheapest solo tier.
 - Don't lean on this table as hard as the Jobber one in a competitive deal —
   it's a supporting data point, not a verified head-to-head.
 
@@ -139,39 +149,29 @@ Talking points:
 
 ## Regenerating this table
 
-If seat rates or the discount brackets change, re-run this and paste the
-output back into the two tables above:
+If the base fees or the per-user rate change, re-run this and paste the
+output back into the tables above:
 
 ```python
-def field_cost(qty, rate):
-    if qty <= 0: return 0
-    tier1 = min(qty, 5)
-    tier2 = max(0, min(qty, 10) - 5)
-    tier3 = max(0, qty - 10)
-    return tier1 * rate + tier2 * rate * 0.9 + tier3 * rate * 0.85
-
-def view_cost(qty, included, rate=10):
-    return max(0, qty - included) * rate
-
 plans = {
-    'Core':   {'rep': 49, 'field': 25, 'office': 89, 'view_included': 1, 'min_seats': 3},
-    'Growth': {'rep': 65, 'field': 30, 'office': 105, 'view_included': 3, 'min_seats': 5},
-    'Pro':    {'rep': 85, 'field': 35, 'office': 135, 'view_included': 5, 'min_seats': 8},
+    'Core':   {'base': 259, 'included': 1},
+    'Growth': {'base': 359, 'included': 1},
+    'Pro':    {'base': 459, 'included': 1},
 }
 
-scenarios = [
-    ("1 rep, 2 field", 1, 2, 0, 0),
-    ("1 rep, 4 field", 1, 4, 0, 0),
-    # ...add whatever team shapes come up often on calls
-]
+PER_USER = 29
 
-for label, rep, field, office, view in scenarios:
-    print(label + ":")
+scenarios = [1, 3, 5, 8, 10, 15, 20, 25]
+# ...add whatever team sizes come up often on calls
+
+for users in scenarios:
+    print(str(users) + " users:")
     for name, p in plans.items():
-        total = rep*p['rep'] + field_cost(field, p['field']) + office*p['office'] + view_cost(view, p['view_included'])
-        min_ok = "OK" if (rep+field+office) >= p['min_seats'] else "BELOW MIN " + str(p['min_seats'])
-        print("  " + name + ": $" + format(total, '.2f') + "  [" + min_ok + "]")
+        additional = max(0, users - p['included'])
+        total = p['base'] + additional * PER_USER
+        print("  " + name + ": $" + format(total, '.2f'))
 ```
 
-_Last regenerated: 2026-07-18, matching the Owner/Admin-seat + Housecall Pro
-comparison update on `main`._
+_Last regenerated: 2026-07-19, matching the flat per-user pricing overhaul
+(Solo/Starter removed, role-based seat pricing and volume discounts removed,
+$259/$359/$459 base fees + $29/mo flat per additional user) on `main`._

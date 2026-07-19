@@ -135,125 +135,86 @@
     })
   }
 
-  // Pricing calculator: pure arithmetic on the counts the visitor enters,
-  // multiplied against each plan's seat rates (read from data-* attributes
-  // on the results markup — see PricingCalculator.tsx). No backend call;
-  // this is just presenting the same numbers already printed on the seat
-  // table in a way that's easier to reason about with a real team size.
+  // Pricing calculator: pure arithmetic on the total internal-user count the
+  // visitor enters, applied against each plan's flat base fee + flat
+  // per-additional-user rate (read from data-* attributes on the results
+  // markup — see PricingCalculator.tsx). No backend call. Every plan
+  // includes 1 user in its base fee; every additional internal user is the
+  // same flat rate regardless of role. Customer-portal / external users are
+  // never part of this count.
   function bindPricingCalculator() {
     var calc = document.querySelector('[data-pricing-calc]')
     if (!calc) return
 
-    var viewPrice = parseFloat(calc.dataset.viewPrice) || 10
-
-    var inputs = {
-      rep: calc.querySelector('[data-calc-input="rep"]'),
-      field: calc.querySelector('[data-calc-input="field"]'),
-      office: calc.querySelector('[data-calc-input="office"]'),
-      view: calc.querySelector('[data-calc-input="view"]'),
-    }
+    var usersInput = calc.querySelector('[data-calc-input="users"]')
     var results = calc.querySelectorAll('[data-calc-plan]')
     var aiSelect = calc.querySelector('[data-calc-ai-select]')
 
     function clampCount(v) {
       var n = parseInt(v, 10)
-      if (isNaN(n) || n < 0) return 0
+      if (isNaN(n) || n < 1) return 1
       if (n > 999) return 999
       return n
     }
 
-    // Field-seat volume breaks: seats 1-5 at full rate, seats 6-10 at -10%,
-    // seats 11+ at -15% — graduated like a tax bracket, so adding a seat
-    // never makes the total go down. Mirrors the copy on the calculator and
-    // the plan seat tables.
-    function fieldCost(qty, rate) {
-      if (qty <= 0) return 0
-      var tier1 = Math.min(qty, 5)
-      var tier2 = Math.max(0, Math.min(qty, 10) - 5)
-      var tier3 = Math.max(0, qty - 10)
-      return tier1 * rate + tier2 * rate * 0.9 + tier3 * rate * 0.85
-    }
-
-    // View-only seats: first `included` per plan are free, everything past
-    // that bills at the flat view-only rate.
-    function viewCost(qty, included) {
-      var billable = Math.max(0, qty - included)
-      return billable * viewPrice
-    }
-
     function recalc() {
-      var rep = clampCount(inputs.rep.value)
-      var field = clampCount(inputs.field.value)
-      var office = clampCount(inputs.office.value)
-      var view = inputs.view ? clampCount(inputs.view.value) : 0
-      var totalSeats = rep + field + office + view
-
-      var soloHint = calc.querySelector('[data-calc-solo-hint]')
-      if (soloHint) {
-        soloHint.style.display = totalSeats === 0 ? 'block' : 'none'
-      }
+      var totalUsers = usersInput ? clampCount(usersInput.value) : 1
 
       // Company-wide AI add-on: a single flat cost applied once per company,
-      // never multiplied by seat count, and never a factor in the minSeats
-      // check below — AI package choice and seat minimums are independent.
+      // never multiplied by user count.
       var aiOption = aiSelect ? aiSelect.options[aiSelect.selectedIndex] : null
       var aiPriceRaw = aiOption ? aiOption.getAttribute('data-price') : '0'
       var aiPrice = aiPriceRaw === '' || aiPriceRaw == null ? null : parseFloat(aiPriceRaw)
       var aiLineLabel = aiOption ? aiOption.getAttribute('data-line-label') : 'Included AI'
 
       results.forEach(function (card) {
-        var repPrice = parseFloat(card.dataset.repPrice)
-        var fieldPrice = parseFloat(card.dataset.fieldPrice)
-        var officePrice = parseFloat(card.dataset.officePrice)
-        var viewIncluded = parseInt(card.dataset.viewIncluded, 10) || 0
-        var minSeats = parseInt(card.dataset.minSeats, 10) || 0
+        var basePrice = parseFloat(card.dataset.basePrice)
+        var includedUsers = parseInt(card.dataset.includedUsers, 10) || 1
+        var perUserPrice = parseFloat(card.dataset.perUserPrice)
 
-        // CRM/seats subtotal — unaffected by the AI selector.
-        var crmSubtotal = rep * repPrice + fieldCost(field, fieldPrice) + office * officePrice + viewCost(view, viewIncluded)
+        var additionalUsers = Math.max(0, totalUsers - includedUsers)
+        var additionalUsersCost = additionalUsers * perUserPrice
 
-        var crmSubtotalEl = card.querySelector('[data-calc-crm-subtotal]')
+        var baseLineEl = card.querySelector('[data-calc-base-line]')
+        var usersLineEl = card.querySelector('[data-calc-users-line]')
         var aiLineEl = card.querySelector('[data-calc-ai-line]')
         var aiLineLabelEl = card.querySelector('[data-calc-ai-line-label]')
         var totalEl = card.querySelector('[data-calc-total]')
         var noteEl = card.querySelector('[data-calc-note]')
 
-        if (crmSubtotalEl) crmSubtotalEl.textContent = '$' + Math.round(crmSubtotal).toLocaleString() + '/mo'
+        if (baseLineEl) baseLineEl.textContent = '$' + Math.round(basePrice).toLocaleString() + '/mo'
+        if (usersLineEl) {
+          usersLineEl.textContent =
+            additionalUsers > 0 ? '$' + Math.round(additionalUsersCost).toLocaleString() + '/mo' : '$0/mo'
+        }
         if (aiLineLabelEl && aiLineLabel) aiLineLabelEl.textContent = aiLineLabel
 
-        // Grand total keeps CRM/seats and AI as clearly separate line items —
-        // never silently merged into one unexplained number.
-        var grandTotal = crmSubtotal
+        // Base platform fee + additional users + AI add-ons = estimated total.
+        var grandTotal = basePrice + additionalUsersCost
         if (aiPrice === null) {
           // "Custom" AI package — price unknown, always shown as its own line.
           if (aiLineEl) aiLineEl.textContent = 'Contact sales'
         } else {
-          grandTotal = crmSubtotal + aiPrice
+          grandTotal += aiPrice
           if (aiLineEl) aiLineEl.textContent = '$' + Math.round(aiPrice).toLocaleString() + '/mo'
         }
 
         if (totalEl) totalEl.textContent = '$' + Math.round(grandTotal).toLocaleString() + (aiPrice === null ? ' + AI' : '')
 
         if (noteEl) {
-          if (totalSeats === 0) {
-            noteEl.textContent = 'Add your team above to see a total'
-          } else if (rep + field + office < minSeats) {
-            noteEl.textContent = minSeats + ' seat minimum on this plan'
+          if (additionalUsers === 0) {
+            noteEl.textContent = '1 user included · no additional users'
           } else {
-            var note = totalSeats + ' seat' + (totalSeats === 1 ? '' : 's') + ' total'
-            if (field > 5) note += ' · field volume discount applied'
-            if (view > 0 && view <= viewIncluded) note += ' · view-only free'
-            noteEl.textContent = note
+            noteEl.textContent = totalUsers + ' users total · ' + additionalUsers + ' additional user' + (additionalUsers === 1 ? '' : 's') + ' at $' + Math.round(perUserPrice) + '/mo each'
           }
         }
       })
     }
 
-    Object.keys(inputs).forEach(function (key) {
-      var input = inputs[key]
-      if (!input) return
-      input.addEventListener('input', recalc)
-      input.addEventListener('change', recalc)
-    })
+    if (usersInput) {
+      usersInput.addEventListener('input', recalc)
+      usersInput.addEventListener('change', recalc)
+    }
 
     if (aiSelect) {
       aiSelect.addEventListener('change', recalc)
@@ -261,11 +222,9 @@
 
     calc.querySelectorAll('[data-calc-step]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var key = btn.dataset.calcStep
         var dir = parseInt(btn.dataset.dir, 10)
-        var input = inputs[key]
-        if (!input) return
-        input.value = clampCount(clampCount(input.value) + dir)
+        if (!usersInput) return
+        usersInput.value = clampCount(clampCount(usersInput.value) + dir)
         recalc()
       })
     })
