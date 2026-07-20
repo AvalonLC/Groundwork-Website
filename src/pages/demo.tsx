@@ -58,15 +58,19 @@ export function DemoPage() {
                 ))}
               </div>
             </div>
-            <div style="background: var(--gw-cream-100); border: 1px solid var(--gw-line); border-radius: var(--r-lg); padding: 36px; box-shadow: var(--shadow-md);">
-              <div style="font-family: var(--font-serif); font-size: 24px; font-weight: 500; margin-bottom: 8px;">Request your demo</div>
-              <div style="font-size: 13.5px; color: var(--gw-ink-500); margin-bottom: 24px;">
-                A specialist will follow up within one business day to schedule.
+            <div id="demo-request-card" style="background: var(--gw-cream-100); border: 1px solid var(--gw-line); border-radius: var(--r-lg); padding: 36px; box-shadow: var(--shadow-md);">
+              <div id="demo-request-intro">
+                <div style="font-family: var(--font-serif); font-size: 24px; font-weight: 500; margin-bottom: 8px;">Request your demo</div>
+                <div style="font-size: 13.5px; color: var(--gw-ink-500); margin-bottom: 24px;">
+                  Answer a few quick questions, then pick a time that works for you.
+                </div>
               </div>
               <form
                 data-live-submit
                 data-endpoint="/api/demo-request"
-                data-success-text="✓ Sent — we will reach out"
+                data-success-text="✓ Sent"
+                data-booking-intro="demo-request-intro"
+                data-booking-panel="demo-booking-panel"
                 style="display: flex; flex-direction: column; gap: 14px;"
               >
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -156,6 +160,22 @@ export function DemoPage() {
                   </a>
                 </div>
               </form>
+              <div id="demo-booking-panel" style="display: none;">
+                <div style="font-family: var(--font-serif); font-size: 24px; font-weight: 500; margin-bottom: 4px;">
+                  Thanks — now pick a time
+                </div>
+                <div style="font-size: 13.5px; color: var(--gw-ink-500); margin-bottom: 20px;">
+                  Choose whatever slot works for you below. You'll get a calendar invite with the video link right
+                  away — no back-and-forth.
+                </div>
+                <div class="demo-booking-frame">
+                  <iframe
+                    src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ2BHZHcbMMK9uUr9qGIfT91WUwxpqPyoJXl7UNarQLLXMdErluB9PVAq_oj_VPAhKus1DK7Keoo"
+                    title="Book your Groundwork demo"
+                    loading="lazy"
+                  ></iframe>
+                </div>
+              </div>
             </div>
           </div>
         </div>

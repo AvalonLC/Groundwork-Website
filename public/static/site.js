@@ -115,6 +115,26 @@
               form.querySelectorAll('input, select, textarea').forEach(function (el) {
                 el.disabled = true
               })
+
+              // Opt-in: forms carrying data-booking-panel (currently just the
+              // /demo request form) swap themselves out for an embedded
+              // booking-calendar iframe once the lead is captured, so the
+              // visitor can pick a real time slot without leaving the page.
+              // Every other data-live-submit form is unaffected.
+              var panelId = form.dataset.bookingPanel
+              if (panelId) {
+                var panel = document.getElementById(panelId)
+                if (panel) {
+                  form.style.display = 'none'
+                  var introId = form.dataset.bookingIntro
+                  if (introId) {
+                    var intro = document.getElementById(introId)
+                    if (intro) intro.style.display = 'none'
+                  }
+                  panel.style.display = 'block'
+                  panel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
+              }
             } else {
               throw new Error(result.data.error || 'Failed to send')
             }
