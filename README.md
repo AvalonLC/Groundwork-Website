@@ -65,7 +65,7 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/roles/sales-reps` | Sales reps role page |
 | `/roles/foremen` | Foremen role page |
 | `/roles/laborers` | Laborers role page |
-| `/pricing` | Pricing — plans (each incl. 1 user) + flat per-user rate, and Groundwork AI (allowance + paid packages + BYOK) |
+| `/pricing` | Pricing — plans (each with a per-plan included-user allotment) + flat per-user rate for users beyond that, and Groundwork AI (allowance + paid packages + BYOK) |
 | `/customers` | Customer testimonials + logos |
 | `/case-studies` | Deeper case studies |
 | `/resources` | Resources hub (Academy/Implementation/Blog/Help/API/FAQ cards) + blog preview |
@@ -94,8 +94,8 @@ Unknown `/trades/:slug` values return a real 404 (`c.notFound()`), not a redirec
 
 ## Pricing Model
 `/pricing` presents two independent pricing axes (revised 2026-07-19 — the former role-based-seat model has been fully replaced):
-- **Plans** — Core ($259/mo), Growth ($359/mo), Pro ($459/mo), Enterprise (custom, for 25+ users or multi-location access). The Solo/Starter plan has been removed. Each plan's base fee includes exactly **1 internal user**.
-- **Additional internal users** — a flat **$29/mo per additional user**, the same rate on every plan, regardless of role or permission level (owner, admin, rep, field, or office). No seat minimums, no volume-discount brackets, no free/unlimited Owner or Admin seats. Customer-portal and other external users are free and never count toward this number.
+- **Plans** — Core ($259/mo, includes 1 internal user), Growth ($359/mo, includes 5), Pro ($459/mo, includes 10), Enterprise (custom, for 25+ users or multi-location access). The Solo/Starter plan has been removed. Each plan's base fee includes a starting allotment of internal users that varies by plan.
+- **Additional internal users** — a flat **$25/mo per user beyond the plan's included allotment**, the same rate on every plan, regardless of role or permission level (owner, admin, rep, field, or office). No seat minimums, no volume-discount brackets, no free/unlimited Owner or Admin seats. Customer-portal and other external users are free and never count toward this number. Note: because the included allotment jumps a lot between plans while the base fee only steps up modestly, a higher tier can be cheaper than a lower one at some headcounts (e.g. Pro's $459 flat beats Growth's $484 at 10 users) — see the sales cheat sheet's cross-over table.
 - **Groundwork AI** — unchanged: a shared, company-wide monthly allowance included on every plan (Core 100 / Growth 250 / Pro 500 / Enterprise custom), with optional paid packages (Essentials $12/500, Plus $29/1,500, Max $59/5,000 actions), a "contact sales" custom tier above 5,000, and a BYOK (bring-your-own-OpenAI-key) escape valve that removes the allowance cap. AI is priced flat per company — never per seat — and is a separate line item from the plan + user pricing everywhere it's shown (price calculator, Jobber/Housecall Pro comparisons).
 
 The pricing calculator (`src/components/PricingCalculator.tsx` + `bindPricingCalculator()` in `public/static/site.js`) shows the total as: **Base platform fee + additional users + AI add-ons = estimated monthly total**. The sales cheat sheet at `docs/sales-pricing-cheatsheet.md` mirrors this same formula (`total = base_fee + max(0, users - included) * 29`) for quoting and competitive talk tracks. This is presentation only; no usage metering or billing enforcement lives in this repo (see "Not Yet Implemented").
@@ -139,5 +139,5 @@ curl http://localhost:3000/
 - **Status**: ✅ Live.
 - **Cloudflare project**: `groundwork-crm-marketing`
 - **Live URLs**: https://groundwork-crm.info (custom domain) · https://groundwork-crm-marketing.pages.dev (Pages default domain)
-- **Last deployed**: 2026-07-19 — pricing model overhaul: removed the Solo plan, moved to 3 plans (Core $259 / Growth $359 / Pro $459) each including 1 user, flat $29/mo per additional internal user regardless of role, removed role-based seat pricing/seat minimums/volume brackets/free-Owner-Admin seats, added "25+ users or multi-location" Enterprise callout. Updated pricing page, calculator, comparison tables, FAQ, and sales cheat sheet for consistency. AI allowances/add-ons unchanged. (Prior deploy 2026-07-18 — Trades mega-menu redesign.)
+- **Last deployed**: 2026-07-20 — per-user rate cut from $29/mo to $25/mo flat, and per-plan included-user allotments introduced: Growth now includes 5 users (was 1) and Pro now includes 10 (was 1); Core unchanged at 1. Updated pricing page, calculator, comparison tables, FAQ, and sales cheat sheet for consistency. AI allowances/add-ons unchanged. (Prior deploy 2026-07-19 — pricing model overhaul: removed the Solo plan, moved to 3 plans, removed role-based seat pricing. Earlier deploy 2026-07-18 — Trades mega-menu redesign.)
 - To redeploy: `npm run build && npx wrangler pages deploy dist --project-name groundwork-crm-marketing --branch main` (requires `setup_cloudflare_api_key` first).

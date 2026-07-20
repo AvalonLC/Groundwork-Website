@@ -1,10 +1,11 @@
 // Interactive "what would my team pay?" calculator for the pricing page.
 // Purely client-side math (site.js: bindPricingCalculator) — no backend call.
-// Model: every plan includes 1 internal user in its base fee; every
-// additional internal user is a flat $29/mo, regardless of role or
-// permission level. Customer-portal / external users are free and are
-// never counted here. The AI add-on axis is untouched and priced
-// per-company, layered on as its own line item.
+// Model: every plan includes a starting allotment of internal users in its
+// base fee (Core 1, Growth 5, Pro 10); every additional internal user beyond
+// that allotment is a flat $25/mo, regardless of role or permission level.
+// Customer-portal / external users are free and are never counted here. The
+// AI add-on axis is untouched and priced per-company, layered on as its own
+// line item.
 
 interface CalcPlan {
   key: string
@@ -24,9 +25,9 @@ interface AiPackage {
 }
 
 const CALC_PLANS: CalcPlan[] = [
-  { key: 'core', name: 'Core', basePrice: 259, includedUsers: 1, perUserPrice: 29 },
-  { key: 'growth', name: 'Growth', basePrice: 359, includedUsers: 1, perUserPrice: 29, badge: 'Most popular' },
-  { key: 'pro', name: 'Pro', basePrice: 459, includedUsers: 1, perUserPrice: 29 },
+  { key: 'core', name: 'Core', basePrice: 259, includedUsers: 1, perUserPrice: 25 },
+  { key: 'growth', name: 'Growth', basePrice: 359, includedUsers: 5, perUserPrice: 25, badge: 'Most popular' },
+  { key: 'pro', name: 'Pro', basePrice: 459, includedUsers: 10, perUserPrice: 25 },
 ]
 
 // Company-wide AI add-on, priced flat per company (never multiplied by user
@@ -48,7 +49,7 @@ export function PricingCalculator() {
       <div class="pricing-calc-head">
         <span class="eyebrow">Estimate your price</span>
         <h3>What would your team actually pay?</h3>
-        <p>Every plan includes 1 internal user. Enter your total team size and see a real monthly number per plan.</p>
+        <p>Core includes 1 user, Growth includes 5, Pro includes 10. Enter your total team size and see a real monthly number per plan.</p>
       </div>
 
       <div class="pricing-calc-inputs">
@@ -70,9 +71,9 @@ export function PricingCalculator() {
       </div>
 
       <div class="calc-volume-note">
-        The first user is included in every plan's base fee; each additional internal user is a flat $29/mo, no
-        matter the role or permission level — no seat minimums, no volume brackets to negotiate. Customer-portal
-        and other external logins are free and never count toward this number.
+        Core includes 1 user, Growth includes 5, and Pro includes 10 — all in the base fee. Every user beyond that
+        allotment is a flat $25/mo, no matter the role or permission level — no seat minimums, no volume brackets to
+        negotiate. Customer-portal and other external logins are free and never count toward this number.
       </div>
 
       <label class="calc-field calc-field-ai">

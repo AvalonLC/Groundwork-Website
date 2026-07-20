@@ -9,7 +9,8 @@ export function PricingPage() {
       name: 'Core',
       tagline: 'One crew, one office. Everything you need to stop running the business out of a spreadsheet.',
       basePrice: '$259',
-      perUserPrice: '$29',
+      includedUsers: 1,
+      perUserPrice: '$25',
       aiAllowance: '100 AI actions/mo',
       dark: false,
       badge: undefined as string | undefined,
@@ -29,7 +30,8 @@ export function PricingPage() {
       name: 'Growth',
       tagline: 'Multi-crew operations that need real reporting, not gut feel.',
       basePrice: '$359',
-      perUserPrice: '$29',
+      includedUsers: 5,
+      perUserPrice: '$25',
       aiAllowance: '250 AI actions/mo',
       dark: true,
       badge: 'Most popular',
@@ -48,7 +50,8 @@ export function PricingPage() {
       name: 'Pro',
       tagline: 'Established operators who need automation, audit trails, and a client-facing portal.',
       basePrice: '$459',
-      perUserPrice: '$29',
+      includedUsers: 10,
+      perUserPrice: '$25',
       aiAllowance: '500 AI actions/mo',
       dark: false,
       badge: undefined as string | undefined,
@@ -70,6 +73,7 @@ export function PricingPage() {
       name: 'Enterprise',
       tagline: 'Multi-location groups and franchises that need roll-up reporting and a real contract.',
       basePrice: 'Custom',
+      includedUsers: undefined as number | undefined,
       perUserPrice: undefined as string | undefined,
       aiAllowance: 'Custom AI allowance',
       dark: false,
@@ -142,10 +146,11 @@ export function PricingPage() {
           <h1 style="margin-top: 20px;">Simple pricing for what your company&nbsp;<em style="font-style: italic; color: var(--gw-forest-700);">can do.</em></h1>
           <p class="lede">
             Groundwork is priced on two simple axes. A <strong>plan</strong> sets which workspaces your whole
-            company can use — reporting, automation, the client portal — and includes your first internal user.
-            Every <strong>additional internal user</strong> is a flat $29/mo, no matter their role. And
-            <strong> Groundwork AI</strong> is a shared, company-wide allowance included on every plan — not billed
-            per user. Customer-portal and other external logins are always free and never count toward your bill.
+            company can use — reporting, automation, the client portal — and includes a starting allotment of
+            internal users (Core 1, Growth 5, Pro 10). Every <strong>additional internal user</strong> beyond that
+            is a flat $25/mo, no matter their role. And <strong> Groundwork AI</strong> is a shared, company-wide
+            allowance included on every plan — not billed per user. Customer-portal and other external logins are
+            always free and never count toward your bill.
           </p>
           <div class="pricing-trust-row">
             <span>
@@ -197,7 +202,9 @@ export function PricingPage() {
                 {p.perUserPrice ? (
                   <div class="pricing-seat-table">
                     <div class="pricing-seat-row primary">
-                      <span>1 internal user</span>
+                      <span>
+                        {p.includedUsers} internal user{p.includedUsers === 1 ? '' : 's'}
+                      </span>
                       <span>Included</span>
                     </div>
                     <div class="pricing-seat-row">
@@ -377,9 +384,10 @@ export function PricingPage() {
               <div class="pricing-explainer-col">
                 <div class="pricing-explainer-col-label">Users</div>
                 <p>
-                  Every plan includes your first <strong>internal user</strong>; every additional internal user is a
-                  flat $29/mo — same rate for an owner, a rep, or a field crew member. Customer-portal and other
-                  external logins are free and never count toward this number.
+                  Every plan includes a starting allotment of <strong>internal users</strong> — Core 1, Growth 5,
+                  Pro 10 — and every user beyond that is a flat $25/mo, the same rate for an owner, a rep, or a field
+                  crew member. Customer-portal and other external logins are free and never count toward this
+                  number.
                 </p>
               </div>
               <div class="pricing-explainer-col">
@@ -399,10 +407,11 @@ export function PricingPage() {
               <h3>Same team size, side by side with Jobber.</h3>
               <p>
                 Jobber's plans are priced by user count, capped at a ceiling (5 users, 10 users, 15 users), with
-                extra users at a flat $29/mo add-on — and no published price at all once you pass 15. Groundwork's
-                per-user add-on is the same flat $29/mo Jobber charges, so this comparison comes down to the base
-                platform itself: what each plan actually includes, and how far each company lets you scale before
-                you have to pick up the phone.
+                extra users at a flat $29/mo add-on — and no published price at all once you pass 15. Groundwork
+                bakes a starting allotment of users straight into each plan's base fee (Core 1, Growth 5, Pro 10) at
+                a lower flat $25/mo for anyone beyond that, so this comparison comes down to the base platform
+                itself: what each plan actually includes, and how far each company lets you scale before you have
+                to pick up the phone.
               </p>
             </div>
             <div class="compare-table compare-table-jobber">
@@ -414,17 +423,17 @@ export function PricingPage() {
               <div class="compare-row">
                 <span>5 users</span>
                 <span>Connect — $119–169/mo</span>
-                <span class="compare-gw">Core — $375/mo</span>
+                <span class="compare-gw">Core — $359/mo</span>
               </div>
               <div class="compare-row">
                 <span>10 users</span>
                 <span>Grow — $199–349/mo</span>
-                <span class="compare-gw">Growth — $620/mo</span>
+                <span class="compare-gw">Growth — $484/mo</span>
               </div>
               <div class="compare-row">
                 <span>15 users</span>
                 <span>Plus — $449–599/mo</span>
-                <span class="compare-gw">Pro — $865/mo</span>
+                <span class="compare-gw">Pro — $584/mo</span>
               </div>
               <div class="compare-row">
                 <span>25 users</span>
@@ -434,12 +443,13 @@ export function PricingPage() {
             </div>
             <p class="compare-footnote">
               Jobber's monthly-billed rate shown above; their annual-prepay rate runs lower. Groundwork's totals are
-              exactly what the calculator above computes for that headcount — a flat base fee plus $29/mo per
-              additional user, no negotiating, no hidden brackets. Past 15 users Jobber requires a sales call with no
-              published price at all; at 25+ users or for multi-location access, Groundwork moves to a custom
-              Enterprise quote too. The difference isn't who charges less per login — it's that Groundwork's number
-              is instant and self-serve at any headcount up to that point, and what you get for the base fee
-              (reporting, automation, a client portal, built-in AI) is the actual value being compared.
+              exactly what the calculator above computes for that headcount — a starting allotment of users baked
+              into each plan's base fee, plus $25/mo per user beyond that, no negotiating, no hidden brackets. Past
+              15 users Jobber requires a sales call with no published price at all; at 25+ users or for
+              multi-location access, Groundwork moves to a custom Enterprise quote too. The difference isn't who
+              charges less per login — it's that Groundwork's number is instant and self-serve at any headcount up
+              to that point, and what you get for the base fee (reporting, automation, a client portal, built-in AI)
+              is the actual value being compared.
             </p>
             <p class="compare-footnote compare-footnote-ai">
               <strong>Note on AI:</strong> the totals above reflect CRM plans and users only — Groundwork AI is
@@ -474,12 +484,12 @@ export function PricingPage() {
               <div class="compare-row">
                 <span>5 users</span>
                 <span>Essentials — ~$149/mo</span>
-                <span class="compare-gw">Core — $375/mo</span>
+                <span class="compare-gw">Core — $359/mo</span>
               </div>
               <div class="compare-row">
                 <span>8 users</span>
                 <span>MAX — ~$299–329/mo</span>
-                <span class="compare-gw">Growth — $562/mo</span>
+                <span class="compare-gw">Growth — $434/mo</span>
               </div>
             </div>
             <p class="compare-footnote">
@@ -528,14 +538,16 @@ export function PricingPage() {
             <div class="pricing-faq-head">Pricing questions</div>
             <div class="faq">
               <FAQItem question="How does per-user pricing work?">
-                Every plan includes your first internal user in the base fee. Every additional internal user is a
-                flat $29/mo — the same rate no matter their role or permission level. There's no separate rate for
-                an owner, an admin, a rep, a field crew member, or office staff; it's one number to remember.
+                Every plan includes a starting allotment of internal users in the base fee — Core includes 1,
+                Growth includes 5, and Pro includes 10. Every user beyond that allotment is a flat $25/mo — the same
+                rate no matter their role or permission level. There's no separate rate for an owner, an admin, a
+                rep, a field crew member, or office staff; it's one number to remember.
               </FAQItem>
               <FAQItem question="Do customer-portal or other external users cost anything?">
                 No. Customer-portal access and other external logins (a client checking their job status, for
-                example) are free and unlimited — they never count toward your paid internal-user total. The $29/mo
-                additional-user rate only applies to people on your team who log in to run the business.
+                example) are free and unlimited — they never count toward your paid internal-user total. The
+                $25/mo additional-user rate only applies to people on your team who log in to run the business,
+                once you're past your plan's included allotment.
               </FAQItem>
               <FAQItem question="What happens if my team size changes mid-month?">
                 Add or remove users anytime — you're billed for what you actually have active, prorated to the day.
@@ -545,16 +557,18 @@ export function PricingPage() {
                 No lock-in contract and no cancellation fee. Plans are billed monthly and you can cancel anytime.
                 Annual billing is available at a discount if you'd prefer to lock in a rate.
               </FAQItem>
-              <FAQItem question="If every plan charges the same $29/mo per additional user, why does Core cost less than Pro?">
-                The per-user rate is identical across Core, Growth, and Pro — what changes is what the base fee
-                unlocks. Growth adds real reporting, recurring services, and a bigger AI allowance; Pro adds
-                automation, audit trails, the client portal, SSO, and API access. You're paying more for what your
-                whole company can do, not for a more expensive login.
+              <FAQItem question="If every plan charges the same $25/mo per additional user, why does Core cost less than Pro?">
+                The per-user rate above your plan's included allotment is identical across Core, Growth, and Pro —
+                what changes is how many users are included before that rate kicks in (1 on Core, 5 on Growth, 10
+                on Pro) and what the base fee unlocks. Growth adds real reporting, recurring services, and a bigger
+                AI allowance; Pro adds automation, audit trails, the client portal, SSO, and API access. You're
+                paying more for what your whole company can do and how many people it covers out of the gate, not
+                for a more expensive login.
               </FAQItem>
               <FAQItem question="I'm a solo operator with no employees yet — what do I sign up for?">
                 Core. It includes your first user — you — in the $259/mo base fee, with no minimums to hit. You pay
                 the base fee and nothing else until you add a second internal user. The moment you hire your first
-                crew member or estimator, they're just $29/mo more on the same account.
+                crew member or estimator, they're just $25/mo more on the same account.
               </FAQItem>
               <FAQItem question="Is Groundwork AI included?" id="faq-ai-included">
                 Yes — every plan includes a monthly AI allowance at no extra charge: 100 actions/mo on Core, 250 on

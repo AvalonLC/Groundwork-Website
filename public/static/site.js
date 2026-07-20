@@ -139,9 +139,10 @@
   // visitor enters, applied against each plan's flat base fee + flat
   // per-additional-user rate (read from data-* attributes on the results
   // markup — see PricingCalculator.tsx). No backend call. Every plan
-  // includes 1 user in its base fee; every additional internal user is the
-  // same flat rate regardless of role. Customer-portal / external users are
-  // never part of this count.
+  // includes a starting allotment of users in its base fee (varies per
+  // plan — see data-included-users on each result card); every user beyond
+  // that allotment is the same flat rate regardless of role. Customer-portal
+  // / external users are never part of this count.
   function bindPricingCalculator() {
     var calc = document.querySelector('[data-pricing-calc]')
     if (!calc) return
@@ -203,9 +204,9 @@
 
         if (noteEl) {
           if (additionalUsers === 0) {
-            noteEl.textContent = '1 user included · no additional users'
+            noteEl.textContent = includedUsers + ' user' + (includedUsers === 1 ? '' : 's') + ' included · no additional users'
           } else {
-            noteEl.textContent = totalUsers + ' users total · ' + additionalUsers + ' additional user' + (additionalUsers === 1 ? '' : 's') + ' at $' + Math.round(perUserPrice) + '/mo each'
+            noteEl.textContent = totalUsers + ' users total · ' + includedUsers + ' included + ' + additionalUsers + ' additional user' + (additionalUsers === 1 ? '' : 's') + ' at $' + Math.round(perUserPrice) + '/mo each'
           }
         }
       })
