@@ -110,24 +110,38 @@ export function FinancialPage() {
         <div class="wrap split">
           <MockFrame minHeight={340}>
             <PMMain>
-              <PMTitleRow title="Budget & Rates" sub="LABOR RATE · CREW A INSTALL" />
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+              <PMTitleRow title="Budget & Rates" sub="LABOR · MACHINE · OVERHEAD" />
+              <div class="pm-card" style="margin-bottom: 10px;">
+                <div class="pm-card-h">Labor Rates <span class="chip">Crew A Install</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  {[
+                    { label: 'Base wage', value: '$24.00/hr' },
+                    { label: 'Burden (tax, comp, benefits)', value: '+$9.80/hr' },
+                    { label: 'Equipment allocation', value: '+$4.10/hr' },
+                    { label: 'Fully burdened rate', value: '$37.90/hr', strong: true },
+                  ].map((r) => (
+                    <div style={`background: ${r.strong ? 'var(--gw-forest-800)' : 'var(--gw-cream-200)'}; color: ${r.strong ? 'white' : 'inherit'}; border-radius: 6px; padding: 8px 10px;`}>
+                      <div style={`font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; ${r.strong ? 'color: #B7CFC1;' : 'color: var(--gw-ink-500);'}`}>{r.label}</div>
+                      <div style="font-size: 13px; font-weight: 600;">{r.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div class="pm-card" style="margin-bottom: 10px;">
+                <div class="pm-card-h">Machine Rates <span class="chip">Fleet</span></div>
                 {[
-                  { label: 'Base wage', value: '$24.00/hr' },
-                  { label: 'Burden (tax, comp, benefits)', value: '+$9.80/hr' },
-                  { label: 'Equipment allocation', value: '+$4.10/hr' },
-                  { label: 'Fully burdened rate', value: '$37.90/hr', strong: true },
-                ].map((r) => (
-                  <div style={`background: ${r.strong ? 'var(--gw-forest-800)' : 'var(--gw-cream-200)'}; color: ${r.strong ? 'white' : 'inherit'}; border-radius: 8px; padding: 10px 12px;`}>
-                    <div style={`font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; ${r.strong ? 'color: #B7CFC1;' : 'color: var(--gw-ink-500);'}`}>{r.label}</div>
-                    <div style="font-size: 14px; font-weight: 600;">{r.value}</div>
+                  { name: 'Skid steer', rate: '$46.00/hr burdened' },
+                  { name: '¾-ton dump truck', rate: '$31.50/hr burdened' },
+                ].map((m, i) => (
+                  <div style={`display: flex; justify-content: space-between; padding: 6px 0; font-size: 11.5px;${i < 1 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <span>{m.name}</span><span style="color: var(--gw-ink-500);">{m.rate}</span>
                   </div>
                 ))}
               </div>
               <div class="pm-card">
-                <div class="pm-card-h">Rate history <span class="chip">Immutable</span></div>
-                <div style="font-size: 11.5px; color: var(--gw-ink-500); padding: 6px 0; border-bottom: 1px solid var(--gw-cream-300);">$37.90/hr · effective Jul 1, 2026</div>
-                <div style="font-size: 11.5px; color: var(--gw-ink-500); padding: 6px 0;">$35.20/hr · effective Jan 1, 2026 (superseded)</div>
+                <div class="pm-card-h">Overhead Pools <span class="chip">Immutable history</span></div>
+                <div style="font-size: 11.5px; color: var(--gw-ink-500); padding: 6px 0; border-bottom: 1px solid var(--gw-cream-300);">Shop & yard · $612k/yr pool · effective Jul 1, 2026</div>
+                <div style="font-size: 11.5px; color: var(--gw-ink-500); padding: 6px 0;">Insurance & admin · $198k/yr pool · effective Jan 1, 2026</div>
               </div>
             </PMMain>
           </MockFrame>

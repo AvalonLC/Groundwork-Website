@@ -1,5 +1,6 @@
 import { Layout } from '../components/Layout'
 import { CTABand, SectionHead } from '../components/Blocks'
+import { PM, PMMain, PMTitleRow, PMStats, PMCard } from '../components/ProductMock'
 
 export function ResourcesPage() {
   const cards = [
@@ -93,6 +94,46 @@ export function ResourcesPage() {
               </a>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section class="section" id="academy" style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);">
+        <div class="wrap split" style="align-items: center;">
+          <div class="split-content">
+            <span class="eyebrow">Groundwork Academy</span>
+            <h2 style="margin-top: 20px;">Structured training, built into the platform.</h2>
+            <p class="lede">
+              Groundwork Academy isn't a PDF nobody reads. It's a set of role-specific training tracks — Sales
+              Academy, Estimating 101, Financial Literacy, and the CRM Guide — with progress tracking, phase
+              checklists, and a live view of who has finished what.
+            </p>
+          </div>
+          <PM minHeight={460} shadow="var(--shadow-lg)">
+            <PMMain>
+              <PMTitleRow title="Sales Academy" sub="TRAINING · TEAM PROGRESS" />
+              <PMStats
+                stats={[
+                  { label: 'Enrolled', value: '6' },
+                  { label: 'Completed', value: '4', variant: 'sold' },
+                  { label: 'In Progress', value: '2' },
+                  { label: 'Avg. Score', value: '91%' },
+                ]}
+              />
+              <PMCard heading="Training Phases" chip="4 phases">
+                {[
+                  { phase: 'Phase 1 · Discovery Fundamentals', status: 'Complete', variant: 'rapport' },
+                  { phase: 'Phase 2 · Budget Conversations', status: 'Complete', variant: 'rapport' },
+                  { phase: 'Phase 3 · Objection Handling', status: 'In Progress', variant: 'follow' },
+                  { phase: 'Phase 4 · Closing the Deal', status: 'Not Started', variant: 'website' },
+                ].map((p, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 3 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <span style="font-size: 12.5px; font-weight: 600;">{p.phase}</span>
+                    <span class={`tag tag-${p.variant}`}>{p.status}</span>
+                  </div>
+                ))}
+              </PMCard>
+            </PMMain>
+          </PM>
         </div>
       </section>
 

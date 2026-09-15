@@ -27,39 +27,16 @@ export function PMSidebar() {
       <div class="brand">
         <span class="brand-mark"></span> Groundwork
       </div>
-      <div class="brand-sub">Sales CRM</div>
+      <div class="brand-sub">Cedar Grove Landscape Co.</div>
 
-      <div class="sb-group">
-        <div class="sb-label">Dashboard</div>
-        <div class="sb-item active">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="16" rx="2" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>{' '}
-          My Day
-        </div>
-        <div class="sb-item">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M3 12a9 9 0 1 0 9-9" />
-          </svg>{' '}
-          Business Pulse
-        </div>
-        <div class="sb-item">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <line x1="4" y1="20" x2="4" y2="10" />
-            <line x1="10" y1="20" x2="10" y2="4" />
-            <line x1="16" y1="20" x2="16" y2="14" />
-          </svg>{' '}
-          Financial Snapshot
-        </div>
-        <div class="sb-item">
-          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 3v9l6 3" />
-          </svg>{' '}
-          Ops Snapshot
-        </div>
+      <div class="sb-item active" style="margin-top: 10px;">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>{' '}
+        Command Center
       </div>
+
       <div class="sb-group">
         <div class="sb-label">Sales</div>
         <div class="sb-item">
@@ -88,22 +65,36 @@ export function PMSidebar() {
           </svg>{' '}
           Properties
         </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <line x1="4" y1="9" x2="20" y2="9" />
+          </svg>{' '}
+          Estimates
+        </div>
       </div>
       <div class="sb-group">
         <div class="sb-label">Financial</div>
         <div class="sb-item">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="5" width="18" height="14" rx="2" />
-            <line x1="3" y1="10" x2="21" y2="10" />
+            <path d="M4 4v16h16" />
+            <path d="M8 16l4-6 3 3 5-7" />
           </svg>{' '}
-          Invoices
+          Money Loop
         </div>
         <div class="sb-item">
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="12" cy="12" r="9" />
             <path d="M12 7v10M9 10c0-1.5 1.5-2 3-2s3 1 3 2-1 2-3 2-3 1-3 2 1.5 2 3 2 3-.5 3-2" />
           </svg>{' '}
-          Payments
+          Budget &amp; Rates
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>{' '}
+          Invoice Reporting
         </div>
       </div>
       <div class="sb-group">
@@ -129,6 +120,23 @@ export function PMSidebar() {
             <rect x="7" y="4" width="10" height="6" rx="1" />
           </svg>{' '}
           Work Orders
+        </div>
+      </div>
+      <div class="sb-group">
+        <div class="sb-label">Admin</div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="9" cy="8" r="4" />
+            <circle cx="17" cy="10" r="3" />
+          </svg>{' '}
+          Client Portal
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="8" y="4" width="8" height="3" rx="1" />
+            <path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+          </svg>{' '}
+          AAR Reviews
         </div>
       </div>
     </aside>
@@ -181,6 +189,23 @@ export function PMTitleRow({ title, sub, actions }: { title: string; sub?: strin
 export function PMStats({ stats }: { stats: { label: string; value: string; variant?: 'overdue' | 'sold' }[] }) {
   return (
     <div class="pm-stats">
+      {stats.map((s) => (
+        <div class={`pm-stat${s.variant ? ' ' + s.variant : ''}`}>
+          <div class="lbl">{s.label}</div>
+          <div class="val">{s.value}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Like PMStats, but supports an arbitrary number of columns — used for
+// screens whose real stat row doesn't fit the 4-up grid (e.g. Money Loop's
+// 5-card "what needs doing" row, Dispatch Board's 4-card row reused at a
+// different width).
+export function PMStatRow({ stats, columns }: { stats: { label: string; value: string; variant?: 'overdue' | 'sold' }[]; columns?: number }) {
+  return (
+    <div style={`display: grid; grid-template-columns: repeat(${columns ?? stats.length}, 1fr); gap: 10px; margin-bottom: 18px;`}>
       {stats.map((s) => (
         <div class={`pm-stat${s.variant ? ' ' + s.variant : ''}`}>
           <div class="lbl">{s.label}</div>

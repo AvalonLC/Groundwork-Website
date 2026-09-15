@@ -1,33 +1,9 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { SplitContent, MockFrame } from '../../components/SplitFeature'
-import { PMMain, PMTitleRow, PMCard, PMTask } from '../../components/ProductMock'
+import { PMMain, PMTitleRow, PMStats, PMCard, PMTask } from '../../components/ProductMock'
 
 export function OperationsPage() {
-  const days = ['MON 7', 'TUE 8', 'WED 9', 'THU 10', 'FRI 11']
-  const crews = [
-    { name: 'Crew A', jobs: [
-      { label: 'Knesley · Pool', bg: 'var(--gw-forest-800)' },
-      { label: 'Knesley cont.', bg: 'var(--gw-forest-800)' },
-      { label: 'McDermott', bg: 'var(--gw-green-500)' },
-      { label: 'McDermott cont.', bg: 'var(--gw-green-500)' },
-      { label: 'Karamsetty', bg: 'var(--gw-clay-500)' },
-    ] },
-    { name: 'Crew B', jobs: [
-      { label: 'Maint · 6', dashed: true },
-      { label: 'Maint · 5', dashed: true },
-      { label: 'Aleman', bg: 'var(--gw-forest-800)' },
-      { label: 'Aleman cont.', bg: 'var(--gw-forest-800)' },
-      { label: 'Aleman finish', bg: 'var(--gw-forest-800)' },
-    ] },
-    { name: 'Crew C', jobs: [
-      { label: 'Patel · Hardscape', bg: 'var(--gw-blue-500)' },
-      { label: 'Patel cont.', bg: 'var(--gw-blue-500)' },
-      { label: 'Patel cont.', bg: 'var(--gw-blue-500)' },
-      { label: 'Open', dashed: true },
-      { label: 'Open', dashed: true },
-    ] },
-  ]
 
   return (
     <Layout
@@ -60,28 +36,42 @@ export function OperationsPage() {
           </SplitContent>
           <MockFrame>
             <PMMain>
-              <PMTitleRow title="Dispatch" sub="WEEK OF JULY 7" />
-              <div style="display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 4px; font-size: 10px;">
-                <div></div>
-                {days.map((d) => (
-                  <div style="text-align:center; color: var(--gw-ink-500); font-weight: 600; padding: 6px 0;">{d}</div>
-                ))}
-                {crews.map((crew) => (
-                  <>
-                    <div style="color: var(--gw-ink-500); padding: 4px;">{crew.name}</div>
-                    {crew.jobs.map((j) =>
-                      j.dashed ? (
-                        <div style="background: var(--gw-cream-200); border: 1px dashed var(--gw-line); border-radius: 4px; padding: 6px 8px; font-size: 10.5px; color: var(--gw-ink-500);">
-                          {j.label}
-                        </div>
-                      ) : (
-                        <div style={`background: ${j.bg}; color: white; border-radius: 4px; padding: 6px 8px; font-size: 10.5px;`}>
-                          {j.label}
-                        </div>
-                      )
-                    )}
-                  </>
-                ))}
+              <PMTitleRow title="Dispatch Board" sub="WEEK OF JULY 7" />
+              <PMStats
+                stats={[
+                  { label: 'Scheduled', value: '18' },
+                  { label: 'In Progress', value: '3', variant: 'sold' },
+                  { label: 'Completed', value: '11' },
+                  { label: 'Active Crews', value: '3' },
+                ]}
+              />
+              <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px;">
+                <div class="pm-card">
+                  <div class="pm-card-h">Crews <span class="chip">Today's dispatched jobs</span></div>
+                  {[
+                    { crew: 'Crew A', label: 'Knesley · Pool Coping', status: '● On site 07:12', color: 'var(--gw-green-500)' },
+                    { crew: 'Crew B', label: 'Recurring maint. · 6 stops', status: '● En route', color: 'var(--gw-amber-500)' },
+                    { crew: 'Crew C', label: 'Patel · Hardscape', status: '● On site 07:45', color: 'var(--gw-green-500)' },
+                  ].map((row, i) => (
+                    <div style={`display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                      <span><strong>{row.crew}</strong><br /><span style="color: var(--gw-ink-500); font-size: 11px;">{row.label}</span></span>
+                      <span style={`color: ${row.color}; font-weight: 600; font-size: 11px; white-space: nowrap;`}>{row.status}</span>
+                    </div>
+                  ))}
+                </div>
+                <div class="pm-card">
+                  <div class="pm-card-h">Activity Feed</div>
+                  {[
+                    { text: 'Crew A checked in · Knesley', time: '07:12' },
+                    { text: 'Crew C checked in · Patel', time: '07:45' },
+                    { text: 'Crew B en route · Maint. stop 2 of 6', time: '08:10' },
+                  ].map((row, i) => (
+                    <div style={`padding: 8px 0; font-size: 11.5px; color: var(--gw-ink-700);${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                      {row.text}
+                      <div style="font-size: 10px; color: var(--gw-ink-400); margin-top: 2px;">{row.time}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </PMMain>
           </MockFrame>
@@ -149,20 +139,22 @@ export function OperationsPage() {
           </SplitContent>
           <MockFrame minHeight={340}>
             <PMMain>
-              <PMTitleRow title="After Action Report" sub="CREW A · KNESLEY · JUL 8" />
-              <div style="display: flex; flex-direction: column; gap: 10px;">
+              <PMTitleRow title="AAR Template Builder" sub="END-OF-DAY QUESTION SET" />
+              <div style="display: flex; flex-direction: column; gap: 8px;">
                 {[
-                  { q: 'Was the job completed as scoped?', a: 'Yes', type: 'Yes/No' },
-                  { q: 'Rate the crew\'s pace today', a: '4 / 5', type: 'Rating' },
-                  { q: 'Any materials shortages?', a: 'No', type: 'Yes/No' },
-                  { q: 'Notes for the office', a: 'Client asked about adding lighting — flagged for sales.', type: 'Text' },
+                  { n: 1, q: 'Was the job completed as scoped?', type: 'Yes / No', required: true },
+                  { n: 2, q: "Rate the crew's pace today", type: 'Rating', required: true },
+                  { n: 3, q: 'Any materials shortages?', type: 'Yes / No', required: false },
+                  { n: 4, q: 'Notes for the office', type: 'Text', required: false },
                 ].map((r) => (
-                  <div style="background: var(--gw-cream-200); border-radius: 8px; padding: 10px 12px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                      <span style="font-size: 11.5px; font-weight: 600; color: var(--gw-ink-900);">{r.q}</span>
-                      <span style="font-size: 9.5px; color: var(--gw-ink-400); text-transform: uppercase; letter-spacing: 0.06em;">{r.type}</span>
-                    </div>
-                    <div style="font-size: 12px; color: var(--gw-ink-700);">{r.a}</div>
+                  <div style="background: var(--gw-cream-200); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 10px;">
+                    <span style="color: var(--gw-ink-400); font-size: 11px; width: 14px;">{r.n}</span>
+                    <span style="flex: 1; font-size: 12px; font-weight: 600; color: var(--gw-ink-900);">{r.q}</span>
+                    <span style="background: white; border: 1px solid var(--gw-line); border-radius: 5px; padding: 3px 8px; font-size: 10.5px; color: var(--gw-ink-500);">{r.type} ▾</span>
+                    <span style="display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--gw-ink-500); white-space: nowrap;">
+                      <span style={`width: 11px; height: 11px; display: inline-block; border-radius: 3px; border: 1.5px solid ${r.required ? 'var(--gw-green-600)' : 'var(--gw-ink-300)'}; background: ${r.required ? 'var(--gw-green-600)' : 'transparent'};`}></span> Required
+                    </span>
+                    <span style="color: var(--gw-ink-400); font-size: 12px;">⋮⋮</span>
                   </div>
                 ))}
               </div>

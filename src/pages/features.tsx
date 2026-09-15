@@ -1,6 +1,6 @@
 import { Layout } from '../components/Layout'
 import { CTABand, SplitList } from '../components/Blocks'
-import { PMMain, PMTitleRow, PMStats, PMCard } from '../components/ProductMock'
+import { PMMain, PMTitleRow, PMStats, PMStatRow, PMCard } from '../components/ProductMock'
 import { AccessMatrix } from '../components/Matrix'
 import { Icon } from '../components/Icon'
 
@@ -111,29 +111,38 @@ export function FeaturesPage() {
           <div class="pm" style="grid-template-columns: 1fr; box-shadow: var(--shadow-lg); min-height: 460px;">
             <PMMain>
               <PMTitleRow title="Money Loop" sub="OWNER VIEW · FY2026" />
-              <PMStats
+              <div style="background: var(--gw-cream-200); border-radius: 10px; padding: 16px 18px; margin-bottom: 16px;">
+                <div style="font-size: 11px; letter-spacing: 0.08em; color: var(--gw-ink-500); text-transform: uppercase; font-weight: 600; margin-bottom: 6px;">How we're tracking</div>
+                <div style="font-size: 12.5px; color: var(--gw-ink-700); margin-bottom: 10px;">
+                  <strong style="font-family: var(--font-serif); font-size: 20px; color: var(--gw-ink-900);">83%</strong> of what it costs to keep the doors open this year
+                </div>
+                <div style="height: 9px; background: var(--gw-cream-300); border-radius: 5px; overflow: hidden;">
+                  <div style="width: 83%; height: 100%; background: linear-gradient(90deg, var(--gw-forest-600), var(--gw-green-500));"></div>
+                </div>
+              </div>
+              <PMStatRow
+                columns={5}
                 stats={[
-                  { label: 'Overhead covered', value: '83%', variant: 'sold' },
-                  { label: 'Outstanding', value: '$48.2k' },
-                  { label: 'Invoiced MTD', value: '$142k' },
-                  { label: 'Past Due 30+', value: '$8.1k', variant: 'overdue' },
+                  { label: 'Money to Collect', value: '$48.2k' },
+                  { label: 'Needs an Invoice', value: '5' },
+                  { label: 'Needs to be Paid', value: '9', variant: 'overdue' },
+                  { label: "Something's Off", value: '2', variant: 'overdue' },
+                  { label: 'Needs Your Call', value: '3' },
                 ]}
               />
-              <PMCard heading="Recent Invoices" chip="14 items">
-                <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 0.7fr; gap: 8px; font-size: 10px; letter-spacing: 0.08em; color: var(--gw-ink-500); text-transform: uppercase; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid var(--gw-cream-300); margin-bottom: 6px;">
-                  <span>Client</span><span>Job</span><span>Amount</span><span>Status</span>
-                </div>
+              <PMCard heading="What Needs Doing" chip="19 items">
                 {[
-                  { client: 'R. Aleman', job: 'Full landscape', amount: '$84,000', tag: 'Paid', variant: 'rapport' },
-                  { client: 'D. Patel', job: 'Hardscape', amount: '$52,000', tag: 'Deposit', variant: 'qual' },
-                  { client: 'L. Ozawa', job: 'Maint. Contract', amount: '$1,200', tag: 'Past due', variant: 'red' },
-                  { client: 'J. Grumley', job: 'Tree Removal', amount: '$8,200', tag: 'Sent', variant: 'website' },
+                  { client: 'R. Aleman', job: 'Full landscape · job complete, not yet invoiced', tag: 'Needs an Invoice', variant: 'qual' },
+                  { client: 'D. Patel', job: 'Hardscape · invoiced Jul 3, unpaid 12 days', tag: 'Needs to be Paid', variant: 'red' },
+                  { client: 'L. Ozawa', job: 'Maint. Contract · amount doesn\'t match estimate', tag: "Something's Off", variant: 'red' },
+                  { client: 'J. Grumley', job: 'Tree Removal · 3 calls, no answer', tag: 'Needs Your Call', variant: 'follow' },
                 ].map((row, i) => (
-                  <div style={`display: grid; grid-template-columns: 1.5fr 1fr 1fr 0.7fr; gap: 8px; font-size: 12px; padding: 8px 0;${i < 3 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
-                    <span style="font-weight:600;">{row.client}</span>
-                    <span style="color: var(--gw-ink-500);">{row.job}</span>
-                    <span>{row.amount}</span>
-                    <span><span class={`tag tag-${row.variant}`}>{row.tag}</span></span>
+                  <div style={`display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0;${i < 3 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{row.client}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{row.job}</div>
+                    </div>
+                    <span class={`tag tag-${row.variant}`}>{row.tag}</span>
                   </div>
                 ))}
               </PMCard>
@@ -187,59 +196,42 @@ export function FeaturesPage() {
           </div>
           <div class="pm" style="grid-template-columns: 1fr; box-shadow: var(--shadow-lg); min-height: 500px;">
             <PMMain>
-              <PMTitleRow title="Dispatch" sub="WEEK OF JULY 7" />
-              <div style="display: grid; grid-template-columns: 60px repeat(5, 1fr); gap: 4px; font-size: 10px;">
-                <div></div>
-                {['MON 7', 'TUE 8', 'WED 9', 'THU 10', 'FRI 11'].map((d) => (
-                  <div style="text-align:center; color: var(--gw-ink-500); font-weight: 600; padding: 6px 0;">{d}</div>
-                ))}
-                {[
-                  { name: 'Crew A', jobs: [
-                    { label: 'Knesley · Pool', bg: 'var(--gw-forest-800)' },
-                    { label: 'Knesley cont.', bg: 'var(--gw-forest-800)' },
-                    { label: 'McDermott · Garden', bg: 'var(--gw-green-500)' },
-                    { label: 'McDermott cont.', bg: 'var(--gw-green-500)' },
-                    { label: 'Karamsetty · Tree', bg: 'var(--gw-clay-500)' },
-                  ] },
-                  { name: 'Crew B', jobs: [
-                    { label: 'Maint · 6 accounts', dashed: true },
-                    { label: 'Maint · 5 accounts', dashed: true },
-                    { label: 'Aleman · Landscape', bg: 'var(--gw-forest-800)' },
-                    { label: 'Aleman cont.', bg: 'var(--gw-forest-800)' },
-                    { label: 'Aleman finish', bg: 'var(--gw-forest-800)' },
-                  ] },
-                  { name: 'Crew C', jobs: [
-                    { label: 'Patel · Hardscape', bg: 'var(--gw-blue-500)' },
-                    { label: 'Patel cont.', bg: 'var(--gw-blue-500)' },
-                    { label: 'Patel cont.', bg: 'var(--gw-blue-500)' },
-                    { label: 'Open', dashed: true },
-                    { label: 'Open', dashed: true },
-                  ] },
-                ].map((crew) => (
-                  <>
-                    <div style="color: var(--gw-ink-500); padding: 4px;">{crew.name}</div>
-                    {crew.jobs.map((j) =>
-                      j.dashed ? (
-                        <div style="background: var(--gw-cream-200); border: 1px dashed var(--gw-line); border-radius: 4px; padding: 6px 8px; font-size: 10.5px; color: var(--gw-ink-500);">{j.label}</div>
-                      ) : (
-                        <div style={`background: ${j.bg}; color: white; border-radius: 4px; padding: 6px 8px; font-size: 10.5px;`}>{j.label}</div>
-                      )
-                    )}
-                  </>
-                ))}
-              </div>
-              <div class="pm-card" style="margin-top: 16px;">
-                <div class="pm-card-h">In Progress Now <span class="chip">3 crews</span></div>
-                {[
-                  { crew: 'Crew A', label: 'Knesley · Pool Coping', status: '● On site 07:12', color: 'var(--gw-green-500)' },
-                  { crew: 'Crew B', label: 'Recurring maint. · 6 stops', status: '● En route', color: 'var(--gw-amber-500)' },
-                  { crew: 'Crew C', label: 'Patel · Hardscape', status: '● On site 07:45', color: 'var(--gw-green-500)' },
-                ].map((row, i) => (
-                  <div style={`display: flex; justify-content: space-between; padding: 6px 0; font-size: 12.5px;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
-                    <span><strong>{row.crew}</strong> · {row.label}</span>
-                    <span style={`color: ${row.color}; font-weight: 600;`}>{row.status}</span>
-                  </div>
-                ))}
+              <PMTitleRow title="Dispatch Board" sub="WEEK OF JULY 7" />
+              <PMStats
+                stats={[
+                  { label: 'Scheduled', value: '18' },
+                  { label: 'In Progress', value: '3', variant: 'sold' },
+                  { label: 'Completed', value: '11' },
+                  { label: 'Active Crews', value: '3' },
+                ]}
+              />
+              <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px;">
+                <div class="pm-card">
+                  <div class="pm-card-h">Crews <span class="chip">Today's dispatched jobs</span></div>
+                  {[
+                    { crew: 'Crew A', label: 'Knesley · Pool Coping', status: '● On site 07:12', color: 'var(--gw-green-500)' },
+                    { crew: 'Crew B', label: 'Recurring maint. · 6 stops', status: '● En route', color: 'var(--gw-amber-500)' },
+                    { crew: 'Crew C', label: 'Patel · Hardscape', status: '● On site 07:45', color: 'var(--gw-green-500)' },
+                  ].map((row, i) => (
+                    <div style={`display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                      <span><strong>{row.crew}</strong><br /><span style="color: var(--gw-ink-500); font-size: 11px;">{row.label}</span></span>
+                      <span style={`color: ${row.color}; font-weight: 600; font-size: 11px; white-space: nowrap;`}>{row.status}</span>
+                    </div>
+                  ))}
+                </div>
+                <div class="pm-card">
+                  <div class="pm-card-h">Activity Feed</div>
+                  {[
+                    { text: 'Crew A checked in · Knesley', time: '07:12' },
+                    { text: 'Crew C checked in · Patel', time: '07:45' },
+                    { text: 'Crew B en route · Maint. stop 2 of 6', time: '08:10' },
+                  ].map((row, i) => (
+                    <div style={`padding: 8px 0; font-size: 11.5px; color: var(--gw-ink-700);${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                      {row.text}
+                      <div style="font-size: 10px; color: var(--gw-ink-400); margin-top: 2px;">{row.time}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </PMMain>
           </div>
@@ -272,10 +264,10 @@ export function FeaturesPage() {
                 <AccessMatrix
                   columns={['Office', 'Sales', 'Estimator', 'View']}
                   rows={[
-                    { label: 'Today', access: [true, true, true, true] },
-                    { label: 'My Dashboard', access: [true, true, false, false] },
+                    { label: 'Command Center', access: [true, true, true, true] },
                     { label: 'Pipeline', access: [true, true, false, false] },
-                    { label: 'Financial Overview', access: [true, false, false, false] },
+                    { label: 'Money Loop', access: [true, false, false, false] },
+                    { label: 'Budget & Rates', access: [true, false, true, false] },
                     { label: 'Schedule', access: [true, true, true, true] },
                     { label: 'Admin Settings', access: [true, false, false, false] },
                   ]}
@@ -331,6 +323,27 @@ export function FeaturesPage() {
                 <p style="color: #B7CFC1; font-size: 15px;">{c.body}</p>
               </div>
             ))}
+          </div>
+
+          <div style="margin-top: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-lg); overflow: hidden; max-width: 420px; margin-left: auto; margin-right: 0;">
+            <div style="display: flex; gap: 4px; padding: 12px 14px 0;">
+              {['Home', 'Suggestions', 'Coach', 'Setup', 'Chat'].map((t, i) => (
+                <span style={`font-size: 10px; letter-spacing: 0.04em; padding: 6px 9px; border-radius: 5px 5px 0 0; ${i === 2 ? 'background: rgba(255,255,255,0.08); color: white; font-weight: 600;' : 'color: #7A9788;'}`}>{t}</span>
+              ))}
+            </div>
+            <div style="padding: 16px 18px 20px; border-top: 1px solid rgba(255,255,255,0.08);">
+              <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Coach · Deals going quiet</div>
+              {[
+                { name: 'Nicole Knesley', detail: 'Pool Coping · $58,200 · no contact 7 days', risk: '$58,200 at risk' },
+                { name: 'Sydney Lampard', detail: 'Deck lighting · $18,000 · missed follow-up', risk: '$18,000 at risk' },
+              ].map((d, i) => (
+                <div style={`background: rgba(255,255,255,0.05); border-left: 3px solid var(--gw-red-500); border-radius: 6px; padding: 10px 12px;${i < 1 ? ' margin-bottom: 8px;' : ''}`}>
+                  <div style="font-size: 12.5px; font-weight: 600; color: white; margin-bottom: 2px;">{d.name}</div>
+                  <div style="font-size: 11px; color: #B7CFC1; margin-bottom: 4px;">{d.detail}</div>
+                  <div style="font-size: 10.5px; color: #F0A8A0; font-weight: 600;">{d.risk}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
