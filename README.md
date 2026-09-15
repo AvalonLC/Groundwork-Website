@@ -118,6 +118,24 @@ The old 4-item "Solutions" nav dropdown (Landscaping / Home service / Field serv
 - The SendGrid lead-notification email (`/api/demo-request` in `src/index.tsx`) is unchanged — the sales team still gets notified of every qualified lead even though the visitor self-books their own time slot.
 - Test scripts: `mobile-audit/test_booking_iframe.cjs` (bare iframe embeddability check), `mobile-audit/test_demo_booking_flow.cjs` (full desktop form→panel flow with a mocked `/api/demo-request`), `mobile-audit/test_demo_booking_mobile.cjs` (same, at a 390px mobile viewport).
 
+## Live-Product Content Overhaul (2026-09-15)
+Following direct reconnaissance of the real, live `groundwork-crm.com` product (Playwright walkthrough of all nav groups, the AI assistant's 5 tabs, and the Client Portal admin view), marketing copy across the site was updated to reflect features that are actually live in the product today, replacing generic or stale placeholder language:
+
+- **Money Loop** — the plain-language overhead-coverage / cash-health dashboard ("How we're tracking: X% of what it costs to keep the doors open this year"). Replaces generic "Financial Snapshot" framing on `/product/financial`, `/features`, `/pricing`, and the homepage Financial pillar.
+- **Budget & Rates** (the burdened-hour engine) — burdened labor/equipment/overhead-pool cost calculator with immutable rate versioning. New section on `/product/financial`; referenced on `/pricing` and the homepage.
+- **Client Portal** — a real, live client-facing scoped read-only portal; admin side has invite/disable, an activity log, and staff "preview as client" mode. New section on `/product/admin`; referenced on `/pricing`, `/features`, and the homepage Admin pillar.
+- **After Action Reports (AAR)** — a required end-of-day field report before clock-out, with a configurable question builder (Yes/No, text, rating, checklist, dropdown). New section on `/product/operations`; AAR Template builder bullet on `/product/admin`; replaces "photos & sign-offs" language on `/product/mobile`, `/roles/foremen`, `/roles/laborers`, and the homepage laborer role panel.
+- **Groundwork AI** — the 5-tab slide-over assistant (Home, Suggestions, Coach, Setup, Chat), including the owner-level Coach tab that flags at-risk deals with dollars at risk. Renamed from generic "AI Assistant" on the homepage bento grid; new 4th card on `/features`' Field & Dashboards section; AI Coach mention added to `/roles/owners` and the Pro plan on `/pricing`.
+- **Services & Pricing / AI quotes** — the 3,000-item master price book powering estimates, and AI-drafted quote descriptions/scopes/follow-ups. Updated on `/product/sales`.
+- **Groundwork Academy tracks** — named the 4 real tracks (Sales Academy, Estimating 101, Financial Literacy, CRM Guide) in place of generic "40+ short videos" copy on `/resources`.
+- **Bug fix**: `home.tsx` and `faq.tsx` both described a stale role-based seat pricing model that contradicted the already-shipped flat $25/mo-per-user model on `/pricing` — both corrected to consistent language.
+
+This pass touched `home.tsx`, `faq.tsx`, `features.tsx`, `pricing.tsx`, `resources.tsx`, `product/financial.tsx`, `product/operations.tsx`, `product/admin.tsx`, `product/sales.tsx`, `product/mobile.tsx`, `roles/owners.tsx`, `roles/foremen.tsx`, `roles/laborers.tsx` — content and copy only, no new routes, no component API changes. All existing `SplitContent`/`MockFrame`/`SplitList`/`PMTitleRow`/`PMStats` building blocks were reused as-is.
+
+**Two live-app issues observed during reconnaissance (not part of this repo, flagging for awareness)**: the live product's `/login` route currently 404s, and `/api/auth/bootstrap` / `/api/auth/me` occasionally return transient 500s that clear on page reload.
+
+**Not yet deployed** — this content pass is committed to git but has not been pushed to production. See "Deployment" below for the redeploy command.
+
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
 - Component classes/CSS selectors were kept identical to the design's `styles.css` (e.g. `.pm`, `.bento-card`, `.split-list`) so the ported stylesheet drives visuals unchanged — no Tailwind rewrite was done, matching the "recreate in framework, keep visuals authoritative" instruction from the handoff README.
