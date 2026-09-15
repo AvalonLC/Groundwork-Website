@@ -20,7 +20,7 @@ executed) is for the product to move to `login.groundwork-crm.com` and for this 
 to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an aspirational
 `login.groundwork-crm.com` subdomain — it does not exist yet.
 
-## Currently Implemented — all 30 pages built ✅
+## Currently Implemented — all 35 pages built ✅
 
 **Shared system** (in `src/components/` + `src/data/`):
 - `Layout` — page shell: fonts (Newsreader serif / Instrument Sans / JetBrains Mono), meta tags, nav, footer, `site.js`
@@ -69,6 +69,11 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/customers` | Customer testimonials + logos |
 | `/case-studies` | Deeper case studies |
 | `/resources` | Resources hub (Academy/Implementation/Blog/Help/API/FAQ cards) + blog preview |
+| `/academy` | Groundwork Academy hub — links to all 4 training tracks |
+| `/academy/sales` | Sales Academy — Company Playbook (8 stages) + 3 training phases (9 modules), real lesson notes |
+| `/academy/estimating-101` | Estimating 101 — 6 lessons on scoping, pricing, and margin, real lesson notes |
+| `/academy/financial-literacy` | Financial Literacy — 5 lessons on P&L, cash flow, and budget vs actual, real lesson notes |
+| `/academy/crm-guide` | CRM Guide — 7 module walkthroughs of the product's core workspaces, real lesson notes |
 | `/faq` | FAQ accordion |
 | `/security` | Security & compliance |
 | `/about` | About / team / principles |
@@ -136,6 +141,21 @@ This pass touched `home.tsx`, `faq.tsx`, `features.tsx`, `pricing.tsx`, `resourc
 
 **Not yet deployed** — this content pass is committed to git but has not been pushed to production. See "Deployment" below for the redeploy command.
 
+## Groundwork Academy Content Pages (2026-09-15)
+Previously, the "Groundwork Academy" card on `/resources` only scroll-anchored to an on-page UI mockup of the Sales Academy training-progress screen — there was no real, readable content behind it. This pass adds five new routes with actual written curriculum notes for all four Academy tracks, extracted structurally from live-app reconnaissance (module/lesson titles, durations, phase groupings — content itself is newly written, generic teaching copy, not reproduced verbatim from any tenant's real data):
+
+- **`/academy`** — hub page linking to all 4 tracks via `TrackCard`s.
+- **`/academy/sales`** — Sales Academy: an 8-stage "Company Playbook" (New Lead → Won/Lost) plus 3 training phases (Foundations, Execution, Mastery) covering 9 modules, each with real explanatory body text and a certification path (New Hire → Apprentice → Journeyman → Certified).
+- **`/academy/estimating-101`** — 6 lessons on scoping, pricing, and margin (What Is an Estimate?, Reading a Site Walk, Material Pricing Basics, Labor Costing, Building Your Margin, Presenting the Estimate).
+- **`/academy/financial-literacy`** — 5 lessons on reading and using financial data (Reading a P&L Statement, Gross Margin vs Net Margin, Cash Flow Basics, Understanding Invoices & Deposits, Budget vs Actual).
+- **`/academy/crm-guide`** — 7 module walkthroughs of the product's five core workspaces (The 5-Workspace Model, Leads & Pipeline, Clients/Properties & History, Estimates→Invoices→Payments, Work Orders & Scheduling, Tasks & Command Center, Reports & Data Reads).
+
+New shared components in `src/components/Academy.tsx`: `AcademyHero`, `TrackCard`, `Lesson`, `PhaseBlock`, `PlaybookStage` — a content-first pattern (styled after `security.tsx`'s card-grid approach) distinct from the existing `SplitContent`/`MockFrame`/`ProductMock` product-page pattern, since these pages needed to read as actual course material rather than a UI preview.
+
+`resources.tsx`'s "Groundwork Academy" card now links to `/academy` (was `#academy`); the existing on-page Sales Academy mockup section was kept as a visual teaser, with an added "See all 4 tracks, with real lesson notes →" link into the real hub page.
+
+**Confidentiality note**: while drafting `/academy/sales`, a module was briefly titled "The Avalon Way of Selling" — a verbatim leak of the real customer tenant's name from the reconnaissance screenshots. This was caught and renamed to the generic "The Company Way of Selling" before committing. A repo-wide grep for the real tenant/user names confirms no leaks in the new Academy files.
+
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
 - Component classes/CSS selectors were kept identical to the design's `styles.css` (e.g. `.pm`, `.bento-card`, `.split-list`) so the ported stylesheet drives visuals unchanged — no Tailwind rewrite was done, matching the "recreate in framework, keep visuals authoritative" instruction from the handoff README.
@@ -166,6 +186,7 @@ curl http://localhost:3000/
 - **Status**: ✅ Live.
 - **Cloudflare project**: `groundwork-crm-marketing`
 - **Live URLs**: https://groundwork-crm.info (custom domain) · https://groundwork-crm-marketing.pages.dev (Pages default domain)
+- **Last deployed**: 2026-09-15 (fourth deploy, Groundwork Academy content pages) — added `/academy` and its 4 track pages (`/academy/sales`, `/academy/estimating-101`, `/academy/financial-literacy`, `/academy/crm-guide`) with real written lesson/module content, per user request that "Explore" on the Academy card lead somewhere with actual notes and breakdowns, not just a mockup. Updated `resources.tsx`'s Academy card to link to `/academy`. See "Groundwork Academy Content Pages" section above for full detail. Deployed with the same manually-supplied-token workaround as the prior deploy (Deploy panel is still on the wrong Cloudflare account). Verified live: all 5 new routes return 200 on `groundwork-crm.info`, "The Company Way of Selling" (post-fix module title) confirmed live, `/resources` links to `/academy` confirmed live.
 - **Last deployed**: 2026-09-15 (third deploy, mockup rebuild pass) — rebuilt the site's illustrative CSS/HTML "product mock" components (`ProductMock.tsx` and usages in `features.tsx`, `product/financial.tsx`, `product/admin.tsx`, `product/operations.tsx`, `resources.tsx`) so their layout, labels, and stats mirror the real Groundwork app's actual screens, following live-app Playwright reconnaissance (structural reference only — no real screenshots or customer data embedded, per explicit decision to avoid publishing confidential tenant data). Specifically: `PMSidebar`'s nav groups now match the real left-nav (Command Center, Sales incl. Estimates, Financial incl. Money Loop/Budget & Rates/Invoice Reporting, Operations, Admin incl. Client Portal/AAR Reviews); the Money Loop mock now shows the real "How we're tracking" progress-bar header plus the 5-card stat row (Money to Collect / Needs an Invoice / Needs to be Paid / Something's Off / Needs Your Call) and a "What Needs Doing" lane list; the Dispatch mock now shows the real Dispatch Board's 4 stat cards (Scheduled/In Progress/Completed/Active Crews) plus Crews and Activity Feed panels; Budget & Rates now shows the real 3-section layout (Labor Rates / Machine Rates / Overhead Pools); Client Portal now shows the real 3-stat row (Active Users/Pending Invites/Disabled) plus a Recent Portal Activity table; the AAR mock now shows the real Template Builder's numbered question-row structure (type dropdown, Required checkbox, reorder handle); added a Groundwork AI slide-over mock (5 tabs, Coach at-risk-deal cards) to the Field & Dashboards section; added a real `#academy` section on `/resources` with a Sales Academy training-progress mock (previously a dead anchor link). All mock data remains fictional/illustrative (the site's existing placeholder cast — Knesley, Patel, Aleman, etc.); one placeholder tenant name that briefly matched the real customer's name during editing was caught and corrected before commit. Deployed with a manually-supplied token for the correct account (see note below) — verified live on `groundwork-crm.info`, byte-identical diff against the deployment URL.
 - **Last deployed**: 2026-09-15 (second deploy, full-site consistency pass) — extended the live-product content overhaul to the remaining pages that hadn't yet been touched: `product/hub.tsx` bento cards now name Money Loop, Budget & Rates, After Action Reports, and Client Portal; `product/my-day.tsx` and `roles/hub.tsx` now mention Money Loop / After Action Report where they previously used generic or stale language; every remaining "sign-off" / "photo & sign-off" reference site-wide (`faq.tsx` x2, `features.tsx` Field Mode card, `home.tsx` x2) was replaced with the real After Action Report feature name — a full-repo grep now returns zero "sign-off" matches. Verified live on `groundwork-crm.info`: all checked routes return 200, and Money Loop / Client Portal / Groundwork AI / After Action Report all resolve correctly across home, `/product`, `/faq`, `/features`, `/roles`, `/resources`, and `/pricing`.
   Reviewed and intentionally left unchanged as part of this pass (generic/infra pages where feature-specific language wouldn't fit): `about.tsx`, `customers.tsx`, `case-studies.tsx`, `security.tsx`, `contact.tsx`, `start.tsx`, `signup.tsx`, `login.tsx`, `download.tsx`, `multi-crew-ops.tsx`, `product/platform.tsx` (architecture/integrations page), `trades/hub.tsx` and the individual `/trades/:slug` pages (trade-specific copy, correctly scoped per trade rather than platform-wide features).
