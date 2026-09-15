@@ -52,7 +52,7 @@ export function ResourcesPage() {
       tag: 'Owner',
       time: '10 min read',
       title: 'The three dashboards every service business owner should open in the morning',
-      desc: 'Business Pulse, Financial Snapshot, Operations Snapshot — and what to do with each in the first 15 minutes of the day.',
+      desc: 'Business Pulse, Financial Snapshot, Money Loop, Operations Snapshot — and what to do with each in the first 15 minutes of the day.',
     },
   ]
 

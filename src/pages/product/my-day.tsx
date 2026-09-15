@@ -74,7 +74,7 @@ export function MyDayPage() {
               { href: '/roles/owners', title: 'Owner', desc: 'Business Pulse: pipeline value, cash, ops load.' },
               { href: '/roles/office-managers', title: 'Office manager', desc: 'Cross-team follow-ups + invoicing queue.' },
               { href: '/roles/sales-reps', title: 'Sales rep', desc: 'Queue-driven view with Daily Sales Start-Up.' },
-              { href: '/roles/foremen', title: 'Foreman', desc: 'Field Mode: route, scope, clock, sign-off.' },
+              { href: '/roles/foremen', title: 'Foreman', desc: 'Field Mode: route, scope, clock, After Action Report.' },
               { href: '/roles/laborers', title: 'Laborer', desc: 'Read-only stops for today. Nothing else.' },
             ].map((r) => (
               <a href={r.href} style="text-decoration: none; background: var(--gw-cream-100); border: 1px solid var(--gw-line); border-radius: 12px; padding: 20px; display: block;">

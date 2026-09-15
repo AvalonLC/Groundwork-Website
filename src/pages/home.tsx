@@ -570,7 +570,7 @@ export function HomePage() {
               </p>
               <ul>
                 <RoleCheckItem title="Business Pulse" body="Pipeline value, close rate, sold MTD, open proposals, at-risk deals — a single page." />
-                <RoleCheckItem title="Financial Snapshot" body="Outstanding, deposits, cash in, cash out — the numbers you care about, in the language you use." />
+                <RoleCheckItem title="Financial Snapshot &amp; Money Loop" body="Outstanding, deposits, cash in, cash out, plus overhead-coverage in one honest number." />
                 <RoleCheckItem title="Operations Snapshot" body="Crews out, jobs scheduled, work orders in progress, capacity vs. demand." />
                 <RoleCheckItem title="Full access, no restrictions" body="See everything. Nothing hidden. No permissions to fight with." />
               </ul>

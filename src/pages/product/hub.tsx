@@ -20,9 +20,9 @@ export function ProductHubPage() {
           <div class="bento">
             <BentoCard href="/product/my-day" size="wide" dark icon="M" title="My Day" desc="Every user's daily start-of-day view — open, overdue, upcoming, and a checklist tailored to their role." linkLabel="Explore My Day →" />
             <BentoCard href="/product/sales" icon="S" title="Sales" desc="Pipeline, leads, clients, properties, estimates, and communications." linkLabel="Sales module →" />
-            <BentoCard href="/product/financial" icon="F" title="Financial" desc="Invoices, payments, deposits, statements, activity ledger." linkLabel="Financial module →" />
-            <BentoCard href="/product/operations" icon="O" title="Operations" desc="Schedule, dispatch, work orders, recurring services, assets, time." linkLabel="Operations module →" />
-            <BentoCard href="/product/admin" icon="A" title="Admin & Permissions" desc="Roles, workflow, integrations, audit, access modes, system config." linkLabel="Admin module →" />
+            <BentoCard href="/product/financial" icon="F" title="Financial" desc="Invoices, payments, Money Loop overhead-coverage, Budget & Rates burdened costing." linkLabel="Financial module →" />
+            <BentoCard href="/product/operations" icon="O" title="Operations" desc="Schedule, dispatch, work orders, After Action Reports, assets, time." linkLabel="Operations module →" />
+            <BentoCard href="/product/admin" icon="A" title="Admin & Permissions" desc="Roles, Client Portal, workflow, integrations, audit, access modes." linkLabel="Admin module →" />
             <BentoCard href="/product/mobile" icon={<Icon name="smartphone" size={18} />} title="Mobile & Field Mode" desc="Rugged mobile view for foremen and crews." linkLabel="Field Mode →" />
             <BentoCard href="/product/platform" icon={<Icon name="settings" size={18} />} title="Platform architecture" desc="How the modules connect. Data model. Integrations." linkLabel="See architecture →" />
             <BentoCard href="/features" icon="≡" title="All features" desc="The full feature list, module by module." linkLabel="Feature index →" />

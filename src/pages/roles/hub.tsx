@@ -9,7 +9,7 @@ export function RolesHubPage() {
       icon: 'key',
       title: 'Owners',
       tag: 'Clarity, cash, and pipeline',
-      desc: 'Owners get Business Pulse, Financial Snapshot, and Ops Snapshot — three dashboards that answer "where is the business right now?" in 30 seconds.',
+      desc: 'Owners get Business Pulse, Financial Snapshot, Money Loop, and Ops Snapshot — dashboards that answer "where is the business right now?" in 30 seconds.',
     },
     {
       href: '/roles/office-managers',
