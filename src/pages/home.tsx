@@ -410,15 +410,16 @@ export function HomePage() {
                 <div class="pillar-icon">F</div>
                 <span class="pillar-eyebrow">Financial</span>
               </div>
-              <h3>See the money without opening the books.</h3>
+              <h3>See the money — and what it actually costs you — without opening the books.</h3>
               <p>
-                Invoices, deposits, payments, and statements tied directly to jobs and clients. Owners get a
-                snapshot; office teams get a system.
+                Invoices, deposits, payments, and statements tied directly to jobs and clients. The Money Loop
+                shows owners plain-language cash health at a glance; Budget &amp; Rates runs true burdened-cost
+                math underneath every price you charge.
               </p>
               <ul class="pillar-list">
                 <li>Invoices tied to jobs, estimates, and change orders</li>
-                <li>Deposit + payment tracking</li>
-                <li>Financial snapshot dashboard</li>
+                <li>Money Loop — overhead-coverage &amp; cash-health dashboard</li>
+                <li>Budget &amp; Rates — burdened labor, equipment &amp; overhead costing</li>
                 <li>Statements &amp; activity ledger per client</li>
               </ul>
               <div class="pillar-visual">
@@ -431,9 +432,9 @@ export function HomePage() {
                   </div>
                   <div style="background: var(--gw-cream-100); border: 1px solid var(--gw-cream-300); border-radius: 6px; padding: 10px 12px; flex:1;">
                     <div style="font-size: 10px; letter-spacing: 0.1em; color: var(--gw-ink-400); text-transform: uppercase; margin-bottom: 4px;">
-                      Deposits
+                      Overhead covered
                     </div>
-                    <div style="font-family: var(--font-serif); font-size: 22px; color: var(--gw-green-500);">$24,900</div>
+                    <div style="font-family: var(--font-serif); font-size: 22px; color: var(--gw-green-500);">83%</div>
                   </div>
                 </div>
               </div>
@@ -480,13 +481,14 @@ export function HomePage() {
               </div>
               <h3>Give every person the view built for their job.</h3>
               <p>
-                Granular roles &amp; permissions, integrations, templates, workflows, audit logs, and a client
-                portal. Configure once, run everywhere.
+                Granular roles &amp; permissions, integrations, templates, workflows, audit logs, and a real
+                client portal — with an invite/activity log and staff "preview as client" mode. Configure once,
+                run everywhere.
               </p>
               <ul class="pillar-list">
                 <li>Owner, Manager, Sales, Estimator, Field, View-only roles</li>
                 <li>Access matrix at the screen level</li>
-                <li>Templates, forms, checklists, automations</li>
+                <li>Client Portal — invite, activity log, preview as client</li>
                 <li>Audit log &amp; approval queue</li>
               </ul>
               <div class="pillar-visual">
@@ -892,8 +894,8 @@ export function HomePage() {
             </div>
             <div class="bento-card narrow dark">
               <div class="b-icon">AI</div>
-              <h4>AI Assistant</h4>
-              <p>Draft follow-up emails. Summarize a lead's history. Answer "what should I do next?" — in context.</p>
+              <h4>Groundwork AI</h4>
+              <p>A slide-over assistant on every screen — proactive suggestions, an owner-level Coach that flags at-risk deals, and free-text chat that already knows the page you're on.</p>
             </div>
             <div class="bento-card narrow">
               <div class="b-icon">
@@ -923,8 +925,8 @@ export function HomePage() {
               <div class="b-icon">
                 <Icon name="file-text" size={18} />
               </div>
-              <h4>Forms &amp; checklists</h4>
-              <p>Custom forms, safety checklists, quality sign-offs — attached to properties and jobs.</p>
+              <h4>After Action Reports</h4>
+              <p>A configurable end-of-day field report — required before clock-out, reviewed by the office.</p>
             </div>
             <div class="bento-card tiny">
               <div class="b-icon">
@@ -1091,10 +1093,12 @@ export function HomePage() {
               training, and the first 30 days of dedicated support. We don't do 90-day rollouts.
             </FAQItem>
             <FAQItem question="How is Groundwork priced?">
-              A <strong>plan</strong> (Core, Growth, Pro, Enterprise) sets which workspaces your company can use.
-              Within it, <strong>seats</strong> are priced by role — Field / View-Only seats cost a fraction of full
-              Sales or Admin seats. <strong>Groundwork AI</strong> is a shared, company-wide allowance included on
-              every plan, not billed per seat. See{' '}
+              A <strong>plan</strong> (Core, Growth, Pro, Enterprise) sets which workspaces your whole company can
+              use — reporting, automation, the client portal — and includes a starting allotment of internal users.
+              Every additional internal user beyond that is a flat $25/mo, no matter their role — an owner, a rep,
+              and a field crew member all cost the same. <strong>Groundwork AI</strong> is a separate, shared
+              company-wide allowance included on every plan, not billed per user. Customer-portal and other
+              external logins are always free. See{' '}
               <a href="/pricing" style="color: var(--gw-forest-700); text-decoration: underline;">
                 pricing
               </a>
