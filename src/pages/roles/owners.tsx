@@ -101,15 +101,15 @@ export function OwnersPage() {
               Groundwork exists to shorten the distance between "I want to know" and "I know." Every screen is
               designed around a question an owner might reasonably ask before their first coffee.
             </p>
-            <SplitList
-              items={[
-                { num: '→', title: 'Will we hit the month?', body: 'Business Pulse shows sold vs. goal in real time.' },
-                { num: '→', title: "Who's behind?", body: 'Overdue follow-ups per rep. At-risk deals. Reason codes.' },
-                { num: '→', title: "Where's the cash?", body: 'Outstanding by client. Deposits held. Aging.' },
-                { num: '→', title: "Who's on site right now?", body: 'Ops Snapshot with crew live status.' },
-                { num: '→', title: 'What just changed?', body: 'Recently Updated feed — deals, notes, sign-offs.' },
-              ]}
-            />
+              <SplitList
+                items={[
+                  { num: '→', title: 'Will we hit the month?', body: 'Business Pulse shows sold vs. goal in real time.' },
+                  { num: '→', title: 'Are we covering overhead?', body: 'Money Loop shows the percentage of this year\'s overhead already covered — one honest number.' },
+                  { num: '→', title: "Who's behind?", body: 'Groundwork AI\'s Coach tab flags deals that have gone quiet, with dollars at risk.' },
+                  { num: '→', title: "Where's the cash?", body: 'Outstanding by client. Deposits held. Aging.' },
+                  { num: '→', title: "Who's on site right now?", body: 'Ops Snapshot with crew live status.' },
+                ]}
+              />
           </div>
         </div>
       </section>

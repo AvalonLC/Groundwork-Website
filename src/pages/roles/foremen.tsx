@@ -54,7 +54,7 @@ export function ForemenPage() {
                 { num: '→', title: 'Scope + files at the property', body: 'Notes from sales, photos, plans, materials list.' },
                 { num: '→', title: 'Crew & time tracking', body: "Who's on site, when they clocked in, where they are now." },
                 { num: '→', title: 'Safety checklists', body: 'JHA / tailgate meeting checklists per job.' },
-                { num: '→', title: 'Sign-off & photos', body: 'Client signature, before/after photos, quality notes.' },
+                { num: '→', title: 'After Action Report', body: 'A short end-of-day report is required before clock-out — the office gets a clean feed, not a text message.' },
               ]}
             />
           </div>

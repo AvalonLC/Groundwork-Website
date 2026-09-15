@@ -52,7 +52,7 @@ export function LaborersPage() {
               items={[
                 { num: '→', title: 'Assigned stops only', body: 'No pipeline. No pricing. Just your work today.' },
                 { num: '→', title: 'Clock in from the truck', body: "Time tracker aware of the job you're on." },
-                { num: '→', title: 'Photos & sign-offs', body: 'Log before / after photos, mark the job done, move on.' },
+                { num: '→', title: 'End-of-day report', body: 'A short After Action Report before clock-out — a couple of taps, then done.' },
                 { num: '→', title: 'Read-only, always safe', body: "You can't accidentally break anything." },
                 { num: '→', title: '15-minute training', body: 'Full crew onboarded in a single tailgate meeting.' },
               ]}

@@ -6,7 +6,7 @@ export function ResourcesPage() {
     {
       href: '#academy',
       title: 'Groundwork Academy',
-      desc: 'Structured training for every seat. 40+ short videos, workflow walkthroughs, and role-specific onboarding paths.',
+      desc: 'Structured training tracks for every seat — Sales Academy, Estimating 101, Financial Literacy, and the CRM Guide.',
     },
     {
       href: '#implementation',

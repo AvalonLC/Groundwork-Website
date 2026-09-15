@@ -110,9 +110,9 @@ export function SalesPage() {
                 { num: '→', title: 'Scripts & Talk Tracks', body: 'Discovery, budget, close, and follow-up scripts.' },
                 { num: '→', title: 'Email Templates', body: 'Consistent, on-brand outreach with variables.' },
                 { num: '→', title: 'Objection Handling', body: 'Prewritten answers to the top-20 pushbacks.' },
-                { num: '→', title: 'Pricing Tools', body: 'Real-time pricing calculators for service lines.' },
-                { num: '→', title: 'AI Assistant', body: 'Draft an email, summarize a deal, suggest a next step.' },
-                { num: '→', title: 'Groundwork Academy', body: 'Structured training for every seat.' },
+                { num: '→', title: 'Services & Pricing', body: 'A 3,000-item price book of materials, labor, and services powers every estimate.' },
+                { num: '→', title: 'Groundwork AI quotes', body: 'Draft a quote description, scope of work, or follow-up email straight from the deal.' },
+                { num: '→', title: 'Groundwork Academy', body: 'Structured training for every seat — Sales Academy, Estimating 101, and more.' },
               ]}
             />
           </SplitContent>

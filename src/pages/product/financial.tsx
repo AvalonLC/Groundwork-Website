@@ -70,6 +70,84 @@ export function FinancialPage() {
         </div>
       </section>
 
+      <section class="section" style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Money Loop"
+            title="The health question, answered in plain language."
+            lede="Owners don't think in balance sheets — they think 'are we covering what it costs to keep the doors open?' Money Loop turns overhead recovery into one honest number instead of a spreadsheet nobody opens."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Overhead-coverage percentage', body: "How much of this year's overhead is covered by what's been sold and billed — updated live." },
+                { num: '→', title: 'Plain-language framing', body: 'No jargon. "How we\'re tracking" — the way an owner would actually say it.' },
+                { num: '→', title: 'Tied to Budget & Rates', body: 'Powered by the same burdened-cost math that prices every job — not a separate estimate.' },
+                { num: '→', title: 'Built for the morning glance', body: 'One card, one number, on the owner dashboard — not a report you have to run.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrame minHeight={340}>
+            <PMMain>
+              <PMTitleRow title="Money Loop" sub="OWNER · FY2026" />
+              <div style="background: var(--gw-cream-200); border-radius: 10px; padding: 20px; margin-top: 6px;">
+                <div style="font-size: 12.5px; color: var(--gw-ink-700); margin-bottom: 10px;">
+                  How we're tracking: <strong style="color: var(--gw-ink-900);">83%</strong> of what it costs to keep the doors open this year
+                </div>
+                <div style="height: 10px; background: var(--gw-cream-300); border-radius: 5px; overflow: hidden;">
+                  <div style="width: 83%; height: 100%; background: linear-gradient(90deg, var(--gw-forest-600), var(--gw-green-500));"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: var(--gw-ink-500); margin-top: 8px;">
+                  <span>Overhead pool · $612k</span>
+                  <span>Covered · $508k</span>
+                </div>
+              </div>
+            </PMMain>
+          </MockFrame>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <MockFrame minHeight={340}>
+            <PMMain>
+              <PMTitleRow title="Budget & Rates" sub="LABOR RATE · CREW A INSTALL" />
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                {[
+                  { label: 'Base wage', value: '$24.00/hr' },
+                  { label: 'Burden (tax, comp, benefits)', value: '+$9.80/hr' },
+                  { label: 'Equipment allocation', value: '+$4.10/hr' },
+                  { label: 'Fully burdened rate', value: '$37.90/hr', strong: true },
+                ].map((r) => (
+                  <div style={`background: ${r.strong ? 'var(--gw-forest-800)' : 'var(--gw-cream-200)'}; color: ${r.strong ? 'white' : 'inherit'}; border-radius: 8px; padding: 10px 12px;`}>
+                    <div style={`font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; ${r.strong ? 'color: #B7CFC1;' : 'color: var(--gw-ink-500);'}`}>{r.label}</div>
+                    <div style="font-size: 14px; font-weight: 600;">{r.value}</div>
+                  </div>
+                ))}
+              </div>
+              <div class="pm-card">
+                <div class="pm-card-h">Rate history <span class="chip">Immutable</span></div>
+                <div style="font-size: 11.5px; color: var(--gw-ink-500); padding: 6px 0; border-bottom: 1px solid var(--gw-cream-300);">$37.90/hr · effective Jul 1, 2026</div>
+                <div style="font-size: 11.5px; color: var(--gw-ink-500); padding: 6px 0;">$35.20/hr · effective Jan 1, 2026 (superseded)</div>
+              </div>
+            </PMMain>
+          </MockFrame>
+          <SplitContent
+            eyebrow="Budget & Rates"
+            title="The burdened-cost engine behind every price you charge."
+            lede="Most CRMs let you type in a price. Budget & Rates calculates what a job actually costs — labor burden, equipment, and overhead allocation — so quoting under cost stops being a guessing game."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'True burdened labor cost', body: 'Wage + payroll tax + workers comp + benefits, rolled into one rate.' },
+                { num: '→', title: 'Equipment & overhead pools', body: 'Allocate fleet, tools, and overhead into the rate that prices the job.' },
+                { num: '→', title: 'Immutable rate history', body: "Saving never edits an existing rate — it writes a new version. Old jobs keep the rate they were priced at." },
+                { num: '→', title: 'Feeds Money Loop & estimates', body: 'The same numbers price a job, cost a job, and roll up into overhead coverage.' },
+              ]}
+            />
+          </SplitContent>
+        </div>
+      </section>
+
       <section class="section">
         <div class="wrap split">
           <MockFrame>

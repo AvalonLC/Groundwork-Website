@@ -110,11 +110,11 @@ export function FeaturesPage() {
         <div class="wrap split">
           <div class="pm" style="grid-template-columns: 1fr; box-shadow: var(--shadow-lg); min-height: 460px;">
             <PMMain>
-              <PMTitleRow title="Financial Snapshot" sub="OWNER VIEW" />
+              <PMTitleRow title="Money Loop" sub="OWNER VIEW · FY2026" />
               <PMStats
                 stats={[
+                  { label: 'Overhead covered', value: '83%', variant: 'sold' },
                   { label: 'Outstanding', value: '$48.2k' },
-                  { label: 'Deposits MTD', value: '$24.9k', variant: 'sold' },
                   { label: 'Invoiced MTD', value: '$142k' },
                   { label: 'Past Due 30+', value: '$8.1k', variant: 'overdue' },
                 ]}
@@ -144,17 +144,17 @@ export function FeaturesPage() {
               <PillarIcon letter="F" />
               <span class="eyebrow" style="margin: 0;">Financial</span>
             </div>
-            <h2>See the money without opening the books.</h2>
+            <h2>See the money — and what it costs — without opening the books.</h2>
             <p class="lede">
               Invoices, deposits, payments, and statements — all tied to the client, property, and job that generated
-              them. Groundwork isn't your accounting system, but it's the operational layer that keeps your accounting
-              system honest.
+              them. Money Loop turns overhead recovery into one plain-language number; Budget &amp; Rates runs the
+              burdened-cost math underneath every price you charge.
             </p>
             <SplitList
               items={[
-                { num: '→', title: 'Financial Overview', body: 'Outstanding, deposits, invoiced, past-due, month-over-month.' },
+                { num: '→', title: 'Money Loop', body: "Overhead-coverage percentage — how much of this year's cost of doing business is covered so far." },
+                { num: '→', title: 'Budget & Rates', body: 'Burdened labor, equipment, and overhead-pool costing, with immutable rate history.' },
                 { num: '→', title: 'Invoices & Payments', body: 'Send, track, reconcile — partial payments and deposits included.' },
-                { num: '→', title: 'Deposits & Statements', body: 'Per-client statements. Deposit ledger. Activity trail.' },
                 { num: '→', title: 'QuickBooks Online sync', body: 'Two-way sync of clients, invoices, and payments.' },
               ]}
             />
@@ -297,9 +297,9 @@ export function FeaturesPage() {
               items={[
                 { num: '→', title: 'Six default roles', body: 'Owner, Management, Sales, Estimator, Field, View-only — configurable.' },
                 { num: '→', title: 'Screen-level access matrix', body: 'Grant Pipeline but not Financial. Grant Reports but not Payments.' },
-                { num: '→', title: 'Templates & automations', body: 'Reusable email templates, checklists, forms, and drip campaigns.' },
+                { num: '→', title: 'Client Portal', body: "Invite clients to a scoped, read-only portal. Staff manage access and can preview a client's exact view." },
+                { num: '→', title: 'AAR Template builder', body: 'Configure the end-of-day field report question set — Yes/No, text, rating, checklist, dropdown.' },
                 { num: '→', title: 'Approval queue & audit log', body: 'Approve estimates, flag anomalies, see who changed what.' },
-                { num: '→', title: 'Client portal & Field Mode', body: 'External access for clients. Rugged internal access for crews.' },
               ]}
             />
           </div>
@@ -314,14 +314,16 @@ export function FeaturesPage() {
             <h2 style="color: var(--gw-cream-100); margin-top: 20px;">The bridge between the office and the truck.</h2>
             <p class="lede" style="color: #B7CFC1;">
               The office runs on desktops. The field runs on phones. Groundwork's My Day, Team View, and Field Mode
-              connect the two without asking either side to change how they work.
+              connect the two without asking either side to change how they work — and Groundwork AI sits on top
+              of all three, on every screen.
             </p>
           </div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
             {[
               { letter: 'M', title: 'My Day', body: 'Personal daily view — open, overdue, upcoming, and a daily start-up checklist. Every role gets one, tuned to their work.' },
               { letter: 'T', title: 'Team View', body: "Managers see every rep's day, every crew's status, every follow-up state — one screen, no reports." },
               { letter: 'F', title: 'Field Mode', body: 'Rugged mobile-first view for foremen and crews. Route, scope, clock, photos, sign-off. Nothing else.' },
+              { letter: 'AI', title: 'Groundwork AI', body: 'A slide-over assistant on every screen — Home, Suggestions, an owner-level Coach that flags at-risk deals, Setup, and free-text Chat that already knows the page you\'re on.' },
             ].map((c) => (
               <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-lg); padding: 32px;">
                 <div style="width: 32px; height: 32px; border-radius: 7px; background: var(--gw-forest-700); color: var(--gw-green-100); display: grid; place-items: center; font-weight: 700; margin-bottom: 18px;">{c.letter}</div>

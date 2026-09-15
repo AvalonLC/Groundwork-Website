@@ -112,7 +112,7 @@ export function AdminPage() {
             <SplitList
               items={[
                 { num: '→', title: 'Templates', body: 'Reusable emails, checklists, forms, and estimates.' },
-                { num: '→', title: 'Automations', body: 'Triggers → actions. Deal won → invoice draft. Overdue → escalation.' },
+                { num: '→', title: 'AAR Template builder', body: 'Configure the end-of-day report question set — Yes/No, text, rating, checklist, dropdown.' },
                 { num: '→', title: 'Approval Queue', body: 'Estimates, change orders, and financial changes gated by approval.' },
                 { num: '→', title: 'Audit Log', body: 'Who changed what, when, and from where. Immutable.' },
                 { num: '→', title: 'Access Modes', body: 'Company-wide policies: SSO, IP restrictions, 2FA enforcement.' },
@@ -120,6 +120,46 @@ export function AdminPage() {
               ]}
             />
           </SplitContent>
+        </div>
+      </section>
+
+      <section class="section" style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Client Portal"
+            title="Give clients their own door — that you still control."
+            lede="Clients sign in at their own portal to see the status of their job, without ever touching your internal workspace. Staff manage every invite from Admin, and can step into a client's exact view to troubleshoot."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Scoped, read-only access', body: "Clients see their own properties, jobs, and invoices — nothing else." },
+                { num: '→', title: 'Invite & disable from Admin', body: 'Staff control who gets portal access, and can revoke it instantly.' },
+                { num: '→', title: 'Preview as client', body: "Step into a client's exact portal view to troubleshoot or demo — no separate login." },
+                { num: '→', title: 'Real activity log', body: 'Logins, invites, and update-published events tied to work orders — auditable.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrame minHeight={340}>
+            <PMMain>
+              <PMTitleRow title="Client Portal" sub="ADMIN · MANAGE ACCESS" />
+              <div class="pm-card">
+                <div class="pm-card-h">Portal users <span class="chip">3 active</span></div>
+                {[
+                  { name: 'Nicole Knesley', status: 'Active', last: 'Logged in 2d ago' },
+                  { name: 'D. Patel', status: 'Active', last: 'Invited · not yet accepted' },
+                  { name: 'R. Aleman', status: 'Disabled', last: 'Revoked by Tyler' },
+                ].map((u, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{u.name}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{u.last}</div>
+                    </div>
+                    <span class={`tag ${u.status === 'Active' ? 'tag-rapport' : 'tag-red'}`}>{u.status}</span>
+                  </div>
+                ))}
+              </div>
+            </PMMain>
+          </MockFrame>
         </div>
       </section>
 

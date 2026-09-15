@@ -40,7 +40,7 @@ export function MobilePage() {
                 { num: '→', title: "Today's route", body: 'Ordered stops with client, address, and job context.' },
                 { num: '→', title: 'Scope + files at the property', body: 'Photos, plans, materials, notes from sales.' },
                 { num: '→', title: 'Clock in from the truck', body: "Time tracker aware of the job you're on." },
-                { num: '→', title: 'Photos & sign-offs', body: 'Before / after photos, quality checklists, client signature.' },
+                { num: '→', title: 'After Action Report', body: 'A short end-of-day report is required before clock-out — no more chasing down what happened.' },
                 { num: '→', title: 'Offline-capable', body: 'Works in the field. Syncs when signal returns.' },
                 { num: '→', title: 'Two modes', body: 'Foreman (leadership) and Laborer (read-only) — same app, different lens.' },
               ]}

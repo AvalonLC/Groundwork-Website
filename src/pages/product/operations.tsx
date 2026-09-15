@@ -131,6 +131,46 @@ export function OperationsPage() {
         </div>
       </section>
 
+      <section class="section" style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="After Action Reports"
+            title="A real end-of-day report — not a text to the office."
+            lede="Every crew closes the day with a short, configurable After Action Report before they can clock out. Build your own question set once; the office reviews a clean feed instead of chasing down what actually happened."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Required before clock-out', body: "Foremen can't close the day without filing the report." },
+                { num: '→', title: 'Configurable question builder', body: 'Yes/No, text, rating, checklist, and dropdown question types.' },
+                { num: '→', title: 'Office review queue', body: 'AAR Reviews surfaces every submitted report for the office to check off.' },
+                { num: '→', title: 'Rolls up to Field Reports', body: 'Aggregated view across crews, jobs, and dates for pattern-spotting.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrame minHeight={340}>
+            <PMMain>
+              <PMTitleRow title="After Action Report" sub="CREW A · KNESLEY · JUL 8" />
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                {[
+                  { q: 'Was the job completed as scoped?', a: 'Yes', type: 'Yes/No' },
+                  { q: 'Rate the crew\'s pace today', a: '4 / 5', type: 'Rating' },
+                  { q: 'Any materials shortages?', a: 'No', type: 'Yes/No' },
+                  { q: 'Notes for the office', a: 'Client asked about adding lighting — flagged for sales.', type: 'Text' },
+                ].map((r) => (
+                  <div style="background: var(--gw-cream-200); border-radius: 8px; padding: 10px 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                      <span style="font-size: 11.5px; font-weight: 600; color: var(--gw-ink-900);">{r.q}</span>
+                      <span style="font-size: 9.5px; color: var(--gw-ink-400); text-transform: uppercase; letter-spacing: 0.06em;">{r.type}</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--gw-ink-700);">{r.a}</div>
+                  </div>
+                ))}
+              </div>
+            </PMMain>
+          </MockFrame>
+        </div>
+      </section>
+
       <RelatedCards
         items={[
           { href: '/product/my-day', title: 'My Day', desc: "Where crews see today's stops." },

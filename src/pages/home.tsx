@@ -749,7 +749,7 @@ export function HomePage() {
               <ul>
                 <RoleCheckItem title="Assigned stops only" body="No pipeline. No pricing. Just your work today." />
                 <RoleCheckItem title="Clock in from the truck" body="Time tracker aware of the job you're on." />
-                <RoleCheckItem title="Photos & sign-offs" body="Log before / after photos, mark the job done, move on." />
+                <RoleCheckItem title="End-of-day report" body="A short After Action Report before clock-out, then you're done." />
                 <RoleCheckItem title="Read-only, always safe" body="You can't accidentally break anything." />
               </ul>
               <Button href="/demo" variant="secondary" arrow>
