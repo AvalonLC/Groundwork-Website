@@ -856,7 +856,7 @@ export function HomePage() {
               items={[
                 { num: '→', title: 'Ranked by urgency, not date created', body: 'Overdue rises. Today gets attention. Coming Up stays visible without shouting.' },
                 { num: '→', title: 'Daily Sales Start-Up checklist', body: 'A short, opinionated ritual for reps: review, prioritize, chase, log.' },
-                { num: '→', title: 'Recently Updated stream', body: 'See what changed while you were out — deals, notes, follow-ups, sign-offs.' },
+                { num: '→', title: 'Recently Updated stream', body: 'See what changed while you were out — deals, notes, follow-ups, After Action Reports.' },
               ]}
             />
           </div>
@@ -1085,8 +1085,8 @@ export function HomePage() {
             </FAQItem>
             <FAQItem question="What about the field crew? Do laborers need to learn a CRM?">
               No. Laborers and foremen get a purpose-built mobile view (Field Mode) that only shows today's assigned
-              work, time tracking, and photo / sign-off capture. There's no pipeline, no pricing, no admin — just the
-              job. Training a crew takes 15 minutes.
+              work, time tracking, and an end-of-day After Action Report. There's no pipeline, no pricing, no admin —
+              just the job. Training a crew takes 15 minutes.
             </FAQItem>
             <FAQItem question="How long does implementation take?">
               Most teams go live in 2–3 weeks. That includes discovery, configuration, data migration, role-based

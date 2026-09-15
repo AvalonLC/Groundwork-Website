@@ -30,7 +30,7 @@ export function MyDayPage() {
                 { num: '→', title: 'Open · Proposals · Overdue · Sold', body: 'Four stats at the top. Everyone knows what "good" looks like at 8am.' },
                 { num: '→', title: 'My Tasks, ranked by urgency', body: 'Overdue rises. Today shows next. Upcoming stays quiet.' },
                 { num: '→', title: 'Daily Sales Start-Up checklist', body: 'An opinionated ritual — review pipeline, prioritize top three, chase overdue follow-ups, log activity.' },
-                { num: '→', title: 'Recently Updated', body: 'See what changed while you were out — deals, notes, sign-offs.' },
+                { num: '→', title: 'Recently Updated', body: 'See what changed while you were out — deals, notes, After Action Reports.' },
               ]}
             />
           </SplitContent>

@@ -44,8 +44,8 @@ export function FAQPage() {
             </FAQItem>
             <FAQItem question="What about the field crew? Do laborers need to learn a CRM?">
               No. Laborers and foremen get a purpose-built mobile view (Field Mode) that only shows today's assigned
-              work, time tracking, and photo / sign-off capture. There's no pipeline, no pricing, no admin — just the
-              job. Training a crew takes 15 minutes.
+              work, time tracking, and an end-of-day After Action Report. There's no pipeline, no pricing, no admin —
+              just the job. Training a crew takes 15 minutes.
             </FAQItem>
             <FAQItem question="How long does implementation take?">
               Most teams go live in 2–3 weeks. That includes discovery, configuration, data migration, role-based

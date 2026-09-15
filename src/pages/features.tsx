@@ -322,7 +322,7 @@ export function FeaturesPage() {
             {[
               { letter: 'M', title: 'My Day', body: 'Personal daily view — open, overdue, upcoming, and a daily start-up checklist. Every role gets one, tuned to their work.' },
               { letter: 'T', title: 'Team View', body: "Managers see every rep's day, every crew's status, every follow-up state — one screen, no reports." },
-              { letter: 'F', title: 'Field Mode', body: 'Rugged mobile-first view for foremen and crews. Route, scope, clock, photos, sign-off. Nothing else.' },
+              { letter: 'F', title: 'Field Mode', body: 'Rugged mobile-first view for foremen and crews. Route, scope, clock, photos, After Action Report. Nothing else.' },
               { letter: 'AI', title: 'Groundwork AI', body: 'A slide-over assistant on every screen — Home, Suggestions, an owner-level Coach that flags at-risk deals, Setup, and free-text Chat that already knows the page you\'re on.' },
             ].map((c) => (
               <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-lg); padding: 32px;">
