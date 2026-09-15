@@ -146,7 +146,7 @@ export function AdminPage() {
                 <div class="pm-card-h">Portal users <span class="chip">3 active</span></div>
                 {[
                   { name: 'Nicole Knesley', status: 'Active', last: 'Logged in 2d ago' },
-                  { name: 'D. Patel', status: 'Active', last: 'Invited · not yet accepted' },
+                  { name: 'D. Patel', status: 'Pending', last: 'Invited · not yet accepted' },
                   { name: 'R. Aleman', status: 'Disabled', last: 'Revoked by Tyler' },
                 ].map((u, i) => (
                   <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
@@ -154,7 +154,7 @@ export function AdminPage() {
                       <div style="font-size: 12.5px; font-weight: 600;">{u.name}</div>
                       <div style="font-size: 11px; color: var(--gw-ink-500);">{u.last}</div>
                     </div>
-                    <span class={`tag ${u.status === 'Active' ? 'tag-rapport' : 'tag-red'}`}>{u.status}</span>
+                    <span class={`tag ${u.status === 'Active' ? 'tag-rapport' : u.status === 'Pending' ? 'tag-follow' : 'tag-red'}`}>{u.status}</span>
                   </div>
                 ))}
               </div>
