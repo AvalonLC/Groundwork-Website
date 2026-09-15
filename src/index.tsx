@@ -23,6 +23,11 @@ import { PricingPage } from './pages/pricing'
 import { CustomersPage } from './pages/customers'
 import { CaseStudiesPage } from './pages/case-studies'
 import { ResourcesPage } from './pages/resources'
+import { AcademyHubPage } from './pages/academy/hub'
+import { AcademySalesPage } from './pages/academy/sales'
+import { AcademyEstimating101Page } from './pages/academy/estimating-101'
+import { AcademyFinancialLiteracyPage } from './pages/academy/financial-literacy'
+import { AcademyCrmGuidePage } from './pages/academy/crm-guide'
 import { FAQPage } from './pages/faq'
 import { SecurityPage } from './pages/security'
 import { AboutPage } from './pages/about'
@@ -213,6 +218,11 @@ app.get('/pricing', (c) => c.html(<PricingPage />))
 app.get('/customers', (c) => c.html(<CustomersPage />))
 app.get('/case-studies', (c) => c.html(<CaseStudiesPage />))
 app.get('/resources', (c) => c.html(<ResourcesPage />))
+app.get('/academy', (c) => c.html(<AcademyHubPage />))
+app.get('/academy/sales', (c) => c.html(<AcademySalesPage />))
+app.get('/academy/estimating-101', (c) => c.html(<AcademyEstimating101Page />))
+app.get('/academy/financial-literacy', (c) => c.html(<AcademyFinancialLiteracyPage />))
+app.get('/academy/crm-guide', (c) => c.html(<AcademyCrmGuidePage />))
 app.get('/faq', (c) => c.html(<FAQPage />))
 app.get('/security', (c) => c.html(<SecurityPage />))
 app.get('/about', (c) => c.html(<AboutPage />))

@@ -5,7 +5,7 @@ import { PM, PMMain, PMTitleRow, PMStats, PMCard } from '../components/ProductMo
 export function ResourcesPage() {
   const cards = [
     {
-      href: '#academy',
+      href: '/academy',
       title: 'Groundwork Academy',
       desc: 'Structured training tracks for every seat — Sales Academy, Estimating 101, Financial Literacy, and the CRM Guide.',
     },
@@ -107,6 +107,12 @@ export function ResourcesPage() {
               Academy, Estimating 101, Financial Literacy, and the CRM Guide — with progress tracking, phase
               checklists, and a live view of who has finished what.
             </p>
+            <a
+              href="/academy"
+              style="display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 13px; font-weight: 600; color: var(--gw-forest-700); text-decoration: none; letter-spacing: 0.02em;"
+            >
+              See all 4 tracks, with real lesson notes →
+            </a>
           </div>
           <PM minHeight={460} shadow="var(--shadow-lg)">
             <PMMain>
