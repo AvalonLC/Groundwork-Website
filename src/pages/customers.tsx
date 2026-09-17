@@ -3,7 +3,7 @@ import { CTABand, TestimonialCard, SectionHead } from '../components/Blocks'
 
 export function CustomersPage() {
   const logos = [
-    'Avalon Landscape',
+    'Meridian Landscape',
     'Northline HVAC',
     'Cedar Grove Co.',
     'Redwater Plumbing',
@@ -58,7 +58,7 @@ export function CustomersPage() {
   const caseStudies = [
     {
       tag: 'Landscape · 24 employees',
-      company: 'Avalon Landscape',
+      company: 'Meridian Landscape',
       title: 'From spreadsheet chaos to $186k month.',
       desc: 'The 6-week story of migrating a 24-person landscape company off a Rolodex of tools.',
     },

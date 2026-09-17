@@ -149,7 +149,7 @@ export function HomePage() {
           </div>
           <div class="logos">
             <span class="logo-mark">
-              <span class="sq"></span> Avalon Landscape
+              <span class="sq"></span> Meridian Landscape
             </span>
             <span class="logo-mark">
               <span class="sq circle"></span> Northline HVAC

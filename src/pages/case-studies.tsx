@@ -4,7 +4,7 @@ import { CTABand } from '../components/Blocks'
 export function CaseStudiesPage() {
   const studies = [
     {
-      tag: 'Avalon Landscape · 24 employees · Northern VA',
+      tag: 'Meridian Landscape · 24 employees · Northern VA',
       title: 'From spreadsheet chaos to $186k month.',
       desc: 'The 6-week story of migrating a design-build landscape company off a Rolodex of tools.',
       metrics: ['Pipeline value up 42%', 'Follow-ups 0 slipped in first quarter', 'Office admin time down 8 hrs/week'],
