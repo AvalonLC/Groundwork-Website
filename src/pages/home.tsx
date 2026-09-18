@@ -139,37 +139,6 @@ export function HomePage() {
         </div>
       </header>
 
-      {/* Trust bar */}
-      <section class="logostrip">
-        <div class="wrap logostrip-inner">
-          <div class="label">
-            Trusted by service teams
-            <br />
-            across every trade
-          </div>
-          <div class="logos">
-            <span class="logo-mark">
-              <span class="sq"></span> Meridian Landscape
-            </span>
-            <span class="logo-mark">
-              <span class="sq circle"></span> Northline HVAC
-            </span>
-            <span class="logo-mark">
-              <span class="sq"></span> Cedar Grove Co.
-            </span>
-            <span class="logo-mark">
-              <span class="sq circle"></span> Redwater Plumbing
-            </span>
-            <span class="logo-mark">
-              <span class="sq"></span> Ridgeline Exteriors
-            </span>
-            <span class="logo-mark">
-              <span class="sq circle"></span> Ironhouse Services
-            </span>
-          </div>
-        </div>
-      </section>
-
       {/* Problem */}
       <section class="section" data-screen-label="Problem">
         <div class="wrap">

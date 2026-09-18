@@ -2,15 +2,6 @@ import { Layout } from '../components/Layout'
 import { CTABand, TestimonialCard, SectionHead } from '../components/Blocks'
 
 export function CustomersPage() {
-  const logos = [
-    'Meridian Landscape',
-    'Northline HVAC',
-    'Cedar Grove Co.',
-    'Redwater Plumbing',
-    'Ridgeline Exteriors',
-    'Ironhouse Services',
-  ]
-
   const testimonials = [
     {
       quote:
@@ -95,13 +86,6 @@ export function CustomersPage() {
 
       <section class="section" style="padding-top: 20px;">
         <div class="wrap">
-          <div class="logostrip-inner" style="justify-content: space-around; padding: 20px 0 40px;">
-            {logos.map((l, i) => (
-              <span class="logo-mark">
-                <span class={`sq${i % 2 === 1 ? ' circle' : ''}`}></span> {l}
-              </span>
-            ))}
-          </div>
           <div class="testimonials">
             {testimonials.map((t) => (
               <TestimonialCard quote={t.quote} initials={t.initials} name={t.name} role={t.role} />
