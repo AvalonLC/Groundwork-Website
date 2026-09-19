@@ -23,6 +23,7 @@ import { PricingPage } from './pages/pricing'
 import { CustomersPage } from './pages/customers'
 import { CaseStudiesPage } from './pages/case-studies'
 import { ResourcesPage } from './pages/resources'
+import { InteractiveDemoPage } from './pages/interactive-demo'
 import { AcademyHubPage } from './pages/academy/hub'
 import { AcademySalesPage } from './pages/academy/sales'
 import { AcademyEstimating101Page } from './pages/academy/estimating-101'
@@ -218,6 +219,7 @@ app.get('/pricing', (c) => c.html(<PricingPage />))
 app.get('/customers', (c) => c.html(<CustomersPage />))
 app.get('/case-studies', (c) => c.html(<CaseStudiesPage />))
 app.get('/resources', (c) => c.html(<ResourcesPage />))
+app.get('/explore', (c) => c.html(<InteractiveDemoPage />))
 app.get('/academy', (c) => c.html(<AcademyHubPage />))
 app.get('/academy/sales', (c) => c.html(<AcademySalesPage />))
 app.get('/academy/estimating-101', (c) => c.html(<AcademyEstimating101Page />))

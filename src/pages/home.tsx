@@ -32,6 +32,9 @@ export function HomePage() {
             <Button href="/features" variant="secondary">
               See how it works
             </Button>
+            <Button href="/explore" variant="ghost" arrow>
+              Explore it yourself
+            </Button>
           </div>
           <div class="hero-meta">
             <span class="check">

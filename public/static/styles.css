@@ -2024,3 +2024,129 @@ body.mobile-menu-open { overflow: hidden; }
 @media (max-width: 720px) {
   .demo-booking-frame iframe { height: 640px; }
 }
+
+/* ===========================================================
+   Interactive Demo (/explore) — click-around sample workspace.
+   =========================================================== */
+.demo-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: var(--gw-green-050);
+  border: 1px solid #C5DDCC;
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  font-size: 13.5px;
+  color: var(--gw-forest-700);
+}
+.demo-banner strong { color: var(--gw-forest-800); }
+@media (max-width: 640px) {
+  .demo-banner { flex-direction: column; align-items: flex-start; }
+}
+
+.demo-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.demo-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gw-cream-100);
+  border: 1px solid var(--gw-line);
+  border-radius: 999px;
+  padding: 9px 16px 9px 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--gw-ink-500);
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.demo-tab:hover { border-color: var(--gw-line-strong); color: var(--gw-ink-900); }
+.demo-tab.active {
+  background: var(--gw-forest-800);
+  color: var(--gw-cream-100);
+  border-color: var(--gw-forest-800);
+}
+.demo-tab-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(20,40,30,0.08);
+  font-size: 11px;
+  font-weight: 700;
+}
+.demo-tab.active .demo-tab-num { background: rgba(255,255,255,0.18); }
+
+/* Today panel: clickable tasks that check off */
+[data-demo-task] { transition: background .15s ease, opacity .2s ease; }
+[data-demo-task]:hover { background: var(--gw-cream-200); border-radius: 4px; }
+[data-demo-task].demo-task-done .tk-title { text-decoration: line-through; color: var(--gw-ink-400); }
+[data-demo-task].demo-task-done { opacity: 0.6; }
+[data-demo-task].demo-task-done .cb { background: var(--gw-green-600); border-color: var(--gw-green-600); position: relative; }
+[data-demo-task].demo-task-done .cb::after {
+  content: ""; position: absolute; left: 2.5px; top: 0px; width: 4px; height: 8px;
+  border-right: 1.5px solid white; border-bottom: 1.5px solid white; transform: rotate(45deg);
+}
+
+/* Pipeline panel: clickable lead cards + slide-over detail */
+.demo-workspace { position: relative; overflow: hidden; }
+.demo-lead-card { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+.demo-lead-card:hover { transform: translateY(-1px); box-shadow: 0 4px 10px -4px rgba(20,40,30,0.2); }
+.demo-slideover {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: min(360px, 92%);
+  background: var(--gw-cream-100);
+  border-left: 1px solid var(--gw-line);
+  box-shadow: -18px 0 40px -20px rgba(20,40,30,0.35);
+  padding: 24px 22px;
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  overflow-y: auto;
+  z-index: 5;
+}
+.demo-slideover.open { transform: translateX(0); }
+.demo-slideover-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--gw-cream-200);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--gw-ink-500);
+}
+.demo-slideover-close:hover { background: var(--gw-cream-300); }
+
+/* Money Loop panel: click-to-handle rows */
+[data-demo-handle] { transition: background .15s ease, opacity .2s ease; }
+[data-demo-handle]:hover { background: var(--gw-cream-200); border-radius: 4px; }
+[data-demo-handle].demo-handled { opacity: 0.55; }
+[data-demo-handle].demo-handled .demo-money-job::after { content: " — handled"; color: var(--gw-green-600); font-weight: 600; }
+
+/* Groundwork AI panel: expandable coach cards */
+.demo-ai-card { cursor: pointer; transition: background .15s ease; }
+.demo-ai-card:hover { background: rgba(255,255,255,0.09); }
+.demo-ai-detail {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 11px;
+  color: #D7E5DC;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .demo-tabs { gap: 6px; }
+  .demo-tab { padding: 8px 12px 8px 6px; font-size: 12.5px; }
+  .demo-slideover { width: 100%; }
+}

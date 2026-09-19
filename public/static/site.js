@@ -253,6 +253,94 @@
     recalc()
   }
 
+  // Interactive Demo (/explore) — a click-around sample workspace. Pure
+  // client-side state (no backend, nothing persisted, resets on reload):
+  // - Tabs switch between 4 panels (Today, Pipeline, Money Loop, AI)
+  // - Tasks toggle a "done" strike-through state
+  // - Pipeline lead cards open a slide-over with sample client detail
+  // - Money Loop rows toggle a "handled" state
+  // - AI Coach cards expand to show a suggested action
+  function bindInteractiveDemo() {
+    var root = document.querySelector('[data-demo-root]')
+    if (!root) return
+
+    function showPanel(name) {
+      root.querySelectorAll('[data-demo-panel]').forEach(function (panel) {
+        panel.hidden = panel.getAttribute('data-demo-panel') !== name
+      })
+      root.querySelectorAll('[data-demo-tab]').forEach(function (tab) {
+        tab.classList.toggle('active', tab.getAttribute('data-demo-tab') === name)
+      })
+      var slideover = root.querySelector('[data-demo-slideover]')
+      if (slideover) slideover.classList.remove('open')
+    }
+
+    root.querySelectorAll('[data-demo-tab]').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        showPanel(tab.getAttribute('data-demo-tab'))
+      })
+    })
+
+    root.querySelectorAll('[data-demo-next]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        showPanel(btn.getAttribute('data-demo-next'))
+        var pm = root.closest('.wrap') || root
+        pm.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    })
+
+    // Today: click a task to toggle done
+    root.querySelectorAll('[data-demo-task]').forEach(function (task) {
+      task.addEventListener('click', function () {
+        task.classList.toggle('demo-task-done')
+      })
+    })
+
+    // Pipeline: click a lead card to open the slide-over with that lead's detail
+    var slideover = root.querySelector('[data-demo-slideover]')
+    root.querySelectorAll('[data-demo-lead]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        var id = card.getAttribute('data-demo-lead')
+        if (!slideover) return
+        slideover.querySelectorAll('[data-lead-detail]').forEach(function (d) {
+          d.hidden = d.getAttribute('data-lead-detail') !== id
+        })
+        slideover.classList.add('open')
+      })
+    })
+    var closeBtn = root.querySelector('[data-demo-slideover-close]')
+    if (closeBtn && slideover) {
+      closeBtn.addEventListener('click', function () {
+        slideover.classList.remove('open')
+      })
+    }
+
+    // Money Loop: click a row to mark it handled
+    root.querySelectorAll('[data-demo-handle]').forEach(function (row) {
+      row.addEventListener('click', function () {
+        row.classList.toggle('demo-handled')
+        var tag = row.querySelector('[data-demo-handle-tag]')
+        if (tag) {
+          if (row.classList.contains('demo-handled')) {
+            tag.dataset.originalText = tag.dataset.originalText || tag.textContent
+            tag.textContent = 'Handled'
+            tag.className = 'tag tag-rapport'
+          } else if (tag.dataset.originalText) {
+            tag.textContent = tag.dataset.originalText
+          }
+        }
+      })
+    })
+
+    // Groundwork AI: click a coach card to reveal the suggested action
+    root.querySelectorAll('[data-demo-ai-card]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        var detail = card.querySelector('[data-demo-ai-detail]')
+        if (detail) detail.hidden = !detail.hidden
+      })
+    })
+  }
+
   function init() {
     bindMobileMenu()
     bindRoleTabs()
@@ -260,6 +348,7 @@
     bindForms()
     bindLiveForms()
     bindPricingCalculator()
+    bindInteractiveDemo()
   }
 
   if (document.readyState === 'loading') {
