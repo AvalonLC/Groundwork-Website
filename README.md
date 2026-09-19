@@ -20,7 +20,7 @@ executed) is for the product to move to `login.groundwork-crm.com` and for this 
 to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an aspirational
 `login.groundwork-crm.com` subdomain — it does not exist yet.
 
-## Currently Implemented — all 35 pages built ✅
+## Currently Implemented — all 36 pages built ✅
 
 **Shared system** (in `src/components/` + `src/data/`):
 - `Layout` — page shell: fonts (Newsreader serif / Instrument Sans / JetBrains Mono), meta tags, nav, footer, `site.js`
@@ -75,6 +75,7 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/academy/financial-literacy` | Financial Literacy — 5 lessons on P&L, cash flow, and budget vs actual, real lesson notes |
 | `/academy/crm-guide` | CRM Guide — 7 module walkthroughs of the product's core workspaces, real lesson notes |
 | `/faq` | FAQ accordion |
+| `/explore` | Interactive Demo — click-around sample workspace (Today, Pipeline, Money Loop, Groundwork AI), no signup required |
 | `/security` | Security & compliance |
 | `/about` | About / team / principles |
 | `/contact` | Contact channels + message form |
@@ -156,6 +157,26 @@ New shared components in `src/components/Academy.tsx`: `AcademyHero`, `TrackCard
 
 **Confidentiality note**: while drafting `/academy/sales`, a module was briefly titled "The Avalon Way of Selling" — a verbatim leak of the real customer tenant's name from the reconnaissance screenshots. This was caught and renamed to the generic "The Company Way of Selling" before committing. A repo-wide grep for the real tenant/user names confirms no leaks in the new Academy files.
 
+## Interactive Demo (2026-09-19)
+Per user request for "a sort of click around space" to let visitors get a feel for the product without booking a call, added a new page at **`/explore`** — a self-contained, click-around sample workspace.
+
+**Design decisions**:
+- **Own URL, not a modal** — shareable, gives the product room to breathe at full sidebar+main-panel width, and lets a persistent "sample workspace" banner + CTA follow the whole session.
+- **4 stops, sequenced as a story** (not a random tour): Today → Pipeline → Money Loop → Groundwork AI. Ends on the AI Coach card as the "wow" moment, bridging into "book a real demo."
+- **100% client-side** — no backend call, no persisted state, no login. Resets on every page load. This keeps it well inside Cloudflare Pages' free-tier and stays consistent with the rest of the site's "no data storage needed" architecture.
+- **Reuses existing components** — the same `ProductMock` building blocks (`PMMain`, `PMTitleRow`, `PMStats`, `PMCard`, etc.) used throughout `/features` and `/product/*`, so the demo looks visually consistent with the rest of the site rather than introducing a new design language.
+- **Fictional data only** — the same placeholder cast already used elsewhere (Knesley, Patel, Grumley, Dhulipala, Lampard, Aleman, Ozawa).
+
+**What's interactive**:
+1. **Today** — click a task row to check it off (strike-through + dimmed).
+2. **Pipeline** — click a lead card (Discovery/Budget/Decision columns) to open a slide-over panel with that lead's contact info, property, and opportunity history.
+3. **Money Loop** — click a "What Needs Doing" row to mark it handled (tag switches to "Handled", row dims).
+4. **Groundwork AI** — click a Coach card (flagging a deal going quiet) to expand a suggested next action.
+
+**Implementation**: new `src/pages/interactive-demo.tsx`; new `bindInteractiveDemo()` function in `public/static/site.js` (tab switching, task toggling, slide-over open/close, handled-state toggling, AI card expand — all plain DOM manipulation, no framework); new CSS block in `public/static/styles.css` for `.demo-banner`, `.demo-tabs`, `.demo-slideover`, and related hover/state classes. Registered as `app.get('/explore', ...)` in `index.tsx`. Entry points: homepage hero ("Explore it yourself" ghost button, next to "Book a demo" and "See how it works"), top nav ("Try it" item, inherited into the mobile menu automatically via `nav.ts`).
+
+Verified live: `/explore` returns 200, zero browser console errors (checked via Playwright against both local and production), all interactive data-attributes and their CSS/JS bindings present in the deployed `styles.css` / `site.js`.
+
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
 - Component classes/CSS selectors were kept identical to the design's `styles.css` (e.g. `.pm`, `.bento-card`, `.split-list`) so the ported stylesheet drives visuals unchanged — no Tailwind rewrite was done, matching the "recreate in framework, keep visuals authoritative" instruction from the handoff README.
@@ -186,6 +207,7 @@ curl http://localhost:3000/
 - **Status**: ✅ Live.
 - **Cloudflare project**: `groundwork-crm-marketing`
 - **Live URLs**: https://groundwork-crm.info (custom domain) · https://groundwork-crm-marketing.pages.dev (Pages default domain)
+- **Last deployed**: 2026-09-19 (seventh deploy, interactive demo) — built a fully client-side, click-around demo at `/explore` per user request ("am i able to create a live demo inside the site... something not too crazy but enough to convince them"). New `src/pages/interactive-demo.tsx` walks visitors through a 4-stop sequenced story — My Day/Today → Sales Pipeline → Money Loop → Groundwork AI — reusing the existing `ProductMock` component library and the site's established fictional-data cast (Knesley, Patel, Grumley, Dhulipala, Lampard, Aleman, Ozawa) so nothing new or real is introduced. Interactions are 100% client-side (no backend, no persisted state): task check-off on the Today panel, a lead-card slide-over on the Pipeline panel (click a kanban card to see contact/property/opportunity detail), row "handled" toggling on the Money Loop panel, and expandable AI Coach cards revealing a suggested action. Added `bindInteractiveDemo()` to the shared `public/static/site.js` (same pattern as `bindMobileMenu`/`bindPricingCalculator`), new `.demo-*` rules to `public/static/styles.css`, a `GET /explore` route in `src/index.tsx`, a "Try it" top-level nav entry in `src/data/nav.ts`, and a new ghost-variant "Explore it yourself" hero CTA on the homepage (`home.tsx`) alongside the existing "Book a demo" / "See how it works" buttons. A persistent banner on the page discloses it's a sample workspace with example data and links to `/demo` for visitors who want to see it with their real data. Verified live: `/explore` returns 200 on `groundwork-crm.info`, `PlaywrightConsoleCapture` confirms zero browser console errors both locally and in production, and homepage/nav/mobile-menu all link to `/explore` correctly.
 - **Last deployed**: 2026-09-15 (sixth deploy, trust bar removed) — per explicit user decision, removed the "Trusted by service teams across every trade" logo strip from `home.tsx` and the matching logo strip from `customers.tsx`. Rationale: the real customer's actual name ("Avalon Landscape Construction") is fine to use elsewhere, but the user wants to hold off on publishing any customer names in a trust/social-proof context — real or fictional — until there's an actual roster of live customers to show, so no visitor is misled. Testimonials and case studies sections (already explicitly labeled illustrative) were left unchanged. Verified live: `grep -i "trusted by"` on the deployed homepage and `/customers` returns zero matches.
 - **Last deployed**: 2026-09-15 (fifth deploy, placeholder customer-name fix) — the pre-existing placeholder logo/case-study name "Avalon Landscape" (used in `home.tsx`'s trust bar, `customers.tsx`'s logo strip/case-study list, and `case-studies.tsx`) accidentally matched the real customer tenant's business name from live-app reconnaissance ("Avalon Landscape Construction"), violating the standing no-real-customer-data constraint. Renamed to "Meridian Landscape" across all three files — consistent with the site's existing fictional-name cast (Northline HVAC, Cedar Grove Co., Ridgeline Exteriors, etc.). Verified live: `grep -i avalon` across the deployed homepage, `/customers`, and `/case-studies` returns zero matches; "Meridian Landscape" confirmed present on all three.
 - **Last deployed**: 2026-09-15 (fourth deploy, Groundwork Academy content pages) — added `/academy` and its 4 track pages (`/academy/sales`, `/academy/estimating-101`, `/academy/financial-literacy`, `/academy/crm-guide`) with real written lesson/module content, per user request that "Explore" on the Academy card lead somewhere with actual notes and breakdowns, not just a mockup. Updated `resources.tsx`'s Academy card to link to `/academy`. See "Groundwork Academy Content Pages" section above for full detail. Deployed with the same manually-supplied-token workaround as the prior deploy (Deploy panel is still on the wrong Cloudflare account). Verified live: all 5 new routes return 200 on `groundwork-crm.info`, "The Company Way of Selling" (post-fix module title) confirmed live, `/resources` links to `/academy` confirmed live.
