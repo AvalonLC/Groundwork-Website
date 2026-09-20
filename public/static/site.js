@@ -264,6 +264,33 @@
     var root = document.querySelector('[data-demo-root]')
     if (!root) return
 
+    var STOPS = ['today', 'pipeline', 'money', 'ai']
+    var visited = { today: true }
+
+    function updateProgress() {
+      var count = STOPS.filter(function (s) { return visited[s] }).length
+      root.querySelectorAll('[data-demo-pip]').forEach(function (pip) {
+        pip.classList.toggle('active', !!visited[pip.getAttribute('data-demo-pip')])
+      })
+      var counter = root.querySelector('[data-demo-progress-count]')
+      if (counter) counter.textContent = String(count)
+    }
+
+    // Small transient toast for illustrative-only clicks (inert sidebar
+    // items, non-Coach AI tabs) — reassures the visitor nothing broke.
+    var toastEl = root.querySelector('[data-demo-toast]')
+    var toastTimer = null
+    function showToast(msg) {
+      if (!toastEl) return
+      toastEl.textContent = msg
+      toastEl.classList.add('show')
+      if (toastTimer) clearTimeout(toastTimer)
+      toastTimer = setTimeout(function () { toastEl.classList.remove('show') }, 2200)
+    }
+
+    // Command Center → Today, everything else uses its own name directly.
+    var sidebarTargetMap = { today: 'command', pipeline: 'pipeline', money: 'money', ai: null }
+
     function showPanel(name) {
       root.querySelectorAll('[data-demo-panel]').forEach(function (panel) {
         panel.hidden = panel.getAttribute('data-demo-panel') !== name
@@ -271,8 +298,14 @@
       root.querySelectorAll('[data-demo-tab]').forEach(function (tab) {
         tab.classList.toggle('active', tab.getAttribute('data-demo-tab') === name)
       })
+      var wantKey = sidebarTargetMap[name]
+      root.querySelectorAll('.pm-sidebar [data-demo-sidebar-target]').forEach(function (el) {
+        el.classList.toggle('active', wantKey !== null && el.getAttribute('data-demo-sidebar-target') === wantKey)
+      })
       var slideover = root.querySelector('[data-demo-slideover]')
       if (slideover) slideover.classList.remove('open')
+      visited[name] = true
+      updateProgress()
     }
 
     root.querySelectorAll('[data-demo-tab]').forEach(function (tab) {
@@ -289,10 +322,28 @@
       })
     })
 
+    // Sidebar: Command Center / Pipeline / Money Loop items jump straight
+    // to the matching demo panel, same as the tabs above. Every other
+    // sidebar item is illustrative-only — clicking surfaces a toast rather
+    // than doing nothing, so the shell still feels alive.
+    root.querySelectorAll('[data-demo-sidebar-target]').forEach(function (item) {
+      item.addEventListener('click', function () {
+        var target = item.getAttribute('data-demo-sidebar-target')
+        showPanel(target === 'command' ? 'today' : target)
+      })
+    })
+    root.querySelectorAll('[data-demo-sidebar-inert]').forEach(function (item) {
+      item.addEventListener('click', function () {
+        var label = item.textContent.trim()
+        showToast('"' + label + '" isn\u2019t wired up in this sample \u2014 it\u2019s live in your real workspace.')
+      })
+    })
+
     // Today: click a task to toggle done
     root.querySelectorAll('[data-demo-task]').forEach(function (task) {
       task.addEventListener('click', function () {
         task.classList.toggle('demo-task-done')
+        updateBellBadge()
       })
     })
 
@@ -329,16 +380,85 @@
             tag.textContent = tag.dataset.originalText
           }
         }
+        updateBellBadge()
       })
     })
 
-    // Groundwork AI: click a coach card to reveal the suggested action
+    // Groundwork AI: click a coach card — a brief "thinking" beat, then
+    // reveal the suggested action (fake latency sells the "AI reasoning"
+    // moment; it's still instant enough not to feel like a real delay).
     root.querySelectorAll('[data-demo-ai-card]').forEach(function (card) {
       card.addEventListener('click', function () {
         var detail = card.querySelector('[data-demo-ai-detail]')
-        if (detail) detail.hidden = !detail.hidden
+        var thinking = card.querySelector('[data-demo-ai-thinking]')
+        if (!detail) return
+        if (!detail.hidden) {
+          detail.hidden = true
+          return
+        }
+        if (thinking && detail.hidden) {
+          thinking.hidden = false
+          setTimeout(function () {
+            thinking.hidden = true
+            detail.hidden = false
+          }, 550)
+        } else {
+          detail.hidden = false
+        }
       })
     })
+    // AI panel: Home / Suggestions / Setup / Chat tabs are illustrative —
+    // clicking surfaces a toast pointing back at the Coach tab being shown.
+    root.querySelectorAll('[data-demo-ai-tab]').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        showToast('This sample only walks through the Coach tab \u2014 ' + tab.getAttribute('data-demo-ai-tab') + ' is live in your real workspace.')
+      })
+    })
+
+    // Topbar: notification bell badge count reflects what's still open —
+    // overdue Today tasks not yet checked off, plus Money Loop rows not
+    // yet marked handled. Ticks down (with a little pulse) as you work
+    // through the sample, just like the real unread counter would.
+    var bellBadge = root.querySelector('[data-demo-bell-badge]')
+    function updateBellBadge() {
+      if (!bellBadge) return
+      var openOverdue = root.querySelectorAll('[data-demo-task].overdue:not(.demo-task-done)').length
+      var openMoney = root.querySelectorAll('[data-demo-handle]:not(.demo-handled)').length
+      var count = openOverdue + openMoney
+      var prev = bellBadge.textContent
+      bellBadge.textContent = String(count)
+      bellBadge.setAttribute('data-demo-bell-badge', count === 0 ? '' : String(count))
+      if (String(count) !== prev) {
+        bellBadge.classList.add('demo-bell-pulse')
+        setTimeout(function () { bellBadge.classList.remove('demo-bell-pulse') }, 200)
+      }
+    }
+    updateBellBadge()
+
+    // Topbar: live search filters tasks, pipeline lead cards, and Money
+    // Loop rows across whichever panels are in the DOM (client-side only —
+    // filtering doesn't change which panel/tab is active).
+    var searchInput = root.querySelector('[data-demo-search]')
+    var searchEmpty = root.querySelector('[data-demo-search-empty]')
+    var searchEmptyTerm = root.querySelector('[data-demo-search-empty-term]')
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        var term = searchInput.value.trim().toLowerCase()
+        var items = root.querySelectorAll('[data-demo-searchable]')
+        var visibleCount = 0
+        items.forEach(function (el) {
+          var match = !term || el.getAttribute('data-demo-searchable').indexOf(term) !== -1
+          el.classList.toggle('demo-search-hide', !match)
+          if (match) visibleCount++
+        })
+        if (searchEmpty) {
+          searchEmpty.hidden = !(term && visibleCount === 0)
+          if (searchEmptyTerm) searchEmptyTerm.textContent = searchInput.value.trim()
+        }
+      })
+    }
+
+    updateProgress()
   }
 
   function init() {
