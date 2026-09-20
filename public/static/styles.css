@@ -176,10 +176,10 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .nav-inner {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 14px 32px;
+  padding: 14px 24px;
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
 }
 .brand {
   display: flex;
@@ -206,22 +206,23 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .nav-links {
   display: flex;
-  gap: 4px;
-  margin-left: 8px;
+  gap: 0;
+  margin-left: 0;
 }
 .nav-links a {
-  padding: 8px 14px;
+  padding: 8px 11px;
   border-radius: 8px;
-  font-size: 14.5px;
+  font-size: 14px;
   color: var(--gw-ink-700);
   font-weight: 450;
+  white-space: nowrap;
 }
 .nav-links a:hover { color: var(--gw-ink-900); background: rgba(20,40,30,0.04); }
-.nav-cta { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.nav-cta { margin-left: auto; display: flex; gap: 6px; align-items: center; }
 .nav-cta .signin {
-  font-size: 14.5px;
+  font-size: 14px;
   color: var(--gw-ink-700);
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid transparent;
   display: inline-flex;
@@ -230,17 +231,6 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
   white-space: nowrap;
 }
 .nav-cta .signin:hover { color: var(--gw-ink-900); border-color: var(--gw-line); }
-.nav-cta .signin .host {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--gw-ink-400);
-  padding-left: 10px;
-  border-left: 1px solid var(--gw-line);
-  white-space: nowrap;
-}
-@media (max-width: 1180px) {
-  .nav-cta .signin .host { display: none; }
-}
 
 /* Nav dropdown affordance */
 .nav-links a { position: relative; }
@@ -1605,6 +1595,13 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
    Structure: tablet-down (≤960) → phone-down (≤720) → small phone (≤480)
    =========================================================== */
 
+/* Narrow desktop (1024px-class laptops): drop the secondary "Log in"
+   link so the primary "Book a demo" CTA never gets clipped by the
+   global overflow-x guard when the full nav-links set is present. */
+@media (max-width: 1100px) {
+  .nav-cta .signin { display: none; }
+}
+
 /* --- Tablet & below (≤960px) --- */
 @media (max-width: 960px) {
   .wrap { padding: 0 24px; }
@@ -1906,7 +1903,6 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
 
   /* Hide site-domain text (mono) that can overflow */
   .footer-bottom .site-domain { font-size: 11px; }
-  .nav-cta .signin .host { display: none; }
 }
 
 /* Mobile menu (off-canvas) — hidden by default, shown when body has .mobile-menu-open */

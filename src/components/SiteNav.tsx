@@ -40,7 +40,7 @@ export function SiteNav({ path }: { path: string }) {
           </div>
           <div class="nav-cta">
             <a href="/login" class="signin">
-              Log in <span class="host">groundwork-crm.com</span>
+              Log in
             </a>
             <a href="/demo" class="btn btn-primary">
               Book a demo <span class="arrow">→</span>

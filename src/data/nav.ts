@@ -79,7 +79,7 @@ export const NAV: NavItem[] = [
   },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Customers', href: '/customers' },
-  { label: 'Try it', href: '/explore' },
+  { label: 'Explore', href: '/explore' },
   {
     label: 'Resources',
     href: '/resources',
