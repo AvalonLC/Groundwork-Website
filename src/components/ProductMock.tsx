@@ -23,18 +23,12 @@ export function PM({
 
 // `active` selects which item carries the .active highlight (defaults to
 // 'command', matching every existing static usage). `interactive`, when
-// true, tags the three items that map to a real demo panel (Command
-// Center → Today, Pipeline → Pipeline, Money Loop → Money Loop) with
-// data-demo-sidebar-target so the /explore page's client-side JS can wire
-// them up; every other item gets data-demo-sidebar-inert so a click can
-// surface a lightweight "not part of this demo" toast instead of doing
-// nothing. Both attributes are inert on any page that isn't /explore.
+// true, tags EVERY item with data-demo-sidebar-target=<key> so the
+// /explore page's client-side JS can wire the whole sidebar up to a real
+// panel — not just a curated subset. Inert on any page that isn't /explore.
 export function PMSidebar({ active = 'command', interactive = false }: { active?: string; interactive?: boolean } = {}) {
-  // These three keys map to a real /explore demo panel — always wired up as
-  // targets when interactive, regardless of which one is currently active.
-  const targets = ['command', 'pipeline', 'money']
-  const attr = (key: string) =>
-    interactive ? (targets.includes(key) ? { 'data-demo-sidebar-target': key } : { 'data-demo-sidebar-inert': 'true' }) : {}
+  const attr = (key: string) => (interactive ? { 'data-demo-sidebar-target': key } : {})
+  const cls = (key: string) => `sb-item${active === key ? ' active' : ''}`
   return (
     <aside class="pm-sidebar">
       <div class="brand">
@@ -42,7 +36,7 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
       </div>
       <div class="brand-sub">Cedar Grove Landscape Co.</div>
 
-      <div class={`sb-item${active === 'command' ? ' active' : ''}`} style="margin-top: 10px;" {...attr('command')}>
+      <div class={cls('command')} style="margin-top: 10px;" {...attr('command')}>
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <rect x="3" y="4" width="18" height="16" rx="2" />
           <line x1="3" y1="10" x2="21" y2="10" />
@@ -52,33 +46,33 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
 
       <div class="sb-group">
         <div class="sb-label">Sales</div>
-        <div class={`sb-item${active === 'pipeline' ? ' active' : ''}`} {...attr('pipeline')}>
+        <div class={cls('pipeline')} {...attr('pipeline')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M4 6h16M4 12h10M4 18h6" />
           </svg>{' '}
           Pipeline
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('leads')} {...attr('leads')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="9" cy="8" r="4" />
             <path d="M2 20c0-4 3-7 7-7s7 3 7 7" />
           </svg>{' '}
           Leads
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('clients')} {...attr('clients')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="9" cy="8" r="4" />
             <circle cx="17" cy="10" r="3" />
           </svg>{' '}
           Clients
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('properties')} {...attr('properties')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-4v-6h-8v6H4a1 1 0 0 1-1-1z" />
           </svg>{' '}
           Properties
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('estimates')} {...attr('estimates')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="4" y="4" width="16" height="16" rx="2" />
             <line x1="4" y1="9" x2="20" y2="9" />
@@ -88,21 +82,21 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
       </div>
       <div class="sb-group">
         <div class="sb-label">Financial</div>
-        <div class={`sb-item${active === 'money' ? ' active' : ''}`} {...attr('money')}>
+        <div class={cls('money')} {...attr('money')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M4 4v16h16" />
             <path d="M8 16l4-6 3 3 5-7" />
           </svg>{' '}
           Money Loop
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('budget')} {...attr('budget')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="12" cy="12" r="9" />
             <path d="M12 7v10M9 10c0-1.5 1.5-2 3-2s3 1 3 2-1 2-3 2-3 1-3 2 1.5 2 3 2 3-.5 3-2" />
           </svg>{' '}
           Budget &amp; Rates
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('invoicing')} {...attr('invoicing')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="3" y="5" width="18" height="14" rx="2" />
             <line x1="3" y1="10" x2="21" y2="10" />
@@ -112,7 +106,7 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
       </div>
       <div class="sb-group">
         <div class="sb-label">Operations</div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('schedule')} {...attr('schedule')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="3" y="5" width="18" height="16" rx="2" />
             <line x1="3" y1="10" x2="21" y2="10" />
@@ -121,13 +115,13 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
           </svg>{' '}
           Schedule
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('dispatch')} {...attr('dispatch')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M9 20l-5-9 5-9M15 4l5 9-5 9" />
           </svg>{' '}
           Dispatch
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('workorders')} {...attr('workorders')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M17 8h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h2" />
             <rect x="7" y="4" width="10" height="6" rx="1" />
@@ -137,14 +131,14 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
       </div>
       <div class="sb-group">
         <div class="sb-label">Admin</div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('clientportal')} {...attr('clientportal')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <circle cx="9" cy="8" r="4" />
             <circle cx="17" cy="10" r="3" />
           </svg>{' '}
           Client Portal
         </div>
-        <div class="sb-item" {...(interactive ? { 'data-demo-sidebar-inert': 'true' } : {})}>
+        <div class={cls('aar')} {...attr('aar')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="8" y="4" width="8" height="3" rx="1" />
             <path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />

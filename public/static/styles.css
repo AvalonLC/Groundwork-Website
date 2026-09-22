@@ -2093,44 +2093,40 @@ body.mobile-menu-open { overflow: hidden; }
   .demo-banner { flex-direction: column; align-items: flex-start; }
 }
 
-.demo-tabs {
+/* Quick-launch chips — curated on-ramp above the mock, sits alongside
+   (not instead of) the full 14-item sidebar. Reuses the shape of the old
+   .demo-tab pill row but drives data-demo-goto instead of data-demo-tab. */
+.demo-quicklinks {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
   flex-wrap: wrap;
 }
-.demo-tab {
+.demo-quicklink {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: var(--gw-cream-100);
   border: 1px solid var(--gw-line);
   border-radius: 999px;
-  padding: 9px 16px 9px 8px;
-  font-size: 13.5px;
+  padding: 9px 16px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--gw-ink-500);
   cursor: pointer;
   transition: background .15s ease, border-color .15s ease, color .15s ease;
+  font-family: inherit;
 }
-.demo-tab:hover { border-color: var(--gw-line-strong); color: var(--gw-ink-900); }
-.demo-tab.active {
+.demo-quicklink:hover { border-color: var(--gw-line-strong); color: var(--gw-ink-900); }
+.demo-quicklink.active {
   background: var(--gw-forest-800);
   color: var(--gw-cream-100);
   border-color: var(--gw-forest-800);
 }
-.demo-tab-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(20,40,30,0.08);
-  font-size: 11px;
-  font-weight: 700;
+@media (max-width: 720px) {
+  .demo-quicklinks { gap: 6px; }
+  .demo-quicklink { padding: 8px 12px; font-size: 12.5px; }
 }
-.demo-tab.active .demo-tab-num { background: rgba(255,255,255,0.18); }
 
 /* Today panel: clickable tasks that check off */
 [data-demo-task] { transition: background .15s ease, opacity .2s ease; }
@@ -2180,6 +2176,39 @@ body.mobile-menu-open { overflow: hidden; }
 [data-demo-handle].demo-handled { opacity: 0.55; }
 [data-demo-handle].demo-handled .demo-money-job::after { content: " — handled"; color: var(--gw-green-600); font-weight: 600; }
 
+/* Groundwork AI: topbar-triggered slide-over (not a sidebar panel — AI
+   isn't a sidebar item in the real product either, it's reachable from
+   anywhere). Reuses the same fixed-drawer pattern as .mobile-menu, but
+   anchored right and styled dark to match the AI section elsewhere on
+   the marketing site. */
+.demo-ai-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(380px, 92%);
+  background: var(--gw-forest-900);
+  color: #B7CFC1;
+  padding: 20px 20px 24px;
+  box-shadow: -18px 0 50px -20px rgba(20,40,30,0.5);
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  overflow-y: auto;
+  z-index: 210;
+  visibility: hidden;
+}
+.demo-ai-overlay.open { transform: translateX(0); visibility: visible; }
+.demo-ai-overlay-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #D7E5DC;
+}
+.demo-ai-overlay-close:hover { background: rgba(255,255,255,0.15); }
+
 /* Groundwork AI panel: expandable coach cards */
 .demo-ai-card { cursor: pointer; transition: background .15s ease; }
 .demo-ai-card:hover { background: rgba(255,255,255,0.09); }
@@ -2198,7 +2227,7 @@ body.mobile-menu-open { overflow: hidden; }
   .demo-slideover { width: 100%; }
 }
 
-/* Progress pips — "N of 4 stops explored" strip above the tabs */
+/* Progress bar — "N of 14 sidebar areas" fill strip above the quicklinks */
 .demo-progress {
   display: flex;
   align-items: center;
@@ -2207,24 +2236,111 @@ body.mobile-menu-open { overflow: hidden; }
   font-size: 11.5px;
   color: var(--gw-ink-500);
 }
-.demo-progress-label { letter-spacing: 0.04em; text-transform: uppercase; font-size: 10px; font-weight: 600; color: var(--gw-ink-400); }
-.demo-progress-pips { display: flex; gap: 5px; }
-.demo-pip {
-  width: 18px; height: 5px;
+.demo-progress-label { letter-spacing: 0.04em; text-transform: uppercase; font-size: 10px; font-weight: 600; color: var(--gw-ink-400); flex: none; }
+.demo-progress-bar {
+  flex: 1;
+  max-width: 220px;
+  height: 6px;
   border-radius: 3px;
   background: var(--gw-cream-300);
-  transition: background .2s ease;
+  overflow: hidden;
 }
-.demo-pip.active { background: var(--gw-green-600); }
-.demo-progress-count { margin-left: auto; }
+.demo-progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gw-forest-600), var(--gw-green-500));
+  border-radius: 3px;
+  transition: width .3s ease;
+  width: 7%;
+}
+.demo-progress-count { margin-left: auto; white-space: nowrap; }
 @media (max-width: 560px) {
   .demo-progress-label { display: none; }
+  .demo-progress-bar { max-width: none; }
 }
+
+/* Kanban column headers (Pipeline) + small-caps field labels (Pipeline
+   slide-over, Money Loop, Work Orders detail cards) — extracted out of
+   long inline style= strings used in the old 4-panel build. */
+.demo-kanban-h {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gw-ink-500);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--gw-line);
+}
+.demo-microlabel {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gw-ink-400);
+  margin-bottom: 3px;
+}
+
+/* Generic clickable data row — used by Leads intake, Clients, Properties,
+   Estimates, Money Loop, Budget & Rates, Invoice Reporting, Schedule,
+   Dispatch, AAR Reviews. Two flavors: plain (.demo-row alone, used by
+   data-demo-handle rows) and expandable (.demo-row-expand, used by
+   data-demo-expand rows, which wraps its own .demo-row-main + hidden
+   .demo-row-detail instead of laying the row out directly). */
+.demo-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  border-top: 1px solid var(--gw-cream-300);
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.demo-row:first-of-type { border-top: none; }
+.demo-row:hover { background: var(--gw-cream-200); border-radius: 4px; }
+.demo-row-sub { font-size: 11px; color: var(--gw-ink-500); margin-top: 1px; }
+.demo-row-value { font-size: 12px; font-weight: 600; color: var(--gw-ink-700); white-space: nowrap; }
+.demo-row-expand { display: block; padding: 10px 4px; }
+.demo-row-expand .demo-row-main { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.demo-row-detail {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--gw-cream-300);
+  font-size: 11.5px;
+  color: var(--gw-ink-500);
+  line-height: 1.5;
+}
+.demo-row-expand.demo-row-open { background: var(--gw-cream-200); border-radius: 4px; }
 
 /* Topbar search — functional filter input styled to match the static
    .pm-topbar .search chrome used on the homepage hero mock */
 .pm-topbar .search { display: flex; align-items: center; }
 .pm-topbar .search input::placeholder { color: var(--gw-ink-400); }
+
+/* Groundwork AI topbar trigger — AI isn't a sidebar item in the real
+   product, it's reachable from anywhere via a small badge like this one;
+   clicking opens the .demo-ai-overlay slide-over defined below. */
+.demo-ai-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--gw-green-050);
+  color: var(--gw-forest-700);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: none;
+  transition: background .15s ease;
+}
+.demo-ai-trigger:hover { background: var(--gw-green-100); }
+.demo-ai-trigger-label { white-space: nowrap; }
+@media (max-width: 560px) {
+  .demo-ai-trigger-label { display: none; }
+  .demo-ai-trigger { padding: 6px; }
+}
 
 /* Notification bell with a reactive badge count */
 .demo-bell {
@@ -2267,16 +2383,19 @@ body.mobile-menu-open { overflow: hidden; }
 }
 [data-demo-searchable].demo-search-hide { display: none !important; }
 
-/* Sidebar items that don't map to one of the 4 demo panels — still show a
-   pointer + hover so the shell feels real, but clicking surfaces a toast
-   instead of silently doing nothing. */
-.pm-sidebar [data-demo-sidebar-target],
-.pm-sidebar [data-demo-sidebar-inert] { cursor: pointer; }
-.pm-sidebar [data-demo-sidebar-inert]:hover { background: rgba(255,255,255,0.05); border-radius: 5px; }
+/* Every sidebar item is a real, clickable panel target on /explore. */
+.pm-sidebar [data-demo-sidebar-target] { cursor: pointer; }
+.pm-sidebar [data-demo-sidebar-target]:hover { background: rgba(255,255,255,0.05); border-radius: 5px; }
+
+/* Client Portal: Disable/Enable toggle sits inline in a .demo-row without
+   itself triggering the row's own click behavior (handled via
+   e.stopPropagation() in site.js) — small secondary button, same family
+   as .btn-secondary but compact enough for a row. */
+.demo-portal-toggle { flex: none; }
 
 /* Small transient toast, shown at the bottom of the main pane for a couple
-   seconds when the visitor clicks something illustrative-only (an inert
-   sidebar item, a non-Coach AI tab). */
+   seconds when the visitor clicks something illustrative-only (a non-Coach
+   AI tab). */
 .demo-toast {
   position: fixed;
   left: 50%;

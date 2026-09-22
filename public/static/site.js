@@ -253,31 +253,29 @@
     recalc()
   }
 
-  // Interactive Demo (/explore) — a click-around sample workspace. Pure
-  // client-side state (no backend, nothing persisted, resets on reload):
-  // - Tabs switch between 4 panels (Today, Pipeline, Money Loop, AI)
-  // - Tasks toggle a "done" strike-through state
-  // - Pipeline lead cards open a slide-over with sample client detail
-  // - Money Loop rows toggle a "handled" state
-  // - AI Coach cards expand to show a suggested action
+  // Interactive Demo (/explore) — a full click-around sample workspace.
+  // Pure client-side state (no backend, nothing persisted, resets on
+  // reload). Every item in the real product's left sidebar (14 total) is
+  // a real panel here — not a curated subset. Groundwork AI is a
+  // slide-over triggered from the topbar (matching the real product,
+  // where AI isn't a sidebar item either).
   function bindInteractiveDemo() {
     var root = document.querySelector('[data-demo-root]')
     if (!root) return
 
-    var STOPS = ['today', 'pipeline', 'money', 'ai']
-    var visited = { today: true }
+    var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'schedule', 'dispatch', 'workorders', 'clientportal', 'aar']
+    var visited = { command: true }
 
     function updateProgress() {
       var count = STOPS.filter(function (s) { return visited[s] }).length
-      root.querySelectorAll('[data-demo-pip]').forEach(function (pip) {
-        pip.classList.toggle('active', !!visited[pip.getAttribute('data-demo-pip')])
-      })
+      var fill = root.querySelector('[data-demo-progress-fill]')
+      if (fill) fill.style.width = Math.round((count / STOPS.length) * 100) + '%'
       var counter = root.querySelector('[data-demo-progress-count]')
       if (counter) counter.textContent = String(count)
     }
 
-    // Small transient toast for illustrative-only clicks (inert sidebar
-    // items, non-Coach AI tabs) — reassures the visitor nothing broke.
+    // Small transient toast for illustrative-only clicks (non-Coach AI
+    // tabs) — reassures the visitor nothing broke.
     var toastEl = root.querySelector('[data-demo-toast]')
     var toastTimer = null
     function showToast(msg) {
@@ -288,58 +286,46 @@
       toastTimer = setTimeout(function () { toastEl.classList.remove('show') }, 2200)
     }
 
-    // Command Center → Today, everything else uses its own name directly.
-    var sidebarTargetMap = { today: 'command', pipeline: 'pipeline', money: 'money', ai: null }
+    function closeAiOverlay() {
+      var overlay = root.querySelector('[data-demo-ai-overlay]')
+      if (overlay) overlay.classList.remove('open')
+    }
 
     function showPanel(name) {
       root.querySelectorAll('[data-demo-panel]').forEach(function (panel) {
         panel.hidden = panel.getAttribute('data-demo-panel') !== name
       })
-      root.querySelectorAll('[data-demo-tab]').forEach(function (tab) {
-        tab.classList.toggle('active', tab.getAttribute('data-demo-tab') === name)
-      })
-      var wantKey = sidebarTargetMap[name]
       root.querySelectorAll('.pm-sidebar [data-demo-sidebar-target]').forEach(function (el) {
-        el.classList.toggle('active', wantKey !== null && el.getAttribute('data-demo-sidebar-target') === wantKey)
+        el.classList.toggle('active', el.getAttribute('data-demo-sidebar-target') === name)
+      })
+      root.querySelectorAll('.demo-quicklink').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-demo-goto') === name)
       })
       var slideover = root.querySelector('[data-demo-slideover]')
       if (slideover) slideover.classList.remove('open')
+      closeAiOverlay()
       visited[name] = true
       updateProgress()
     }
 
-    root.querySelectorAll('[data-demo-tab]').forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        showPanel(tab.getAttribute('data-demo-tab'))
-      })
-    })
-
-    root.querySelectorAll('[data-demo-next]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        showPanel(btn.getAttribute('data-demo-next'))
-        var pm = root.closest('.wrap') || root
-        pm.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      })
-    })
-
-    // Sidebar: Command Center / Pipeline / Money Loop items jump straight
-    // to the matching demo panel, same as the tabs above. Every other
-    // sidebar item is illustrative-only — clicking surfaces a toast rather
-    // than doing nothing, so the shell still feels alive.
+    // Sidebar: every item now jumps straight to its matching panel.
     root.querySelectorAll('[data-demo-sidebar-target]').forEach(function (item) {
       item.addEventListener('click', function () {
-        var target = item.getAttribute('data-demo-sidebar-target')
-        showPanel(target === 'command' ? 'today' : target)
-      })
-    })
-    root.querySelectorAll('[data-demo-sidebar-inert]').forEach(function (item) {
-      item.addEventListener('click', function () {
-        var label = item.textContent.trim()
-        showToast('"' + label + '" isn\u2019t wired up in this sample \u2014 it\u2019s live in your real workspace.')
+        showPanel(item.getAttribute('data-demo-sidebar-target'))
       })
     })
 
-    // Today: click a task to toggle done
+    // Quick-launch chips (above the mock) + in-panel "see next" buttons —
+    // both use the same data-demo-goto attribute.
+    root.querySelectorAll('[data-demo-goto]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        showPanel(btn.getAttribute('data-demo-goto'))
+        var pm = root.querySelector('.pm')
+        if (pm) pm.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    })
+
+    // Today (Command Center): click a task to toggle done
     root.querySelectorAll('[data-demo-task]').forEach(function (task) {
       task.addEventListener('click', function () {
         task.classList.toggle('demo-task-done')
@@ -366,7 +352,10 @@
       })
     }
 
-    // Money Loop: click a row to mark it handled
+    // Generic "handle" rows (Money Loop, Leads intake, Invoice Reporting
+    // reminders, AAR review queue) — click to mark handled/reviewed/etc.
+    // The label used while handled defaults to "Handled" but can be
+    // overridden per-row via data-demo-handled-label.
     root.querySelectorAll('[data-demo-handle]').forEach(function (row) {
       row.addEventListener('click', function () {
         row.classList.toggle('demo-handled')
@@ -374,7 +363,7 @@
         if (tag) {
           if (row.classList.contains('demo-handled')) {
             tag.dataset.originalText = tag.dataset.originalText || tag.textContent
-            tag.textContent = 'Handled'
+            tag.textContent = row.getAttribute('data-demo-handled-label') || 'Handled'
             tag.className = 'tag tag-rapport'
           } else if (tag.dataset.originalText) {
             tag.textContent = tag.dataset.originalText
@@ -383,6 +372,61 @@
         updateBellBadge()
       })
     })
+
+    // Generic expandable rows (Clients, Properties, Estimates, Budget &
+    // Rates, Schedule, Dispatch) — click the row to reveal a detail line
+    // without leaving the panel. Clicking a handle/portal control inside
+    // an expandable row must not also toggle the expand — stopPropagation
+    // on those inner controls handles that.
+    root.querySelectorAll('[data-demo-expand]').forEach(function (row) {
+      row.addEventListener('click', function () {
+        var detail = row.querySelector('.demo-row-detail')
+        if (detail) detail.hidden = !detail.hidden
+        row.classList.toggle('demo-row-open', detail && !detail.hidden)
+      })
+    })
+
+    // Client Portal: Disable/Enable toggle per user — flips the status tag
+    // and button label. Independent little widget, not a data-demo-handle
+    // (there's no "unhandle" concept here, just a live status flip).
+    root.querySelectorAll('[data-demo-portal-toggle]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation()
+        var user = btn.closest('[data-demo-portal-status]')
+        if (!user) return
+        var tag = user.querySelector('[data-demo-portal-tag]')
+        var last = user.querySelector('[data-demo-portal-last]')
+        var isDisabled = user.getAttribute('data-demo-portal-status') === 'Disabled'
+        if (isDisabled) {
+          user.setAttribute('data-demo-portal-status', 'Active')
+          if (tag) { tag.textContent = 'Active'; tag.className = 'tag tag-rapport' }
+          if (last) last.textContent = 'Re-enabled by Tyler just now'
+          btn.textContent = 'Disable'
+        } else {
+          user.setAttribute('data-demo-portal-status', 'Disabled')
+          if (tag) { tag.textContent = 'Disabled'; tag.className = 'tag tag-red' }
+          if (last) last.textContent = 'Revoked by Tyler just now'
+          btn.textContent = 'Enable'
+        }
+      })
+    })
+
+    // Groundwork AI overlay — triggered from the topbar button (AI isn't a
+    // sidebar item in the real product; it's available from anywhere).
+    var aiOverlay = root.querySelector('[data-demo-ai-overlay]')
+    var aiTrigger = root.querySelector('[data-demo-ai-trigger]')
+    if (aiTrigger && aiOverlay) {
+      aiTrigger.addEventListener('click', function () {
+        if (slideover) slideover.classList.remove('open')
+        aiOverlay.classList.toggle('open')
+      })
+    }
+    var aiOverlayClose = root.querySelector('[data-demo-ai-overlay-close]')
+    if (aiOverlayClose && aiOverlay) {
+      aiOverlayClose.addEventListener('click', function () {
+        aiOverlay.classList.remove('open')
+      })
+    }
 
     // Groundwork AI: click a coach card — a brief "thinking" beat, then
     // reveal the suggested action (fake latency sells the "AI reasoning"
@@ -416,15 +460,16 @@
     })
 
     // Topbar: notification bell badge count reflects what's still open —
-    // overdue Today tasks not yet checked off, plus Money Loop rows not
-    // yet marked handled. Ticks down (with a little pulse) as you work
+    // overdue Today tasks not yet checked off, plus every "handle" row
+    // not yet marked handled (Money Loop, Leads intake, Invoice
+    // Reporting, AAR queue). Ticks down (with a little pulse) as you work
     // through the sample, just like the real unread counter would.
     var bellBadge = root.querySelector('[data-demo-bell-badge]')
     function updateBellBadge() {
       if (!bellBadge) return
       var openOverdue = root.querySelectorAll('[data-demo-task].overdue:not(.demo-task-done)').length
-      var openMoney = root.querySelectorAll('[data-demo-handle]:not(.demo-handled)').length
-      var count = openOverdue + openMoney
+      var openHandle = root.querySelectorAll('[data-demo-handle]:not(.demo-handled)').length
+      var count = openOverdue + openHandle
       var prev = bellBadge.textContent
       bellBadge.textContent = String(count)
       bellBadge.setAttribute('data-demo-bell-badge', count === 0 ? '' : String(count))
@@ -435,9 +480,9 @@
     }
     updateBellBadge()
 
-    // Topbar: live search filters tasks, pipeline lead cards, and Money
-    // Loop rows across whichever panels are in the DOM (client-side only —
-    // filtering doesn't change which panel/tab is active).
+    // Topbar: live search filters tasks, pipeline lead cards, and every
+    // other data-demo-searchable row across whichever panel is visible
+    // (client-side only — filtering doesn't change which panel is active).
     var searchInput = root.querySelector('[data-demo-search]')
     var searchEmpty = root.querySelector('[data-demo-search-empty]')
     var searchEmptyTerm = root.querySelector('[data-demo-search-empty-term]')
