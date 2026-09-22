@@ -232,6 +232,49 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .nav-cta .signin:hover { color: var(--gw-ink-900); border-color: var(--gw-line); }
 
+/* "Try it live" — action-cluster badge, distinct from .btn so it doesn't
+   read as a second CTA competing with "Book a demo". Dashed border +
+   pulsing dot signal "live interactive thing", not "click to convert". */
+.nav-tryit {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px 8px 12px;
+  border-radius: 999px;
+  border: 1px dashed var(--gw-line-strong);
+  color: var(--gw-ink-700);
+  font-weight: 500;
+  font-size: 14px;
+  background: transparent;
+  white-space: nowrap;
+  transition: border-color .15s ease, color .15s ease;
+}
+.nav-tryit:hover {
+  border-color: var(--gw-ink-400);
+  color: var(--gw-ink-900);
+}
+.nav-tryit-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gw-green-500);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(23, 138, 90, 0.45);
+  animation: navTryitPulse 2s infinite;
+}
+@keyframes navTryitPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(23, 138, 90, 0.45); }
+  70%  { box-shadow: 0 0 0 5px rgba(23, 138, 90, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(23, 138, 90, 0); }
+}
+/* Mobile menu footer variant: full-width, centered, matches .btn sizing
+   so it sits visually level with Book a demo / Log in below it. */
+.nav-tryit-mobile {
+  justify-content: center;
+  padding: 12px 18px;
+  font-size: 15px;
+}
+
 /* Nav dropdown affordance */
 .nav-links a { position: relative; }
 .nav-links a.has-menu::after {
@@ -1595,6 +1638,13 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
    Structure: tablet-down (≤960) → phone-down (≤720) → small phone (≤480)
    =========================================================== */
 
+/* Narrow desktop (1250px-class laptops): drop the "Try it live" badge
+   from the action cluster first — it's the newest/lowest-priority item
+   there — so the primary "Book a demo" CTA keeps room to breathe. */
+@media (max-width: 1250px) {
+  .nav-cta .nav-tryit { display: none; }
+}
+
 /* Narrow desktop (1024px-class laptops): drop the secondary "Log in"
    link so the primary "Book a demo" CTA never gets clipped by the
    global overflow-x guard when the full nav-links set is present. */
@@ -1659,6 +1709,7 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .brand { font-size: 20px; }
   .nav-links { display: none; }  /* desktop dropdown nav replaced by hamburger + off-canvas menu */
   .nav-cta .signin { display: none; }  /* hidden on phones; found in mobile menu */
+  .nav-cta .nav-tryit { display: none; }  /* hidden on phones; found in mobile menu footer */
   .nav-cta .btn-primary { padding: 10px 16px; font-size: 14px; }
 
   /* Mobile menu toggle button — shown on mobile only */

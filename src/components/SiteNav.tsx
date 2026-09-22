@@ -42,6 +42,10 @@ export function SiteNav({ path }: { path: string }) {
             <a href="/login" class="signin">
               Log in
             </a>
+            <a href="/explore" class="nav-tryit">
+              <span class="nav-tryit-dot"></span>
+              Try it live
+            </a>
             <a href="/demo" class="btn btn-primary">
               Book a demo <span class="arrow">→</span>
             </a>
@@ -173,6 +177,10 @@ function MobileMenu() {
         )
       )}
       <div class="mobile-menu-footer">
+        <a href="/explore" class="nav-tryit nav-tryit-mobile">
+          <span class="nav-tryit-dot"></span>
+          Try it live
+        </a>
         <a href="/demo" class="btn btn-primary">
           Book a demo <span class="arrow">→</span>
         </a>
