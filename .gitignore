@@ -38,3 +38,4 @@ mobile-audit/*.json
 mobile-audit/slices/
 mobile-audit/**/*.png
 mobile-audit/**/*.json
+.qa/
