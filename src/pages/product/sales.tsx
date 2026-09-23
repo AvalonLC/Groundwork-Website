@@ -1,6 +1,6 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
-import { SplitContent, MockFrame } from '../../components/SplitFeature'
+import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
 import { PMCard, PMMain, PMTitleRow } from '../../components/ProductMock'
 import { Icon } from '../../components/Icon'
 
@@ -34,7 +34,7 @@ export function SalesPage() {
               ]}
             />
           </SplitContent>
-          <MockFrame>
+          <MockFrameWithLink panel="pipeline" label="Try the pipeline yourself">
             <PMMain>
               <PMTitleRow title="Pipeline" sub="SALES · Q3 2026" />
               <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
@@ -59,13 +59,13 @@ export function SalesPage() {
                 </div>
               </div>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
         </div>
       </section>
 
       <section class="section">
         <div class="wrap split">
-          <MockFrame>
+          <MockFrameWithLink panel="clients" label="Try the client view yourself">
             <PMMain>
               <PMTitleRow title="Nicole Knesley" sub="CLIENT · LORTON VA" />
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
@@ -78,7 +78,7 @@ export function SalesPage() {
                 <div style="padding: 8px 0; display: flex; justify-content: space-between; font-size: 12.5px;"><span><strong>Fall Cleanup 2025</strong> · $1,850</span><span class="tag tag-website">Complete</span></div>
               </PMCard>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
           <SplitContent
             eyebrow="Clients & properties"
             title="Every client. Every property. Every service."

@@ -503,6 +503,20 @@
       })
     }
 
+    // Deep-link support: marketing pages link into a specific sidebar
+    // panel via ?panel=<key>, e.g. /explore?panel=dispatch. Falls back
+    // silently to the default Command Center panel for an unknown/absent
+    // key, so a bad or missing query string never breaks the page.
+    var requestedPanel = null
+    try {
+      requestedPanel = new URLSearchParams(window.location.search).get('panel')
+    } catch (e) { /* no-op — very old browsers without URLSearchParams */ }
+    if (requestedPanel && STOPS.indexOf(requestedPanel) !== -1) {
+      showPanel(requestedPanel)
+      var targetPm = root.querySelector('.pm')
+      if (targetPm) targetPm.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
     updateProgress()
   }
 

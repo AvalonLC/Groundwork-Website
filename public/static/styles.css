@@ -2440,3 +2440,23 @@ body.mobile-menu-open { overflow: hidden; }
   0%, 60%, 100% { opacity: 0.3; }
   30% { opacity: 1; }
 }
+
+/* "Try this yourself →" caption link under a product-page mock, deep-
+   linking into the matching /explore panel (?panel=<key>). Sits just
+   below the .pm frame — small, quiet, doesn't compete with the section's
+   real CTA, but gives visitors an obvious way to go try the real thing
+   themselves instead of only reading about it. */
+.try-it-caption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 0 2px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gw-forest-700);
+  text-decoration: none;
+}
+.try-it-caption:hover { color: var(--gw-forest-900); }
+.try-it-caption .arrow { transition: transform .15s ease; }
+.try-it-caption:hover .arrow { transform: translateX(3px); }

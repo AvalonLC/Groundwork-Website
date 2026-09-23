@@ -58,3 +58,28 @@ export function MockFrame({ children, minHeight = 460 }: PropsWithChildren<{ min
     </div>
   )
 }
+
+// Small "Try this yourself →" caption link, meant to sit directly under a
+// <MockFrame> — deep-links into the matching /explore panel via
+// ?panel=<key> (see bindInteractiveDemo() in site.js for the reader side).
+// Lets a visitor go click the real interactive version of whatever mock
+// they were just looking at, instead of only ever reading about it.
+export function TryItLink({ panel, label = 'Try this yourself' }: { panel: string; label?: string }) {
+  return (
+    <a href={`/explore?panel=${panel}`} class="try-it-caption">
+      {label} <span class="arrow">→</span>
+    </a>
+  )
+}
+
+// Wraps a <MockFrame> + <TryItLink> as a single grid cell so the caption
+// sits directly beneath the mock inside a .wrap.split two-column layout
+// without disturbing the existing column sizing.
+export function MockFrameWithLink({ panel, label, children, minHeight }: PropsWithChildren<{ panel: string; label?: string; minHeight?: number }>) {
+  return (
+    <div>
+      <MockFrame minHeight={minHeight}>{children}</MockFrame>
+      <TryItLink panel={panel} label={label} />
+    </div>
+  )
+}

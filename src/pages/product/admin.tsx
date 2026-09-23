@@ -1,6 +1,6 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
-import { SplitContent, MockFrame } from '../../components/SplitFeature'
+import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
 import { PMMain, PMTitleRow, PMStats } from '../../components/ProductMock'
 import { Icon } from '../../components/Icon'
 import { AccessMatrix } from '../../components/Matrix'
@@ -139,7 +139,7 @@ export function AdminPage() {
               ]}
             />
           </SplitContent>
-          <MockFrame minHeight={340}>
+          <MockFrameWithLink panel="clientportal" label="Try Client Portal yourself" minHeight={340}>
             <PMMain>
               <PMTitleRow title="Client Portal" sub="ADMIN · MANAGE ACCESS" />
               <PMStats
@@ -170,24 +170,27 @@ export function AdminPage() {
               </div>
               <div class="pm-card">
                 <div class="pm-card-h">Recent Portal Activity</div>
-                <div style="display: grid; grid-template-columns: 1.3fr 1fr 1.6fr 0.8fr; gap: 6px; font-size: 9.5px; letter-spacing: 0.06em; color: var(--gw-ink-500); text-transform: uppercase; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--gw-cream-300); margin-bottom: 4px;">
-                  <span>Event</span><span>Actor</span><span>Detail</span><span>Date</span>
+                <div style="display: grid; grid-template-columns: 1.3fr 1fr 1.6fr 0.8fr; gap: 6px;">
+                  <span style="font-size: 9.5px; letter-spacing: 0.06em; color: var(--gw-ink-500); text-transform: uppercase; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--gw-cream-300);">Event</span>
+                  <span style="font-size: 9.5px; letter-spacing: 0.06em; color: var(--gw-ink-500); text-transform: uppercase; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--gw-cream-300);">Actor</span>
+                  <span style="font-size: 9.5px; letter-spacing: 0.06em; color: var(--gw-ink-500); text-transform: uppercase; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--gw-cream-300);">Detail</span>
+                  <span style="font-size: 9.5px; letter-spacing: 0.06em; color: var(--gw-ink-500); text-transform: uppercase; font-weight: 600; padding-bottom: 6px; border-bottom: 1px solid var(--gw-cream-300);">Date</span>
+                  {[
+                    { event: 'Login', actor: 'Nicole Knesley', detail: 'Portal home', date: 'Jul 6' },
+                    { event: 'Invite sent', actor: 'Tyler', detail: 'D. Patel', date: 'Jul 3' },
+                    { event: 'Access revoked', actor: 'Tyler', detail: 'R. Aleman', date: 'Jun 28' },
+                  ].map((r, i) => (
+                    <>
+                      <span style={`font-size: 11px; padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.event}</span>
+                      <span style={`font-size: 11px; color: var(--gw-ink-500); padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.actor}</span>
+                      <span style={`font-size: 11px; color: var(--gw-ink-500); padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.detail}</span>
+                      <span style={`font-size: 11px; color: var(--gw-ink-500); padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.date}</span>
+                    </>
+                  ))}
                 </div>
-                {[
-                  { event: 'Login', actor: 'Nicole Knesley', detail: 'Portal home', date: 'Jul 6' },
-                  { event: 'Invite sent', actor: 'Tyler', detail: 'D. Patel', date: 'Jul 3' },
-                  { event: 'Access revoked', actor: 'Tyler', detail: 'R. Aleman', date: 'Jun 28' },
-                ].map((r, i) => (
-                  <div style={`display: contents;`}>
-                    <span style={`font-size: 11px; padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.event}</span>
-                    <span style={`font-size: 11px; color: var(--gw-ink-500); padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.actor}</span>
-                    <span style={`font-size: 11px; color: var(--gw-ink-500); padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.detail}</span>
-                    <span style={`font-size: 11px; color: var(--gw-ink-500); padding: 6px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>{r.date}</span>
-                  </div>
-                ))}
               </div>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
         </div>
       </section>
 

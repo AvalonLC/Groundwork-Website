@@ -1,6 +1,6 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
-import { SplitContent, MockFrame } from '../../components/SplitFeature'
+import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
 import { PMMain, PMTitleRow, PMStats } from '../../components/ProductMock'
 
 export function FinancialPage() {
@@ -33,7 +33,7 @@ export function FinancialPage() {
               ]}
             />
           </SplitContent>
-          <MockFrame>
+          <MockFrameWithLink panel="invoicing" label="Try invoice reporting yourself">
             <PMMain>
               <PMTitleRow title="Financial Snapshot" sub="OWNER VIEW · Q3 2026" />
               <PMStats
@@ -66,7 +66,7 @@ export function FinancialPage() {
                 ))}
               </div>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
         </div>
       </section>
 
@@ -86,7 +86,7 @@ export function FinancialPage() {
               ]}
             />
           </SplitContent>
-          <MockFrame minHeight={340}>
+          <MockFrameWithLink panel="money" label="Try Money Loop yourself" minHeight={340}>
             <PMMain>
               <PMTitleRow title="Money Loop" sub="OWNER · FY2026" />
               <div style="background: var(--gw-cream-200); border-radius: 10px; padding: 20px; margin-top: 6px;">
@@ -102,13 +102,13 @@ export function FinancialPage() {
                 </div>
               </div>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
         </div>
       </section>
 
       <section class="section">
         <div class="wrap split">
-          <MockFrame minHeight={340}>
+          <MockFrameWithLink panel="budget" label="Try Budget & Rates yourself" minHeight={340}>
             <PMMain>
               <PMTitleRow title="Budget & Rates" sub="LABOR · MACHINE · OVERHEAD" />
               <div class="pm-card" style="margin-bottom: 10px;">
@@ -144,7 +144,7 @@ export function FinancialPage() {
                 <div style="font-size: 11.5px; color: var(--gw-ink-500); padding: 6px 0;">Insurance & admin · $198k/yr pool · effective Jan 1, 2026</div>
               </div>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
           <SplitContent
             eyebrow="Budget & Rates"
             title="The burdened-cost engine behind every price you charge."

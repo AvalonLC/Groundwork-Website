@@ -1,6 +1,6 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
-import { SplitContent, MockFrame } from '../../components/SplitFeature'
+import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
 import { PMMain, PMTitleRow, PMStats, PMCard, PMTask } from '../../components/ProductMock'
 
 export function OperationsPage() {
@@ -34,7 +34,7 @@ export function OperationsPage() {
               ]}
             />
           </SplitContent>
-          <MockFrame>
+          <MockFrameWithLink panel="dispatch" label="Try the dispatch board yourself">
             <PMMain>
               <PMTitleRow title="Dispatch Board" sub="WEEK OF JULY 7" />
               <PMStats
@@ -74,13 +74,13 @@ export function OperationsPage() {
                 </div>
               </div>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
         </div>
       </section>
 
       <section class="section">
         <div class="wrap split">
-          <MockFrame>
+          <MockFrameWithLink panel="workorders" label="Try work orders yourself">
             <PMMain>
               <PMTitleRow title="Work Order #WO-2264" sub="KNESLEY · POOL COPING · CREW A" />
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
@@ -102,7 +102,7 @@ export function OperationsPage() {
                 <PMTask title="Final walkthrough with client" />
               </PMCard>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
           <SplitContent
             eyebrow="Work orders, assets & time"
             title="Every job has a paper trail."
@@ -137,7 +137,7 @@ export function OperationsPage() {
               ]}
             />
           </SplitContent>
-          <MockFrame minHeight={340}>
+          <MockFrameWithLink panel="aar" label="Try AAR Reviews yourself" minHeight={340}>
             <PMMain>
               <PMTitleRow title="AAR Template Builder" sub="END-OF-DAY QUESTION SET" />
               <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -159,7 +159,7 @@ export function OperationsPage() {
                 ))}
               </div>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
         </div>
       </section>
 
