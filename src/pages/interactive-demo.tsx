@@ -167,6 +167,19 @@ export function InteractiveDemoPage() {
                       { label: 'Sold', value: '3', variant: 'sold' },
                     ]}
                   />
+                  <div class="demo-ring-wrap" style="background: var(--gw-cream-200); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;">
+                    <div class="demo-ring-box">
+                      <svg viewBox="0 0 66 66">
+                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-cream-300)" stroke-width="8" />
+                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-forest-600)" stroke-width="8" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="56" />
+                      </svg>
+                      <span class="demo-ring-num">67%</span>
+                    </div>
+                    <div class="demo-ring-caption">
+                      <strong>4 of 6 open deals have a proposal out</strong>
+                      Groundwork tracks this ratio automatically — reps whose proposal rate drops below 50% get flagged for a coaching nudge before the pipeline dries up.
+                    </div>
+                  </div>
                   <PMCard heading="My Tasks" chip="Click a task to check it off">
                     {tasks.map((t) => (
                       <div class={`pm-task${t.overdue ? ' overdue' : ''}`} data-demo-task data-demo-searchable={t.title.toLowerCase()} style="cursor: pointer;">
@@ -184,6 +197,12 @@ export function InteractiveDemoPage() {
                 {/* ================= 2. Pipeline ================= */}
                 <div data-demo-panel="pipeline" hidden>
                   <PMTitleRow title="Pipeline" sub="SAMPLE WORKSPACE · SALES · CLICK A CARD" />
+                  <PMStatRow columns={4} stats={[
+                    { label: 'Pipeline Value', value: '$202k' },
+                    { label: 'Weighted Value', value: '$96k' },
+                    { label: 'Avg. Deal Age', value: '11d' },
+                    { label: 'Win Rate (90d)', value: '58%', variant: 'sold' },
+                  ]} />
                   <div class="demo-workspace" style="min-height: 380px;">
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
                       <div>
@@ -248,6 +267,22 @@ export function InteractiveDemoPage() {
                     { label: 'Avg. response', value: '4h' },
                     { label: 'This week', value: '3' },
                   ]} />
+                  <PMCard heading="Lead Sources · Last 30 Days" chip="Where new business is coming from">
+                    <div class="demo-hbars" style="margin-bottom: 4px;">
+                      {[
+                        { label: 'Referral', pct: 100, value: '9 leads', color: 'var(--gw-forest-600)' },
+                        { label: 'Website form', pct: 78, value: '7 leads', color: 'var(--gw-forest-600)' },
+                        { label: 'Called in', pct: 44, value: '4 leads', color: 'var(--gw-forest-600)' },
+                        { label: 'Google/SEO', pct: 33, value: '3 leads', color: 'var(--gw-forest-600)' },
+                      ].map((s) => (
+                        <div class="demo-hbar-row">
+                          <span class="demo-hbar-label">{s.label}</span>
+                          <div class="demo-hbar-track"><div class="demo-hbar-fill" style={`width: ${s.pct}%; background: ${s.color};`}></div></div>
+                          <span class="demo-hbar-value">{s.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </PMCard>
                   <PMCard heading="Intake Queue" chip="Click a lead to mark it contacted">
                     {[
                       { name: 'Priya Anand', source: 'Website form · irrigation repair inquiry', tag: 'New', variant: 'website' },
@@ -275,6 +310,22 @@ export function InteractiveDemoPage() {
                     { label: 'Portal users', value: '1' },
                     { label: 'Avg. tenure', value: '2.1 yrs' },
                   ]} />
+                  <PMCard heading="Client Value" chip="Lifetime revenue by account">
+                    <div class="demo-hbars" style="margin-bottom: 4px;">
+                      {[
+                        { label: 'N. Knesley', pct: 100, value: '$59.9k' },
+                        { label: 'V. Dhulipala', pct: 53, value: '$32.0k' },
+                        { label: 'S. Lampard', pct: 30, value: '$18.0k' },
+                        { label: 'J. Grumley', pct: 14, value: '$8.2k' },
+                      ].map((s) => (
+                        <div class="demo-hbar-row">
+                          <span class="demo-hbar-label">{s.label}</span>
+                          <div class="demo-hbar-track"><div class="demo-hbar-fill" style={`width: ${s.pct}%;`}></div></div>
+                          <span class="demo-hbar-value">{s.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </PMCard>
                   <PMCard heading="Client Roster" chip="Click a client to expand">
                     {[
                       { name: 'Nicole Knesley', addr: '6005 Chapman Rd, Lorton VA', value: '$59.9k lifetime', note: '2 properties on file · bi-weekly maintenance contract active since 2024.' },
@@ -300,6 +351,12 @@ export function InteractiveDemoPage() {
                 {/* ================= 5. Properties ================= */}
                 <div data-demo-panel="properties" hidden>
                   <PMTitleRow title="Properties" sub="SAMPLE WORKSPACE · EVERY ADDRESS SERVICED" />
+                  <PMStats stats={[
+                    { label: 'Properties', value: '4' },
+                    { label: 'Active Jobs', value: '3', variant: 'sold' },
+                    { label: 'Recurring Contracts', value: '1' },
+                    { label: 'Avg. Job Value', value: '$29.1k' },
+                  ]} />
                   <PMCard heading="Property Records" chip="Click a property to expand access notes">
                     {[
                       { addr: '6005 Chapman Rd, Lorton VA', client: 'Nicole Knesley', status: 'Pool coping in progress', note: 'Gate code 4471. Friendly dog on property. Irrigation shutoff behind garage.' },
@@ -325,6 +382,19 @@ export function InteractiveDemoPage() {
                 {/* ================= 6. Estimates ================= */}
                 <div data-demo-panel="estimates" hidden>
                   <PMTitleRow title="Estimates" sub="SAMPLE WORKSPACE · PROPOSALS OUT" />
+                  <div class="demo-ring-wrap" style="background: var(--gw-cream-200); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;">
+                    <div class="demo-ring-box">
+                      <svg viewBox="0 0 66 66">
+                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-cream-300)" stroke-width="8" />
+                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-green-500)" stroke-width="8" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="72" />
+                      </svg>
+                      <span class="demo-ring-num">58%</span>
+                    </div>
+                    <div class="demo-ring-caption">
+                      <strong>Win rate on sent estimates, last 90 days</strong>
+                      Every estimate here is priced from the same Budget &amp; Rates engine, so margin never drifts below target on a job you actually win.
+                    </div>
+                  </div>
                   <PMCard heading="Open & Recent Estimates" chip="Click one to expand the breakdown">
                     {[
                       { title: 'Pool Coping Replacement', client: 'N. Knesley', amount: '$58,200', tag: 'Sent', variant: 'website', materials: '$31,400', labor: '$21,800', margin: '15%' },
@@ -366,6 +436,21 @@ export function InteractiveDemoPage() {
                     { label: "Something's Off", value: '2', variant: 'overdue' },
                     { label: 'Needs Your Call', value: '3' },
                   ]} />
+                  <div style="margin-bottom: 16px;">
+                    <div class="demo-microlabel">$48.2k breakdown, by what's blocking it</div>
+                    <div class="demo-stackbar">
+                      <div class="demo-stackbar-seg" style="width: 45%; background: var(--gw-forest-600);">Needs an Invoice</div>
+                      <div class="demo-stackbar-seg" style="width: 33%; background: var(--gw-amber-500);">Needs to be Paid</div>
+                      <div class="demo-stackbar-seg" style="width: 15%; background: var(--gw-red-500);">Off</div>
+                      <div class="demo-stackbar-seg" style="width: 7%; background: var(--gw-blue-500);">Call</div>
+                    </div>
+                    <div class="demo-stackbar-legend">
+                      <span><span class="dot" style="background: var(--gw-forest-600);"></span>Needs an Invoice · $21.7k</span>
+                      <span><span class="dot" style="background: var(--gw-amber-500);"></span>Needs to be Paid · $15.9k</span>
+                      <span><span class="dot" style="background: var(--gw-red-500);"></span>Something's Off · $7.2k</span>
+                      <span><span class="dot" style="background: var(--gw-blue-500);"></span>Needs Your Call · $3.4k</span>
+                    </div>
+                  </div>
                   <PMCard heading="What Needs Doing" chip="Click an item to mark it handled">
                     {moneyRows.map((row, i) => (
                       <div class="demo-row" data-demo-handle data-demo-searchable={`${row.client.toLowerCase()} ${row.job.toLowerCase()}`}>
@@ -384,12 +469,14 @@ export function InteractiveDemoPage() {
                 <div data-demo-panel="budget" hidden>
                   <PMTitleRow title="Budget & Rates" sub="SAMPLE WORKSPACE · LABOR · MACHINE · OVERHEAD" />
                   <PMCard heading="Labor Rates" chip="Crew A Install · click for the math">
-                    <div class="demo-row demo-row-expand" data-demo-expand>
-                      <div class="demo-row-main">
-                        <div><div style="font-size: 12.5px; font-weight: 600;">Fully burdened rate</div><div class="demo-row-sub">Base + burden + equipment allocation</div></div>
-                        <span class="demo-row-value" style="font-size: 15px; font-weight: 600;">$37.90/hr</span>
+                    <div class="demo-row-expand" data-demo-expand style="cursor: pointer;">
+                      <div style="font-size: 11px; color: var(--gw-ink-500); margin-bottom: 6px;">$24.00/hr sticker wage &rarr; <strong style="color: var(--gw-ink-900);">$37.90/hr</strong> fully burdened — the number every estimate is actually priced against.</div>
+                      <div class="demo-stackbar" style="height: 34px;">
+                        <div class="demo-stackbar-seg" style="width: 63%; background: var(--gw-forest-700);">Base $24.00</div>
+                        <div class="demo-stackbar-seg" style="width: 26%; background: var(--gw-forest-500);">Burden $9.80</div>
+                        <div class="demo-stackbar-seg" style="width: 11%; background: var(--gw-clay-500);">Equip $4.10</div>
                       </div>
-                      <div class="demo-row-detail" hidden>Base wage $24.00/hr + payroll tax/comp/benefits $9.80/hr + equipment allocation $4.10/hr = $37.90/hr. This is the number every estimate on Cedar Grove's crews is priced against — not the $24.00 sticker wage.</div>
+                      <div class="demo-row-detail" hidden>Base wage $24.00/hr + payroll tax/comp/benefits $9.80/hr + equipment allocation $4.10/hr = $37.90/hr fully burdened. This is the number every estimate on Cedar Grove's crews is priced against — not the $24.00 sticker wage.</div>
                     </div>
                   </PMCard>
                   <PMCard heading="Machine Rates" chip="Fleet">
@@ -422,6 +509,14 @@ export function InteractiveDemoPage() {
                     { label: '61–90 days', value: '$8.2k', variant: 'overdue' },
                     { label: '90+ days', value: '$0' },
                   ]} />
+                  <div style="margin-bottom: 16px;">
+                    <div class="demo-microlabel">$48.2k outstanding, by age</div>
+                    <div class="demo-stackbar">
+                      <div class="demo-stackbar-seg" style="width: 37%; background: var(--gw-forest-600);">0–30d</div>
+                      <div class="demo-stackbar-seg" style="width: 46%; background: var(--gw-amber-500);">31–60d</div>
+                      <div class="demo-stackbar-seg" style="width: 17%; background: var(--gw-red-500);">61–90d</div>
+                    </div>
+                  </div>
                   <PMCard heading="Invoice Aging" chip="Click a row to send a reminder">
                     {[
                       { client: 'R. Aleman', job: 'Full landscape', amount: '$84,000', tag: 'Paid', variant: 'rapport' },
@@ -533,6 +628,21 @@ export function InteractiveDemoPage() {
                     { label: 'Completed', value: '11' },
                     { label: 'Active Crews', value: '3' },
                   ]} />
+                  <PMCard heading="Today's Timeline" chip="7:00 AM – 4:00 PM window">
+                    {[
+                      { crew: 'Crew A', left: 0, width: 83.3, color: 'var(--gw-green-500)', label: 'Knesley · 7:00–3:30' },
+                      { crew: 'Crew B', left: 0, width: 77.8, color: 'var(--gw-amber-500)', label: 'Maint. route · 7:00–2:00' },
+                      { crew: 'Crew C', left: 5.6, width: 94.4, color: 'var(--gw-green-500)', label: 'Patel · 7:30–4:00' },
+                    ].map((g) => (
+                      <div class="demo-gantt-row">
+                        <span class="demo-gantt-crew">{g.crew}</span>
+                        <div class="demo-gantt-track">
+                          <div class="demo-gantt-bar" style={`left: ${g.left}%; width: ${g.width - g.left}%; background: ${g.color};`}>{g.label}</div>
+                        </div>
+                      </div>
+                    ))}
+                    <div class="demo-gantt-axis"><span>7:00 AM</span><span>10:00 AM</span><span>1:00 PM</span><span>4:00 PM</span></div>
+                  </PMCard>
                   <PMCard heading="Crews" chip="Today's dispatched jobs · click for ETA notes">
                     {[
                       { crew: 'Crew A', label: 'Knesley · Pool Coping', status: '● On site 07:12', color: 'var(--gw-green-500)', note: 'Checked in on time. Materials delivered yesterday — no blockers expected.' },
@@ -575,6 +685,19 @@ export function InteractiveDemoPage() {
                       <div style="font-size: 13px; font-weight: 600;">Crew A · 4 people</div>
                     </div>
                   </div>
+                  <div class="demo-ring-wrap" style="background: var(--gw-cream-200); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;">
+                    <div class="demo-ring-box">
+                      <svg viewBox="0 0 66 66">
+                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-cream-300)" stroke-width="8" />
+                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-green-500)" stroke-width="8" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="56" />
+                      </svg>
+                      <span class="demo-ring-num">67%</span>
+                    </div>
+                    <div class="demo-ring-caption">
+                      <strong>4 of 6 checklist items complete</strong>
+                      This work order auto-closes and rolls straight into the AAR review queue the moment the last box is checked.
+                    </div>
+                  </div>
                   <PMCard heading="Scope & Checklist" chip="Click a remaining item to check it off">
                     <PMTask title="Remove existing coping" done />
                     <PMTask title="Prep bond beam" done />
@@ -593,7 +716,24 @@ export function InteractiveDemoPage() {
                     { label: 'Active Users', value: '1', variant: 'sold' },
                     { label: 'Pending Invites', value: '1' },
                     { label: 'Disabled', value: '1', variant: 'overdue' },
+                    { label: 'Logins (30d)', value: '9' },
                   ]} />
+                  <PMCard heading="Portal Logins · Last 4 Weeks" chip="Client self-service, off your phone">
+                    <div class="demo-vbars">
+                      {[
+                        { label: 'Wk 1', val: '2', h: 30 },
+                        { label: 'Wk 2', val: '1', h: 15 },
+                        { label: 'Wk 3', val: '3', h: 45 },
+                        { label: 'Wk 4', val: '3', h: 45 },
+                      ].map((w) => (
+                        <div class="demo-vbar-col">
+                          <span class="demo-vbar-val">{w.val}</span>
+                          <div class="demo-vbar" style={`height: ${w.h}px;`}></div>
+                          <span class="demo-vbar-label">{w.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </PMCard>
                   <PMCard heading="Portal Users" chip="3 total · click Disable/Enable to toggle">
                     {[
                       { name: 'Nicole Knesley', status: 'Active', last: 'Logged in 2d ago' },
@@ -640,6 +780,12 @@ export function InteractiveDemoPage() {
                 {/* ================= 14. AAR Reviews ================= */}
                 <div data-demo-panel="aar" hidden>
                   <PMTitleRow title="AAR Reviews" sub="SAMPLE WORKSPACE · OFFICE REVIEW QUEUE" />
+                  <PMStats stats={[
+                    { label: 'Submitted (7d)', value: '9' },
+                    { label: 'Awaiting Review', value: '3' },
+                    { label: 'Flagged Issues', value: '1', variant: 'overdue' },
+                    { label: 'Same-Day Review Rate', value: '89%', variant: 'sold' },
+                  ]} />
                   <PMCard heading="Submitted Reports" chip="Click a report to mark it reviewed">
                     {[
                       { crew: 'Crew A', job: 'Knesley · Pool Coping', date: 'Jul 6', flag: false },

@@ -2386,6 +2386,64 @@ body.mobile-menu-open { overflow: hidden; }
   .demo-schedule-grid { grid-template-columns: 60px repeat(5, minmax(90px, 1fr)); overflow-x: auto; }
 }
 
+/* ===========================================================
+   Shared dashboard chart primitives — used across every /explore
+   panel below to replace plain text/list metrics with real
+   visualizations (horizontal bars, stacked bars, progress rings,
+   mini timelines). Built entirely from existing --gw-* tokens so
+   every panel stays visually consistent with the rest of the mock.
+   =========================================================== */
+
+/* Horizontal bar row — label + track + value. Used for stage
+   breakdowns, lead sources, client value comparisons, margins. */
+.demo-hbars { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+.demo-hbar-row { display: grid; grid-template-columns: 118px 1fr 64px; align-items: center; gap: 10px; }
+.demo-hbar-label { font-size: 11.5px; font-weight: 600; color: var(--gw-ink-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.demo-hbar-track { height: 8px; background: var(--gw-cream-300); border-radius: 5px; overflow: hidden; }
+.demo-hbar-fill { height: 100%; border-radius: 5px; background: var(--gw-forest-600); }
+.demo-hbar-value { text-align: right; font-size: 11.5px; font-weight: 700; color: var(--gw-ink-900); white-space: nowrap; }
+
+/* Stacked horizontal bar — burdened-cost breakdowns, AR aging. */
+.demo-stackbar { display: flex; height: 28px; border-radius: 7px; overflow: hidden; margin: 4px 0 10px; }
+.demo-stackbar-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; padding: 0 4px; }
+.demo-stackbar-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 10.5px; color: var(--gw-ink-500); }
+.demo-stackbar-legend .dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 5px; vertical-align: -1px; }
+
+/* Circular progress ring — health %, utilization, win rate, completion. */
+.demo-ring-wrap { display: flex; align-items: center; gap: 16px; }
+.demo-ring-box { position: relative; width: 66px; height: 66px; flex: none; }
+.demo-ring-box svg { width: 66px; height: 66px; transform: rotate(-90deg); }
+.demo-ring-box .demo-ring-num {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-serif); font-size: 15px; font-weight: 600; color: var(--gw-ink-900);
+}
+.demo-ring-caption { font-size: 11px; color: var(--gw-ink-500); line-height: 1.5; }
+.demo-ring-caption strong { display: block; font-size: 12.5px; color: var(--gw-ink-900); margin-bottom: 2px; }
+
+/* Vertical mini bar chart — weekly trend sparkbars. */
+.demo-vbars { display: flex; align-items: flex-end; gap: 9px; height: 64px; margin: 4px 0 6px; }
+.demo-vbar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.demo-vbar { width: 100%; max-width: 28px; border-radius: 4px 4px 0 0; background: var(--gw-forest-600); }
+.demo-vbar-val { font-size: 9px; color: var(--gw-ink-400); margin-bottom: 3px; }
+.demo-vbar-label { font-size: 9.5px; color: var(--gw-ink-400); margin-top: 5px; }
+
+/* Mini timeline / gantt bar — crew-day view on the Dispatch board. */
+.demo-gantt-row { display: grid; grid-template-columns: 62px 1fr; align-items: center; gap: 10px; margin-bottom: 8px; }
+.demo-gantt-crew { font-size: 11px; font-weight: 700; color: var(--gw-forest-800); }
+.demo-gantt-track { position: relative; height: 26px; background: var(--gw-cream-200); border-radius: 6px; }
+.demo-gantt-bar {
+  position: absolute; top: 3px; bottom: 3px; border-radius: 5px;
+  color: white; font-size: 9.5px; font-weight: 600;
+  display: flex; align-items: center; padding: 0 8px;
+  overflow: hidden; white-space: nowrap;
+}
+.demo-gantt-axis { display: flex; justify-content: space-between; font-size: 9px; color: var(--gw-ink-400); margin: 2px 62px 12px; padding: 0 2px; }
+@media (max-width: 480px) {
+  .demo-hbar-row { grid-template-columns: 90px 1fr 56px; }
+  .demo-ring-wrap { flex-wrap: wrap; }
+}
+
 /* Topbar search — functional filter input styled to match the static
    .pm-topbar .search chrome used on the homepage hero mock */
 .pm-topbar .search { display: flex; align-items: center; }
