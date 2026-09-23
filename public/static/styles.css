@@ -2313,6 +2313,79 @@ body.mobile-menu-open { overflow: hidden; }
 }
 .demo-row-expand.demo-row-open { background: var(--gw-cream-200); border-radius: 4px; }
 
+/* Schedule panel: real calendar + crew view — a week grid (crews as rows,
+   days as columns) instead of a stacked day-by-day list. First column is
+   the sticky crew label, then one column per weekday. Job cells reuse
+   .demo-row-expand's click-to-reveal behavior (data-demo-expand is bound
+   generically in site.js) but lay out their own content instead of using
+   .demo-row-main, since they're a compact stacked card, not a list row. */
+.demo-schedule-grid {
+  display: grid;
+  grid-template-columns: 88px repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.demo-schedule-corner { background: transparent; }
+.demo-schedule-daylabel {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--gw-ink-500);
+  text-align: center;
+  padding: 6px 4px 8px;
+  border-bottom: 2px solid var(--gw-line-strong);
+}
+.demo-schedule-daylabel span { display: block; font-size: 9.5px; font-weight: 500; color: var(--gw-ink-400); text-transform: none; letter-spacing: 0.02em; margin-top: 1px; }
+.demo-schedule-crewlabel {
+  display: flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--gw-forest-800);
+  background: var(--gw-cream-200);
+  border-radius: 6px;
+  padding: 0 8px;
+}
+.demo-schedule-cell {
+  background: var(--gw-cream-100);
+  border: 1px solid var(--gw-cream-300);
+  border-radius: 6px;
+  padding: 7px 8px;
+  cursor: pointer;
+  transition: background .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.demo-schedule-cell:hover { background: var(--gw-cream-200); box-shadow: 0 3px 8px -4px rgba(20,40,30,0.25); transform: translateY(-1px); }
+.demo-schedule-cell.demo-row-open { background: var(--gw-green-050); border-color: #C5DDCC; }
+.demo-schedule-cell.off {
+  background: repeating-linear-gradient(135deg, var(--gw-cream-200), var(--gw-cream-200) 6px, var(--gw-cream-100) 6px, var(--gw-cream-100) 12px);
+  color: var(--gw-ink-400);
+  font-size: 10.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.demo-schedule-cell.off:hover { transform: none; box-shadow: none; background: repeating-linear-gradient(135deg, var(--gw-cream-200), var(--gw-cream-200) 6px, var(--gw-cream-100) 6px, var(--gw-cream-100) 12px); }
+.demo-schedule-job-title { font-size: 11.5px; font-weight: 700; color: var(--gw-ink-900); line-height: 1.25; }
+.demo-schedule-job-meta { font-size: 10.5px; color: var(--gw-ink-500); margin-top: 1px; line-height: 1.25; }
+.demo-schedule-job-time { font-size: 10px; font-weight: 600; color: var(--gw-forest-700); margin-top: 4px; }
+.demo-schedule-cell.conflict { border-color: var(--gw-red-500); box-shadow: inset 0 0 0 1px var(--gw-red-500); }
+.demo-schedule-conflict-tag {
+  margin-top: 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--gw-red-500);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.demo-schedule-cell .demo-row-detail { margin-top: 7px; padding-top: 7px; font-size: 10.5px; }
+@media (max-width: 720px) {
+  .demo-schedule-grid { grid-template-columns: 60px repeat(5, minmax(90px, 1fr)); overflow-x: auto; }
+}
+
 /* Topbar search — functional filter input styled to match the static
    .pm-topbar .search chrome used on the homepage hero mock */
 .pm-topbar .search { display: flex; align-items: center; }

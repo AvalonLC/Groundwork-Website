@@ -441,34 +441,86 @@ export function InteractiveDemoPage() {
                   <DemoGoto to="money" label="See how this rolls into the health number" />
                 </div>
 
-                {/* ================= 10. Schedule ================= */}
+                {/* ================= 10. Schedule =================
+                    Real calendar + crew view (not a stacked list) — mirrors
+                    the actual product's week grid: crews as rows, days as
+                    columns, job blocks in each cell. One cell is flagged as
+                    a capacity conflict (double-booked crew) to demonstrate
+                    the real feature described on /product/operations
+                    ("capacity conflicts flagged inline"). Click any job
+                    block to expand its dispatch note — reuses the generic
+                    data-demo-expand handler already wired in site.js. */}
                 <div data-demo-panel="schedule" hidden>
-                  <PMTitleRow title="Schedule" sub="SAMPLE WORKSPACE · WEEK OF JULY 7" />
-                  {[
-                    { day: 'Monday', stops: [
-                      { crew: 'Crew A', client: 'N. Knesley', job: 'Pool Coping · Day 1 of 2', time: '7:00 AM – 3:30 PM' },
-                      { crew: 'Crew B', client: 'Recurring maintenance', job: '6 stops', time: '7:00 AM – 2:00 PM' },
-                    ]},
-                    { day: 'Tuesday', stops: [
-                      { crew: 'Crew A', client: 'N. Knesley', job: 'Pool Coping · Day 2 of 2', time: '7:00 AM – 3:30 PM' },
-                      { crew: 'Crew C', client: 'D. Patel', job: 'Hardscape install', time: '7:30 AM – 4:00 PM' },
-                    ]},
-                    { day: 'Wednesday', stops: [
-                      { crew: 'Crew B', client: 'Recurring maintenance', job: '6 stops', time: '7:00 AM – 2:00 PM' },
-                    ]},
-                  ].map((d) => (
-                    <PMCard heading={d.day} chip={`${d.stops.length} stop${d.stops.length === 1 ? '' : 's'}`}>
-                      {d.stops.map((s) => (
-                        <div class="demo-row demo-row-expand" data-demo-expand data-demo-searchable={`${s.client.toLowerCase()} ${s.job.toLowerCase()} ${s.crew.toLowerCase()}`}>
-                          <div class="demo-row-main">
-                            <div><div style="font-size: 12.5px; font-weight: 600;">{s.crew} · {s.client}</div><div class="demo-row-sub">{s.job}</div></div>
-                            <span class="demo-row-value" style="font-size: 11px;">{s.time}</span>
-                          </div>
-                          <div class="demo-row-detail" hidden>Dispatched to Field Mode automatically at 6:30 AM the morning of. Foreman gets the route, checklist, and client notes on their phone.</div>
-                        </div>
-                      ))}
-                    </PMCard>
-                  ))}
+                  <PMTitleRow title="Schedule" sub="SAMPLE WORKSPACE · WEEK OF JULY 7 · CALENDAR + CREW VIEW" />
+                  <PMStats stats={[
+                    { label: 'Scheduled Hours', value: '146' },
+                    { label: 'Crew Utilization', value: '91%', variant: 'sold' },
+                    { label: 'Capacity Conflicts', value: '1', variant: 'overdue' },
+                    { label: 'Active Crews', value: '3' },
+                  ]} />
+                  {(() => {
+                    const weekDays = [
+                      { label: 'Mon', date: 'Jul 7' },
+                      { label: 'Tue', date: 'Jul 8' },
+                      { label: 'Wed', date: 'Jul 9' },
+                      { label: 'Thu', date: 'Jul 10' },
+                      { label: 'Fri', date: 'Jul 11' },
+                    ]
+                    const crews = [
+                      { name: 'Crew A', jobs: [
+                        { client: 'N. Knesley', job: 'Pool Coping', meta: 'Day 1 of 2', time: '7:00–3:30', note: 'Dispatched to Field Mode automatically at 6:30 AM. Foreman gets the route, checklist, and client notes on their phone.' },
+                        { client: 'N. Knesley', job: 'Pool Coping', meta: 'Day 2 of 2', time: '7:00–3:30', note: 'Final day — grout, seal, and client walkthrough. Work order auto-closes once the checklist is complete.' },
+                        null,
+                        { client: 'R. Aleman', job: 'Full Landscape', meta: 'Phase 2 of 3', time: '7:00–4:00', note: 'Irrigation rough-in. Materials for phase 3 already staged based on the job\u2019s bill of materials.' },
+                        { client: 'R. Aleman', job: 'Full Landscape', meta: 'Phase 3 of 3', time: '7:00–2:30', note: 'Planting + sod. Client walkthrough scheduled for 2:00 PM.' },
+                      ]},
+                      { name: 'Crew B', jobs: [
+                        { client: 'Recurring Maint.', job: 'Route 1 · 6 stops', meta: null, time: '7:00–2:00', note: 'Weekly recurring route — set once, runs on autopilot until the client cancels or the season ends.' },
+                        { client: 'Recurring Maint.', job: 'Route 1 · 6 stops', meta: null, time: '7:00–2:00', conflict: true, note: 'Capacity conflict: Crew B is also assigned an emergency irrigation callout at J. Grumley\u2019s from 1:30\u20133:00 PM today. Scheduling flags the overlap automatically \u2014 reassign a crew or push one job before Tuesday.' },
+                        { client: 'Recurring Maint.', job: 'Route 1 · 6 stops', meta: null, time: '7:00–2:00', note: 'Weekly recurring route — set once, runs on autopilot until the client cancels or the season ends.' },
+                        { client: 'Recurring Maint.', job: 'Route 2 · 5 stops', meta: null, time: '7:00–1:30', note: 'Bi-weekly route, second week of the cycle. Auto-invoices the morning after completion.' },
+                        { client: 'Recurring Maint.', job: 'Route 2 · 5 stops', meta: null, time: '7:00–1:30', note: 'Bi-weekly route, second week of the cycle. Auto-invoices the morning after completion.' },
+                      ]},
+                      { name: 'Crew C', jobs: [
+                        null,
+                        { client: 'D. Patel', job: 'Hardscape Install', meta: 'Day 1 of 3', time: '7:30–4:00', note: 'Skid steer delivered by 7:30 AM. Materials confirmed on-site the day before via the supplier integration.' },
+                        { client: 'D. Patel', job: 'Hardscape Install', meta: 'Day 2 of 3', time: '7:30–4:00', note: 'Paver base + drainage. Weather flagged clear all day \u2014 no delay risk.' },
+                        { client: 'S. Lampard', job: 'Deck Lighting', meta: 'Install day', time: '8:00–3:00', note: 'Single-day install. Client will receive an automatic \u201con our way\u201d text 30 minutes out.' },
+                        { client: 'J. Grumley', job: 'Tree Removal', meta: 'Follow-up trim', time: '7:30–11:00', note: 'Short follow-up visit from last month\u2019s removal job \u2014 billed against the original estimate\u2019s punch list.' },
+                      ]},
+                    ]
+                    return (
+                      <div class="demo-schedule-grid" style="margin-bottom: 6px;">
+                        <div class="demo-schedule-corner"></div>
+                        {weekDays.map((d) => (
+                          <div class="demo-schedule-daylabel">{d.label} <span>{d.date}</span></div>
+                        ))}
+                        {crews.map((crew) => (
+                          <>
+                            <div class="demo-schedule-crewlabel">{crew.name}</div>
+                            {crew.jobs.map((j, i) => (
+                              j ? (
+                                <div
+                                  class={`demo-schedule-cell demo-row-expand${j.conflict ? ' conflict' : ''}`}
+                                  data-demo-expand
+                                  data-demo-searchable={`${j.client.toLowerCase()} ${j.job.toLowerCase()} ${crew.name.toLowerCase()}`}
+                                >
+                                  <div class="demo-schedule-job-title">{j.client}</div>
+                                  <div class="demo-schedule-job-meta">{j.job}{j.meta ? ` · ${j.meta}` : ''}</div>
+                                  <div class="demo-schedule-job-time">{j.time}</div>
+                                  {j.conflict && <div class="demo-schedule-conflict-tag">⚠ Double-booked</div>}
+                                  <div class="demo-row-detail" hidden>{j.note}</div>
+                                </div>
+                              ) : (
+                                <div class="demo-schedule-cell off">Open</div>
+                              )
+                            ))}
+                          </>
+                        ))}
+                      </div>
+                    )
+                  })()}
+                  <div style="font-size: 11px; color: var(--gw-ink-400); margin-bottom: 4px;">Click any job to see its dispatch note. Real Groundwork lets you drag a block to reschedule it — this sample view is click-only.</div>
                   <DemoGoto to="dispatch" label="See today's dispatch board" />
                 </div>
 
