@@ -1,5 +1,6 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
+import { WithTryItLink } from '../../components/SplitFeature'
 
 export function ForemenPage() {
   const stops = [
@@ -58,6 +59,7 @@ export function ForemenPage() {
               ]}
             />
           </div>
+          <WithTryItLink panel="schedule" label="Try the schedule yourself">
           <div class="pm" style="grid-template-columns: 1fr; box-shadow: var(--shadow-lg); min-height: 460px; overflow:hidden;">
             <main class="pm-main" style="background: var(--gw-forest-900); color: var(--gw-cream-100);">
               <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 16px;">
@@ -87,6 +89,7 @@ export function ForemenPage() {
               </div>
             </main>
           </div>
+          </WithTryItLink>
         </div>
       </section>
 

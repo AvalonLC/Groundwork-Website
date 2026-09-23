@@ -83,3 +83,16 @@ export function MockFrameWithLink({ panel, label, children, minHeight }: PropsWi
     </div>
   )
 }
+
+// Same idea as MockFrameWithLink, but for pages that build their own <PM>
+// mock directly (the role pages under /roles/*) instead of going through
+// <MockFrame>. Wraps whatever's passed in (typically a whole <PM>...</PM>
+// block) plus the caption as one grid cell.
+export function WithTryItLink({ panel, label, children }: PropsWithChildren<{ panel: string; label?: string }>) {
+  return (
+    <div>
+      {children}
+      <TryItLink panel={panel} label={label} />
+    </div>
+  )
+}

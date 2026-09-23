@@ -1,6 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { PM, PMMain, PMTitleRow, PMCard } from '../../components/ProductMock'
+import { WithTryItLink } from '../../components/SplitFeature'
 
 export function LaborersPage() {
   const assignments = [
@@ -58,6 +59,7 @@ export function LaborersPage() {
               ]}
             />
           </div>
+          <WithTryItLink panel="workorders" label="Try work orders yourself">
           <PM minHeight={460} shadow="var(--shadow-lg)">
             <PMMain>
               <PMTitleRow title="My Work" sub="LABORER · DIEGO" />
@@ -83,6 +85,7 @@ export function LaborersPage() {
               </PMCard>
             </PMMain>
           </PM>
+          </WithTryItLink>
         </div>
       </section>
 

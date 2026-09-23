@@ -1,6 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { PM, PMMain, PMTitleRow, PMCard, PMTask } from '../../components/ProductMock'
+import { WithTryItLink } from '../../components/SplitFeature'
 
 export function OfficeManagersPage() {
   const tasks = [
@@ -48,6 +49,7 @@ export function OfficeManagersPage() {
               ]}
             />
           </div>
+          <WithTryItLink panel="leads" label="Try the intake queue yourself">
           <PM minHeight={460} shadow="var(--shadow-lg)">
             <PMMain>
               <PMTitleRow title="All Follow-Ups" sub="OFFICE · 6 REPS · THIS WEEK" />
@@ -66,6 +68,7 @@ export function OfficeManagersPage() {
               </PMCard>
             </PMMain>
           </PM>
+          </WithTryItLink>
         </div>
       </section>
 

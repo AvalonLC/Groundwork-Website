@@ -1,6 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { PM, PMMain, PMTitleRow, PMStats, PMCard, PMTask } from '../../components/ProductMock'
+import { WithTryItLink } from '../../components/SplitFeature'
 
 export function OwnersPage() {
   const stageBars = [
@@ -47,6 +48,7 @@ export function OwnersPage() {
               ]}
             />
           </div>
+          <WithTryItLink panel="pipeline" label="Try the pipeline yourself">
           <PM minHeight={460} shadow="var(--shadow-lg)">
             <PMMain>
               <PMTitleRow title="Business Pulse" sub="OWNER · Q3 2026" />
@@ -70,11 +72,13 @@ export function OwnersPage() {
               </PMCard>
             </PMMain>
           </PM>
+          </WithTryItLink>
         </div>
       </section>
 
       <section class="section">
         <div class="wrap split">
+          <WithTryItLink panel="money" label="Try Money Loop yourself">
           <PM minHeight={460} shadow="var(--shadow-lg)">
             <PMMain>
               <PMTitleRow title="Financial Snapshot" sub="OWNER · JULY" />
@@ -94,6 +98,7 @@ export function OwnersPage() {
               </PMCard>
             </PMMain>
           </PM>
+          </WithTryItLink>
           <div class="split-content">
             <span class="eyebrow">The questions Groundwork answers for you</span>
             <h2 style="margin-top: 20px;">The ones you used to have to ask three people.</h2>

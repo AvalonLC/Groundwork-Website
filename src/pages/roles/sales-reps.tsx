@@ -1,6 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { PM, PMMain, PMTitleRow, PMStats, PMCard, PMTask } from '../../components/ProductMock'
+import { WithTryItLink } from '../../components/SplitFeature'
 
 export function SalesRepsPage() {
   const checklist = [
@@ -48,6 +49,7 @@ export function SalesRepsPage() {
               ]}
             />
           </div>
+          <WithTryItLink panel="command" label="Try Command Center yourself">
           <PM minHeight={460} shadow="var(--shadow-lg)">
             <PMMain>
               <PMTitleRow title="My Day" sub="SALES REP · MARCUS" />
@@ -66,6 +68,7 @@ export function SalesRepsPage() {
               </PMCard>
             </PMMain>
           </PM>
+          </WithTryItLink>
         </div>
       </section>
 

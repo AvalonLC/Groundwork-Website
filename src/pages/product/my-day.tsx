@@ -1,6 +1,6 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
-import { SplitContent, MockFrame } from '../../components/SplitFeature'
+import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
 import { PMCard, PMMain, PMStats, PMTask, PMTitleRow, PMSectionLabel } from '../../components/ProductMock'
 
 export function MyDayPage() {
@@ -34,7 +34,7 @@ export function MyDayPage() {
               ]}
             />
           </SplitContent>
-          <MockFrame>
+          <MockFrameWithLink panel="command" label="Try Command Center yourself">
             <PMMain>
               <PMTitleRow title="Today" sub="TYLER · TUESDAY, JULY 7" />
               <PMStats
@@ -55,7 +55,7 @@ export function MyDayPage() {
                 <PMTask title="Vijay Dhulipala discovery" />
               </PMCard>
             </PMMain>
-          </MockFrame>
+          </MockFrameWithLink>
         </div>
       </section>
 
