@@ -39,3 +39,6 @@ mobile-audit/slices/
 mobile-audit/**/*.png
 mobile-audit/**/*.json
 .qa/
+
+# Cloudflare / wrangler local state
+.wrangler/
