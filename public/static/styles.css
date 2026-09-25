@@ -2444,6 +2444,221 @@ body.mobile-menu-open { overflow: hidden; }
   .demo-ring-wrap { flex-wrap: wrap; }
 }
 
+/* ===========================================================
+   Real-product-parity primitives (2026-09-24 pass) — filter bars,
+   status-pill rows, real <table> styling, colored crew chips, avatar
+   initials, and a schedule toolbar. Added to bring Pipeline, Estimates,
+   Schedule, and the new Assets / Time Tracker / Employees & Teams panels
+   closer to the actual Groundwork product's information density, based
+   on real screenshots of the live app.
+   =========================================================== */
+
+/* Filter bar — search/select controls above a table or kanban board.
+   Purely cosmetic selects (no real filtering logic) styled to match the
+   rest of the product-mock chrome. */
+.demo-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.demo-filter-select {
+  appearance: none;
+  background: var(--gw-cream-100);
+  border: 1px solid var(--gw-line);
+  border-radius: 6px;
+  padding: 6px 26px 6px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--gw-ink-700);
+  cursor: default;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23707d74' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 13px;
+}
+.demo-filter-spacer { flex: 1; }
+
+/* Status-pill filter row — All / Follow-up needed / Viewed / Accepted /
+   Draft style toggle strip (Estimates, Assets category filters, etc). */
+.demo-pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.demo-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--gw-cream-200);
+  color: var(--gw-ink-500);
+  cursor: default;
+  white-space: nowrap;
+}
+.demo-pill.active { background: var(--gw-forest-700); color: white; }
+
+/* Real <table> styling — Estimates, Assets, Employees & Teams. Wrapped in
+   .demo-table-wrap for horizontal scroll on narrow viewports without
+   collapsing columns (matches the .pm-main overflow pattern already used
+   for kanban/schedule grids). */
+.demo-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 4px; }
+.demo-table { width: 100%; border-collapse: collapse; font-size: 11.5px; min-width: 620px; }
+.demo-table th {
+  text-align: left;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--gw-ink-400);
+  padding: 0 10px 8px;
+  border-bottom: 2px solid var(--gw-line-strong);
+  white-space: nowrap;
+}
+.demo-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--gw-cream-300);
+  color: var(--gw-ink-700);
+  vertical-align: middle;
+}
+.demo-table tbody tr { cursor: pointer; transition: background .15s ease; }
+.demo-table tbody tr:hover { background: var(--gw-cream-200); }
+.demo-table tbody tr:last-of-type td { border-bottom: none; }
+.demo-table .demo-table-name { font-weight: 600; color: var(--gw-ink-900); }
+.demo-table .demo-table-sub { font-size: 10.5px; color: var(--gw-ink-500); margin-top: 1px; }
+.demo-table .demo-table-detail-row td {
+  padding: 0 10px 12px;
+  border-bottom: 1px solid var(--gw-cream-300);
+  background: var(--gw-cream-200);
+}
+.demo-table .demo-table-detail-row.hidden-row { display: none; }
+.demo-table-detail-inner { font-size: 11px; color: var(--gw-ink-500); line-height: 1.5; padding-top: 8px; }
+
+/* Small round initials avatar — rep chips on Pipeline cards / table rows,
+   assigned-to chips on Estimates and Work Orders. */
+.demo-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--gw-forest-700);
+  color: white;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  flex: none;
+}
+
+/* Pipeline: 6-stage kanban board — wider than the old 4-column layout, so
+   it scrolls horizontally on narrow mocks instead of squeezing columns. */
+.demo-kanban-wide { display: grid; grid-auto-flow: column; grid-auto-columns: 152px; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+.demo-kanban-wide .demo-lead-card { margin-bottom: 6px; }
+.demo-kanban-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; font-size: 9.5px; color: var(--gw-ink-400); }
+.demo-kanban-nextup { font-size: 9.5px; color: var(--gw-forest-700); font-weight: 600; margin-top: 3px; }
+
+/* Schedule: toolbar (date nav + view toggle) and colored crew chips /
+   crew-lane headers, mirroring the real Operations screen. */
+.demo-schedule-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.demo-schedule-datenav { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--gw-ink-900); }
+.demo-schedule-navbtn {
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 5px;
+  background: var(--gw-cream-200);
+  color: var(--gw-ink-500);
+  flex: none;
+}
+.demo-schedule-todaybtn {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--gw-forest-700);
+  background: var(--gw-green-050);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.demo-schedule-viewtoggle { display: flex; gap: 2px; background: var(--gw-cream-200); border-radius: 7px; padding: 2px; }
+.demo-schedule-viewtoggle span { font-size: 10.5px; font-weight: 600; padding: 5px 10px; border-radius: 5px; color: var(--gw-ink-500); }
+.demo-schedule-viewtoggle span.active { background: var(--gw-cream-100); color: var(--gw-ink-900); box-shadow: 0 1px 3px rgba(20,40,30,0.15); }
+
+.demo-crew-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.demo-crew-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+  background: var(--gw-cream-200);
+  color: var(--gw-ink-700);
+}
+.demo-crew-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+.demo-schedule-layout { display: grid; grid-template-columns: 168px 1fr; gap: 14px; align-items: start; }
+.demo-jobpool {
+  background: var(--gw-cream-200);
+  border-radius: 8px;
+  padding: 10px;
+}
+.demo-jobpool-head { font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--gw-ink-500); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.demo-jobpool-item {
+  background: var(--gw-cream-100);
+  border: 1px solid var(--gw-cream-300);
+  border-radius: 6px;
+  padding: 7px 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+.demo-jobpool-item:hover { border-color: var(--gw-line-strong); }
+.demo-jobpool-item .name { font-size: 11px; font-weight: 700; color: var(--gw-ink-900); }
+.demo-jobpool-item .meta { font-size: 9.5px; color: var(--gw-ink-500); margin-top: 2px; }
+.demo-jobpool-item .prio { display: inline-block; margin-top: 4px; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+.demo-jobpool-item .prio.high { background: #FBDCD8; color: #A02B2B; }
+.demo-jobpool-item .prio.normal { background: var(--gw-cream-300); color: var(--gw-ink-500); }
+
+.demo-schedule-grid-wide { grid-template-columns: 108px repeat(5, 1fr); }
+.demo-schedule-crewlabel-wide { flex-direction: column; align-items: flex-start; padding: 6px 8px; gap: 1px; border-left: 4px solid var(--gw-forest-600); }
+.demo-schedule-crewlabel-wide .crew-name { font-size: 11px; font-weight: 700; color: var(--gw-forest-800); }
+.demo-schedule-crewlabel-wide .crew-meta { font-size: 9px; color: var(--gw-ink-500); }
+
+@media (max-width: 720px) {
+  .demo-schedule-layout { grid-template-columns: 1fr; }
+  .demo-jobpool { display: none; }
+}
+
+/* Time Tracker: live clock face + running timer */
+.demo-clock-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--gw-forest-900);
+  color: white;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.demo-clock-time { font-family: var(--font-serif); font-size: 32px; font-weight: 500; letter-spacing: 0.01em; }
+.demo-clock-sub { font-size: 11px; color: #9FB8A8; margin-top: 2px; }
+.demo-clock-btn {
+  background: var(--gw-green-600);
+  color: white;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 7px;
+  cursor: pointer;
+  flex: none;
+  transition: background .15s ease;
+}
+.demo-clock-btn:hover { background: var(--gw-green-500); }
+.demo-clock-btn.running { background: var(--gw-red-500); }
+.demo-clock-btn.running:hover { background: #C24545; }
+
 /* Topbar search — functional filter input styled to match the static
    .pm-topbar .search chrome used on the homepage hero mock */
 .pm-topbar .search { display: flex; align-items: center; }

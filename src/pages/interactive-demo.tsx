@@ -17,6 +17,15 @@ import { Icon } from '../components/Icon'
 // for the rest. Groundwork AI is not a sidebar item in the real product —
 // it's a slide-over available from anywhere — so it's triggered from a
 // topbar button instead of living in the sidebar list.
+//
+// Real-product-parity pass (2026-09-24): using real screenshots from a
+// live Groundwork customer instance as a visual reference (kept
+// illustrative/fictional here — see cast note above), three panels
+// (Pipeline, Estimates, Schedule) were upgraded from simple list/kanban
+// mockups to match the real app's information density (filter bars,
+// status-pill rows, real <table> markup, a Job Pool + crew-chip schedule
+// toolbar), and three brand-new sidebar panels were added that didn't
+// exist before (Assets, Time Tracker, Employees & Teams — 17 total now).
 
 export function InteractiveDemoPage() {
   const tasks = [
@@ -77,7 +86,7 @@ export function InteractiveDemoPage() {
     { key: 'aar', label: 'AAR Reviews' },
   ]
 
-  const sidebarStops = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'schedule', 'dispatch', 'workorders', 'clientportal', 'aar']
+  const sidebarStops = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar']
 
   return (
     <Layout
@@ -194,34 +203,94 @@ export function InteractiveDemoPage() {
                   <DemoGoto to="pipeline" label="See the Sales Pipeline" />
                 </div>
 
-                {/* ================= 2. Pipeline ================= */}
+                {/* ================= 2. Pipeline =================
+                    Real 6-stage board with a filter row, a Closed Results
+                    time-range block, and a By Division breakdown — mirrors
+                    the actual product's Pipeline screen (kanban + stats +
+                    division split), not just a bare 4-column board. */}
                 <div data-demo-panel="pipeline" hidden>
                   <PMTitleRow title="Pipeline" sub="SAMPLE WORKSPACE · SALES · CLICK A CARD" />
+                  <div class="demo-filter-bar">
+                    <span class="demo-filter-select">Rep: All Reps</span>
+                    <span class="demo-filter-select">Division: All Divisions</span>
+                    <span class="demo-filter-select">Sort: Newest First</span>
+                    <span class="demo-filter-spacer"></span>
+                    <span class="demo-pill active" style="cursor: default;">This Quarter</span>
+                  </div>
                   <PMStatRow columns={4} stats={[
                     { label: 'Pipeline Value', value: '$202k' },
                     { label: 'Weighted Value', value: '$96k' },
                     { label: 'Avg. Deal Age', value: '11d' },
                     { label: 'Win Rate (90d)', value: '58%', variant: 'sold' },
                   ]} />
+                  <PMCard heading="By Division" chip="Open pipeline value">
+                    <div class="demo-hbars" style="margin-bottom: 4px;">
+                      {[
+                        { label: 'Landscape', pct: 100, value: '$142k', color: 'var(--gw-forest-600)' },
+                        { label: 'Hardscape', pct: 34, value: '$48k', color: 'var(--gw-clay-500)' },
+                        { label: 'Maintenance', pct: 8, value: '$12k', color: 'var(--gw-green-500)' },
+                      ].map((s) => (
+                        <div class="demo-hbar-row">
+                          <span class="demo-hbar-label">{s.label}</span>
+                          <div class="demo-hbar-track"><div class="demo-hbar-fill" style={`width: ${s.pct}%; background: ${s.color};`}></div></div>
+                          <span class="demo-hbar-value">{s.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </PMCard>
+                  <div style="height: 14px;"></div>
                   <div class="demo-workspace" style="min-height: 380px;">
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                    <div class="demo-kanban-wide">
                       <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-forest-600);">Discovery · 2</div>
-                        <div class="demo-lead-card" data-demo-lead="grumley" data-demo-searchable="julie grumley tree removal" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600;">Julie Grumley</div><div style="font-size: 10.5px; color: var(--gw-ink-500);">Tree Removal · $8.2k</div></div>
-                        <div class="demo-lead-card" data-demo-lead="dhulipala" data-demo-searchable="vijay dhulipala backyard redesign" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;"><div style="font-size: 12px; font-weight: 600;">Vijay Dhulipala</div><div style="font-size: 10.5px; color: var(--gw-ink-500);">Backyard · $32k</div></div>
+                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-forest-600);">New Lead · 1</div>
+                        <div class="demo-lead-card" data-demo-lead="grumley" data-demo-searchable="julie grumley tree removal" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
+                          <div style="font-size: 12px; font-weight: 600;">Julie Grumley</div>
+                          <div style="font-size: 10.5px; color: var(--gw-ink-500);">Tree Removal · $8.2k</div>
+                          <div class="demo-kanban-meta"><span class="demo-avatar">JG</span><span>2d in stage</span></div>
+                        </div>
                       </div>
                       <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-green-500);">Budget · 1</div>
-                        <div class="demo-lead-card" data-demo-lead="knesley" data-demo-searchable="nicole knesley pool coping" style="background: var(--gw-green-050); border: 1px solid #C5DDCC; border-radius: 6px; padding: 10px;"><div style="font-size: 12px; font-weight: 600;">Nicole Knesley</div><div style="font-size: 10.5px; color: var(--gw-ink-500);">Pool Coping · $58k</div><div style="margin-top: 4px;"><span class="tag tag-qual">Qualified</span></div></div>
+                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-green-500);">Intro Call · 1</div>
+                        <div class="demo-lead-card" data-demo-lead="dhulipala" data-demo-searchable="vijay dhulipala backyard redesign" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
+                          <div style="font-size: 12px; font-weight: 600;">Vijay Dhulipala</div>
+                          <div style="font-size: 10.5px; color: var(--gw-ink-500);">Backyard · $32k</div>
+                          <div class="demo-kanban-meta"><span class="demo-avatar">TR</span><span>4d in stage</span></div>
+                          <div class="demo-kanban-nextup">Next: 2nd measurement visit</div>
+                        </div>
                       </div>
                       <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-clay-500);">Decision · 1</div>
-                        <div class="demo-lead-card" data-demo-lead="lampard" data-demo-searchable="sydney lampard deck lighting" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;"><div style="font-size: 12px; font-weight: 600;">Sydney Lampard</div><div style="font-size: 10.5px; color: var(--gw-ink-500);">Deck lighting · $18k</div></div>
+                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-blue-500);">On-Site Consult · 0</div>
+                        <div class="demo-jobpool-item" style="cursor: default; opacity: 0.5; text-align: center; font-size: 10.5px; color: var(--gw-ink-400); padding: 16px 8px;">No deals in this stage</div>
                       </div>
                       <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-forest-800);">Won · 2</div>
-                        <div data-demo-searchable="r. aleman full landscape" style="background: var(--gw-forest-800); color: white; border-radius: 6px; padding: 10px; margin-bottom: 6px;"><div style="font-size: 12px; font-weight: 600;">R. Aleman</div><div style="font-size: 10.5px; color: #B7CFC1;">Full landscape · $84k</div></div>
-                        <div data-demo-searchable="d. patel hardscape" style="background: var(--gw-forest-800); color: white; border-radius: 6px; padding: 10px;"><div style="font-size: 12px; font-weight: 600;">D. Patel</div><div style="font-size: 10.5px; color: #B7CFC1;">Hardscape · $52k</div></div>
+                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-amber-500);">Estimate Dev. · 1</div>
+                        <div class="demo-lead-card" data-demo-lead="knesley" data-demo-searchable="nicole knesley pool coping" style="background: var(--gw-green-050); border: 1px solid #C5DDCC; border-radius: 6px; padding: 10px;">
+                          <div style="font-size: 12px; font-weight: 600;">Nicole Knesley</div>
+                          <div style="font-size: 10.5px; color: var(--gw-ink-500);">Pool Coping · $58k</div>
+                          <div style="margin-top: 4px;"><span class="tag tag-qual">Qualified</span></div>
+                          <div class="demo-kanban-meta"><span class="demo-avatar">TR</span><span>6d in stage</span></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-clay-500);">Presentation · 0</div>
+                        <div class="demo-jobpool-item" style="cursor: default; opacity: 0.5; text-align: center; font-size: 10.5px; color: var(--gw-ink-400); padding: 16px 8px;">No deals in this stage</div>
+                      </div>
+                      <div>
+                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-red-500);">Decision Pending · 1</div>
+                        <div class="demo-lead-card" data-demo-lead="lampard" data-demo-searchable="sydney lampard deck lighting" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
+                          <div style="font-size: 12px; font-weight: 600;">Sydney Lampard</div>
+                          <div style="font-size: 10.5px; color: var(--gw-ink-500);">Deck lighting · $18k</div>
+                          <div class="demo-kanban-meta"><span class="demo-avatar">TR</span><span>9d in stage</span></div>
+                          <div class="demo-kanban-nextup">⚠ No contact 6 days</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="margin-top: 16px;">
+                      <div class="demo-microlabel">Closed Results · This Quarter</div>
+                      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 6px;">
+                        <div data-demo-searchable="r. aleman full landscape" style="background: var(--gw-forest-800); color: white; border-radius: 6px; padding: 10px;"><div style="font-size: 12px; font-weight: 600;">R. Aleman · Won</div><div style="font-size: 10.5px; color: #B7CFC1;">Full landscape · $84k</div></div>
+                        <div data-demo-searchable="d. patel hardscape" style="background: var(--gw-forest-800); color: white; border-radius: 6px; padding: 10px;"><div style="font-size: 12px; font-weight: 600;">D. Patel · Won</div><div style="font-size: 10.5px; color: #B7CFC1;">Hardscape · $52k</div></div>
                       </div>
                     </div>
 
@@ -379,41 +448,76 @@ export function InteractiveDemoPage() {
                   <DemoGoto to="estimates" label="See what's being quoted on these properties" />
                 </div>
 
-                {/* ================= 6. Estimates ================= */}
+                {/* ================= 6. Estimates =================
+                    Real data-table treatment: 5 stat cards, search +
+                    status/rep filters, a status-pill row, and an actual
+                    <table> (Number/Customer/Title/Total/Status/Engagement/
+                    Updated) — mirrors the real product's Estimates screen
+                    instead of a bare ring + expandable list. */}
                 <div data-demo-panel="estimates" hidden>
                   <PMTitleRow title="Estimates" sub="SAMPLE WORKSPACE · PROPOSALS OUT" />
-                  <div class="demo-ring-wrap" style="background: var(--gw-cream-200); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;">
-                    <div class="demo-ring-box">
-                      <svg viewBox="0 0 66 66">
-                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-cream-300)" stroke-width="8" />
-                        <circle cx="33" cy="33" r="27" fill="none" stroke="var(--gw-green-500)" stroke-width="8" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="72" />
-                      </svg>
-                      <span class="demo-ring-num">58%</span>
+                  <PMStatRow columns={5} stats={[
+                    { label: 'Total Active', value: '4' },
+                    { label: 'Awaiting Response', value: '2' },
+                    { label: 'Accepted / Won', value: '1', variant: 'sold' },
+                    { label: 'Drafts', value: '1' },
+                    { label: 'Declined', value: '0' },
+                  ]} />
+                  <div class="demo-filter-bar">
+                    <div class="pm-topbar search" style="flex: 1 1 200px; max-width: 240px; padding: 6px 10px;">
+                      <Icon name="search" size={11} style="opacity: 0.6; margin-right: 5px; vertical-align: -2px;" />
+                      <span style="font-size: 11.5px; color: var(--gw-ink-400);">Search estimates…</span>
                     </div>
-                    <div class="demo-ring-caption">
-                      <strong>Win rate on sent estimates, last 90 days</strong>
-                      Every estimate here is priced from the same Budget &amp; Rates engine, so margin never drifts below target on a job you actually win.
-                    </div>
+                    <span class="demo-filter-select">Rep: All Reps</span>
+                    <span class="demo-filter-select">Sort: Last Updated</span>
                   </div>
-                  <PMCard heading="Open & Recent Estimates" chip="Click one to expand the breakdown">
-                    {[
-                      { title: 'Pool Coping Replacement', client: 'N. Knesley', amount: '$58,200', tag: 'Sent', variant: 'website', materials: '$31,400', labor: '$21,800', margin: '15%' },
-                      { title: 'Tree Removal', client: 'J. Grumley', amount: '$8,200', tag: 'Draft', variant: 'follow', materials: '$900', labor: '$5,200', margin: '25%' },
-                      { title: 'Backyard Redesign', client: 'V. Dhulipala', amount: '$32,000', tag: 'Sent', variant: 'website', materials: '$18,600', labor: '$10,400', margin: '9%' },
-                      { title: 'Deck Lighting', client: 'S. Lampard', amount: '$18,000', tag: 'Approved', variant: 'rapport', materials: '$9,200', labor: '$6,300', margin: '14%' },
-                    ].map((e) => (
-                      <div class="demo-row demo-row-expand" data-demo-expand data-demo-searchable={`${e.title.toLowerCase()} ${e.client.toLowerCase()}`}>
-                        <div class="demo-row-main">
-                          <div>
-                            <div style="font-size: 12.5px; font-weight: 600;">{e.title}</div>
-                            <div class="demo-row-sub">{e.client} · {e.amount}</div>
-                          </div>
-                          <span class={`tag tag-${e.variant}`}>{e.tag}</span>
-                        </div>
-                        <div class="demo-row-detail" hidden>Materials {e.materials} · Labor {e.labor} · Margin {e.margin} — priced from the same Budget &amp; Rates engine used company-wide.</div>
-                      </div>
-                    ))}
-                  </PMCard>
+                  <div class="demo-pill-row">
+                    <span class="demo-pill active" data-demo-pill data-demo-pill-filter="all">All</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="follow">Follow-up needed</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="viewed">Viewed</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="accepted">Accepted</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="draft">Draft</span>
+                  </div>
+                  <div class="demo-table-wrap">
+                    <table class="demo-table">
+                      <thead>
+                        <tr>
+                          <th>Number</th>
+                          <th>Customer</th>
+                          <th>Title / Service</th>
+                          <th>Total</th>
+                          <th>Status</th>
+                          <th>Engagement</th>
+                          <th>Updated</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { num: 'EST-1042', client: 'N. Knesley', title: 'Pool Coping Replacement', amount: '$58,200', tag: 'Sent', status: 'follow', variant: 'follow', tagLabel: 'Follow-up needed', engagement: 'Opened 3× · last Jul 4', updated: 'Jul 4', materials: '$31,400', labor: '$21,800', margin: '15%' },
+                          { num: 'EST-1041', client: 'J. Grumley', title: 'Tree Removal', amount: '$8,200', tag: 'Draft', status: 'draft', variant: 'follow', tagLabel: 'Draft', engagement: 'Not yet sent', updated: 'Jul 2', materials: '$900', labor: '$5,200', margin: '25%' },
+                          { num: 'EST-1039', client: 'V. Dhulipala', title: 'Backyard Redesign', amount: '$32,000', tag: 'Viewed', status: 'viewed', variant: 'website', tagLabel: 'Viewed', engagement: 'Opened 1× · Jun 30', updated: 'Jun 30', materials: '$18,600', labor: '$10,400', margin: '9%' },
+                          { num: 'EST-1035', client: 'S. Lampard', title: 'Deck Lighting', amount: '$18,000', tag: 'Accepted', status: 'accepted', variant: 'rapport', tagLabel: 'Accepted', engagement: 'Signed Jun 24', updated: 'Jun 24', materials: '$9,200', labor: '$6,300', margin: '14%' },
+                        ].map((e) => (
+                          <>
+                            <tr data-demo-table-row data-demo-status={e.status} data-demo-searchable={`${e.title.toLowerCase()} ${e.client.toLowerCase()} ${e.num.toLowerCase()}`}>
+                              <td style="color: var(--gw-ink-500);">{e.num}</td>
+                              <td class="demo-table-name">{e.client}</td>
+                              <td>{e.title}</td>
+                              <td style="font-weight: 700; color: var(--gw-ink-900);">{e.amount}</td>
+                              <td><span class={`tag tag-${e.variant}`}>{e.tagLabel}</span></td>
+                              <td style="color: var(--gw-ink-500);">{e.engagement}</td>
+                              <td style="color: var(--gw-ink-500);">{e.updated}</td>
+                            </tr>
+                            <tr class="demo-table-detail-row hidden-row" data-demo-status={e.status}>
+                              <td colspan={7}>
+                                <div class="demo-table-detail-inner">Materials {e.materials} · Labor {e.labor} · Margin {e.margin} — priced from the same Budget &amp; Rates engine used company-wide.</div>
+                              </td>
+                            </tr>
+                          </>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                   <DemoGoto to="budget" label="See the rate engine behind these numbers" />
                 </div>
 
@@ -553,6 +657,43 @@ export function InteractiveDemoPage() {
                     { label: 'Capacity Conflicts', value: '1', variant: 'overdue' },
                     { label: 'Active Crews', value: '3' },
                   ]} />
+                  <div class="demo-schedule-toolbar">
+                    <div class="demo-schedule-datenav">
+                      <span class="demo-schedule-navbtn"><Icon name="arrow" size={11} style="transform: scaleX(-1);" /></span>
+                      <span>Jul 7 – Jul 11, 2026</span>
+                      <span class="demo-schedule-navbtn"><Icon name="arrow" size={11} /></span>
+                      <span class="demo-schedule-todaybtn">Today</span>
+                    </div>
+                    <span class="demo-filter-spacer"></span>
+                    <div class="demo-schedule-viewtoggle">
+                      <span class="active">Week</span>
+                      <span>Timeline</span>
+                      <span>Month</span>
+                      <span>Agenda</span>
+                    </div>
+                    <span class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">+ Job</span>
+                  </div>
+                  <div class="demo-crew-chips">
+                    <span class="demo-crew-chip"><span class="dot" style="background: var(--gw-blue-500);"></span>Crew A · 2</span>
+                    <span class="demo-crew-chip"><span class="dot" style="background: var(--gw-green-500);"></span>Crew B · 3</span>
+                    <span class="demo-crew-chip"><span class="dot" style="background: var(--gw-clay-500);"></span>Crew C · 3</span>
+                  </div>
+                  <div class="demo-schedule-layout">
+                    <div class="demo-jobpool">
+                      <div class="demo-jobpool-head"><span>Job Pool</span><span>3</span></div>
+                      {[
+                        { name: 'M. Okafor', meta: 'Irrigation repair · unscheduled', prio: 'high' },
+                        { name: 'Ferretti Cleanup', meta: 'Spring cleanup · needs crew', prio: 'normal' },
+                        { name: 'Webb Fence Est.', meta: 'Site walk · tentative', prio: 'normal' },
+                      ].map((j) => (
+                        <div class="demo-jobpool-item">
+                          <div class="name">{j.name}</div>
+                          <div class="meta">{j.meta}</div>
+                          <span class={`prio ${j.prio}`}>{j.prio === 'high' ? 'Needs Crew' : 'Tentative'}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
                   {(() => {
                     const weekDays = [
                       { label: 'Mon', date: 'Jul 7' },
@@ -562,21 +703,21 @@ export function InteractiveDemoPage() {
                       { label: 'Fri', date: 'Jul 11' },
                     ]
                     const crews = [
-                      { name: 'Crew A', jobs: [
+                      { name: 'Crew A', color: 'var(--gw-blue-500)', meta: 'T. Reyes · 4 people · 38/40 hrs', jobs: [
                         { client: 'N. Knesley', job: 'Pool Coping', meta: 'Day 1 of 2', time: '7:00–3:30', note: 'Dispatched to Field Mode automatically at 6:30 AM. Foreman gets the route, checklist, and client notes on their phone.' },
                         { client: 'N. Knesley', job: 'Pool Coping', meta: 'Day 2 of 2', time: '7:00–3:30', note: 'Final day — grout, seal, and client walkthrough. Work order auto-closes once the checklist is complete.' },
                         null,
                         { client: 'R. Aleman', job: 'Full Landscape', meta: 'Phase 2 of 3', time: '7:00–4:00', note: 'Irrigation rough-in. Materials for phase 3 already staged based on the job\u2019s bill of materials.' },
                         { client: 'R. Aleman', job: 'Full Landscape', meta: 'Phase 3 of 3', time: '7:00–2:30', note: 'Planting + sod. Client walkthrough scheduled for 2:00 PM.' },
                       ]},
-                      { name: 'Crew B', jobs: [
+                      { name: 'Crew B', color: 'var(--gw-green-500)', meta: 'J. Alvarez · 5 people · 40/40 hrs', jobs: [
                         { client: 'Recurring Maint.', job: 'Route 1 · 6 stops', meta: null, time: '7:00–2:00', note: 'Weekly recurring route — set once, runs on autopilot until the client cancels or the season ends.' },
                         { client: 'Recurring Maint.', job: 'Route 1 · 6 stops', meta: null, time: '7:00–2:00', conflict: true, note: 'Capacity conflict: Crew B is also assigned an emergency irrigation callout at J. Grumley\u2019s from 1:30\u20133:00 PM today. Scheduling flags the overlap automatically \u2014 reassign a crew or push one job before Tuesday.' },
                         { client: 'Recurring Maint.', job: 'Route 1 · 6 stops', meta: null, time: '7:00–2:00', note: 'Weekly recurring route — set once, runs on autopilot until the client cancels or the season ends.' },
                         { client: 'Recurring Maint.', job: 'Route 2 · 5 stops', meta: null, time: '7:00–1:30', note: 'Bi-weekly route, second week of the cycle. Auto-invoices the morning after completion.' },
                         { client: 'Recurring Maint.', job: 'Route 2 · 5 stops', meta: null, time: '7:00–1:30', note: 'Bi-weekly route, second week of the cycle. Auto-invoices the morning after completion.' },
                       ]},
-                      { name: 'Crew C', jobs: [
+                      { name: 'Crew C', color: 'var(--gw-clay-500)', meta: 'D. Sokolov · 3 people · 34/40 hrs', jobs: [
                         null,
                         { client: 'D. Patel', job: 'Hardscape Install', meta: 'Day 1 of 3', time: '7:30–4:00', note: 'Skid steer delivered by 7:30 AM. Materials confirmed on-site the day before via the supplier integration.' },
                         { client: 'D. Patel', job: 'Hardscape Install', meta: 'Day 2 of 3', time: '7:30–4:00', note: 'Paver base + drainage. Weather flagged clear all day \u2014 no delay risk.' },
@@ -585,14 +726,17 @@ export function InteractiveDemoPage() {
                       ]},
                     ]
                     return (
-                      <div class="demo-schedule-grid" style="margin-bottom: 6px;">
+                      <div class="demo-schedule-grid demo-schedule-grid-wide" style="margin-bottom: 6px;">
                         <div class="demo-schedule-corner"></div>
                         {weekDays.map((d) => (
                           <div class="demo-schedule-daylabel">{d.label} <span>{d.date}</span></div>
                         ))}
                         {crews.map((crew) => (
                           <>
-                            <div class="demo-schedule-crewlabel">{crew.name}</div>
+                            <div class="demo-schedule-crewlabel demo-schedule-crewlabel-wide" style={`border-left-color: ${crew.color};`}>
+                              <span class="crew-name">{crew.name}</span>
+                              <span class="crew-meta">{crew.meta}</span>
+                            </div>
                             {crew.jobs.map((j, i) => (
                               j ? (
                                 <div
@@ -616,6 +760,8 @@ export function InteractiveDemoPage() {
                     )
                   })()}
                   <div style="font-size: 11px; color: var(--gw-ink-400); margin-bottom: 4px;">Click any job to see its dispatch note. Real Groundwork lets you drag a block to reschedule it — this sample view is click-only.</div>
+                    </div>
+                  </div>
                   <DemoGoto to="dispatch" label="See today's dispatch board" />
                 </div>
 
@@ -709,7 +855,116 @@ export function InteractiveDemoPage() {
                   <DemoGoto to="aar" label="See the end-of-day report this feeds into" />
                 </div>
 
-                {/* ================= 13. Client Portal ================= */}
+                {/* ================= 13. Assets =================
+                    Equipment/vehicle tracking table — stat cards, category
+                    filter pills, and a real <table> (Asset/Category/
+                    Assigned Crew/Status/Last Service/Next Service). */}
+                <div data-demo-panel="assets" hidden>
+                  <PMTitleRow title="Assets" sub="SAMPLE WORKSPACE · EQUIPMENT &amp; VEHICLES" />
+                  <PMStatRow columns={4} stats={[
+                    { label: 'Total Assets', value: '9' },
+                    { label: 'In Use Today', value: '5', variant: 'sold' },
+                    { label: 'Needs Service', value: '2', variant: 'overdue' },
+                    { label: 'Out of Service', value: '0' },
+                  ]} />
+                  <div class="demo-pill-row">
+                    <span class="demo-pill active" data-demo-pill data-demo-pill-filter="all">All</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="vehicle">Vehicles</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="equipment">Equipment</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="tool">Power Tools</span>
+                  </div>
+                  <div class="demo-table-wrap">
+                    <table class="demo-table">
+                      <thead>
+                        <tr>
+                          <th>Asset</th>
+                          <th>Category</th>
+                          <th>Assigned Crew</th>
+                          <th>Status</th>
+                          <th>Last Service</th>
+                          <th>Next Service</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { name: '¾-Ton Dump Truck', tagline: 'Ford F-350 · Unit 04', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Crew A', status: 'In Use', variant: 'rapport', last: 'Jun 2', next: 'Sep 2', detail: 'Oil change + brake inspection done Jun 2. Mileage 41,208 — next service due at 45,000 mi or Sep 2, whichever comes first.' },
+                          { name: 'Skid Steer', tagline: 'Bobcat S650', cat: 'equipment', catLabel: 'Equipment', crew: 'Crew C', status: 'In Use', variant: 'rapport', last: 'May 20', next: 'Aug 20', detail: 'Hydraulic fluid + filter service last done May 20. 612 hours on the meter — quarterly service interval.' },
+                          { name: 'Enclosed Trailer', tagline: '20ft · Unit 11', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Crew B', status: 'In Use', variant: 'rapport', last: 'Apr 8', next: 'Oct 8', detail: 'Tire rotation + bearing pack Apr 8. Registration renews Nov 1.' },
+                          { name: 'Stihl Chainsaw', tagline: 'MS 271 · Tag #14', cat: 'tool', catLabel: 'Power Tool', crew: 'Crew C', status: 'Needs Service', variant: 'follow', last: 'Mar 1', next: 'Overdue', detail: 'Chain sharpening + carb tune overdue by 3 weeks. Flagged after crew reported reduced cutting speed.' },
+                          { name: 'Zero-Turn Mower', tagline: 'Exmark 60"', cat: 'equipment', catLabel: 'Equipment', crew: 'Crew B', status: 'In Use', variant: 'rapport', last: 'Jun 15', next: 'Sep 15', detail: 'Blade sharpening + deck cleaning Jun 15. 288 hours on the meter.' },
+                          { name: '½-Ton Pickup', tagline: 'Ford F-150 · Unit 02', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Unassigned', status: 'Available', variant: 'website', last: 'May 30', next: 'Aug 30', detail: 'Standard oil change interval. Currently parked at the yard — available for next dispatch.' },
+                          { name: 'Backpack Blower', tagline: 'Echo PB-580T · Tag #22', cat: 'tool', catLabel: 'Power Tool', crew: 'Crew A', status: 'Needs Service', variant: 'follow', last: 'Feb 12', next: 'Overdue', detail: 'Carburetor cleaning overdue. Starting intermittently in cold mornings per crew report.' },
+                          { name: 'Compact Excavator', tagline: 'Kubota KX040', cat: 'equipment', catLabel: 'Equipment', crew: 'Unassigned', status: 'Available', variant: 'website', last: 'Jun 1', next: 'Sep 1', detail: 'Undercarriage inspection Jun 1. Available for hardscape jobs starting next week.' },
+                          { name: 'Utility Trailer', tagline: '12ft open · Unit 07', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Crew A', status: 'In Use', variant: 'rapport', last: 'Apr 22', next: 'Oct 22', detail: 'Wheel bearing repack Apr 22. Hauling irrigation materials for the Knesley job this week.' },
+                        ].map((a) => (
+                          <>
+                            <tr data-demo-table-row data-demo-status={a.cat} data-demo-searchable={`${a.name.toLowerCase()} ${a.tagline.toLowerCase()} ${a.crew.toLowerCase()}`}>
+                              <td>
+                                <div class="demo-table-name">{a.name}</div>
+                                <div class="demo-table-sub">{a.tagline}</div>
+                              </td>
+                              <td style="color: var(--gw-ink-500);">{a.catLabel}</td>
+                              <td style="color: var(--gw-ink-500);">{a.crew}</td>
+                              <td><span class={`tag tag-${a.variant}`}>{a.status}</span></td>
+                              <td style="color: var(--gw-ink-500);">{a.last}</td>
+                              <td style={a.next === 'Overdue' ? 'color: var(--gw-red-500); font-weight: 700;' : 'color: var(--gw-ink-500);'}>{a.next}</td>
+                            </tr>
+                            <tr class="demo-table-detail-row hidden-row" data-demo-status={a.cat}>
+                              <td colspan={6}><div class="demo-table-detail-inner">{a.detail}</div></td>
+                            </tr>
+                          </>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <DemoGoto to="timetracker" label="See who's clocked in right now" />
+                </div>
+
+                {/* ================= 14. Time Tracker =================
+                    Live clock-in timer (real, ticking JS clock) + week
+                    summary table, per-crew hours. */}
+                <div data-demo-panel="timetracker" hidden>
+                  <PMTitleRow title="Time Tracker" sub="SAMPLE WORKSPACE · CLOCK IN / OUT" />
+                  <div class="demo-clock-card">
+                    <div>
+                      <div class="demo-clock-time" data-demo-clock-time>00:00:00</div>
+                      <div class="demo-clock-sub" data-demo-clock-sub>Clocked in · Pool Coping · N. Knesley</div>
+                    </div>
+                    <button type="button" class="demo-clock-btn running" data-demo-clock-btn>Clock Out</button>
+                  </div>
+                  <PMStatRow columns={4} stats={[
+                    { label: 'Clocked In Now', value: '11' },
+                    { label: "This Week's Hours", value: '146' },
+                    { label: 'Overtime (wk)', value: '4', variant: 'overdue' },
+                    { label: 'Active Crews', value: '3' },
+                  ]} />
+                  <PMCard heading="Week Summary · Jul 7–11" chip="By employee · click to expand daily breakdown">
+                    {[
+                      { name: 'Tyler Reyes', role: 'Foreman · Crew A', hours: '38.0 hrs', tag: 'On Track', variant: 'rapport', detail: 'Mon 7.5 · Tue 7.5 · Wed 7.5 · Thu 7.5 · Fri 8.0 — all shifts clocked in/out on time.' },
+                      { name: 'Marcus Webb', role: 'Crew A', hours: '38.0 hrs', tag: 'On Track', variant: 'rapport', detail: 'Mon 7.5 · Tue 7.5 · Wed 7.5 · Thu 7.5 · Fri 8.0 — matches Tyler\u2019s shift on the Knesley job.' },
+                      { name: 'Jasmine Alvarez', role: 'Foreman · Crew B', hours: '42.0 hrs', tag: '2.0 OT', variant: 'follow', detail: 'Recurring maintenance route ran long Wed due to a locked gate at stop 1 — 2 hrs of overtime flagged for payroll review.' },
+                      { name: 'Priya Anand', role: 'Crew B', hours: '40.0 hrs', tag: 'On Track', variant: 'rapport', detail: 'Full 40-hour week across the two recurring maintenance routes.' },
+                      { name: 'Dmitri Sokolov', role: 'Foreman · Crew C', hours: '34.0 hrs', tag: 'Under 40', variant: 'website', detail: 'Hardscape install wrapped early Thursday — no Friday job assigned yet.' },
+                    ].map((e) => (
+                      <div class="demo-row demo-row-expand" data-demo-expand data-demo-searchable={`${e.name.toLowerCase()} ${e.role.toLowerCase()}`}>
+                        <div class="demo-row-main">
+                          <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="demo-avatar">{e.name.split(' ').map((n) => n[0]).join('')}</span>
+                            <div><div style="font-size: 12.5px; font-weight: 600;">{e.name}</div><div class="demo-row-sub">{e.role}</div></div>
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="demo-row-value">{e.hours}</span>
+                            <span class={`tag tag-${e.variant}`}>{e.tag}</span>
+                          </div>
+                        </div>
+                        <div class="demo-row-detail" hidden>{e.detail}</div>
+                      </div>
+                    ))}
+                  </PMCard>
+                  <DemoGoto to="employees" label="See the full roster behind these hours" />
+                </div>
+
+                {/* ================= 15. Client Portal ================= */}
                 <div data-demo-panel="clientportal" hidden>
                   <PMTitleRow title="Client Portal" sub="SAMPLE WORKSPACE · ADMIN · MANAGE ACCESS" />
                   <PMStats stats={[
@@ -774,10 +1029,77 @@ export function InteractiveDemoPage() {
                       ))}
                     </div>
                   </PMCard>
-                  <DemoGoto to="invoicing" label="See where clients pay their invoices" />
+                  <DemoGoto to="employees" label="See the team roster behind this workspace" />
                 </div>
 
-                {/* ================= 14. AAR Reviews ================= */}
+                {/* ================= 16. Employees & Teams =================
+                    Roster table — roles, statuses, crew assignment, action
+                    buttons. Mirrors the real product's Employees & Teams
+                    screen (name/role/status/crew/actions columns). */}
+                <div data-demo-panel="employees" hidden>
+                  <PMTitleRow title="Employees & Teams" sub="SAMPLE WORKSPACE · ROSTER" />
+                  <PMStatRow columns={4} stats={[
+                    { label: 'Active Employees', value: '11' },
+                    { label: 'Crews', value: '3' },
+                    { label: 'On PTO', value: '1' },
+                    { label: 'Open Roles', value: '1', variant: 'overdue' },
+                  ]} />
+                  <div class="demo-pill-row">
+                    <span class="demo-pill active" data-demo-pill data-demo-pill-filter="all">All</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="foreman">Foremen</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="crew">Crew</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="office">Office</span>
+                  </div>
+                  <div class="demo-table-wrap">
+                    <table class="demo-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Role</th>
+                          <th>Crew</th>
+                          <th>Status</th>
+                          <th>Hire Date</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { name: 'Tyler Reyes', role: 'Foreman', cat: 'foreman', crew: 'Crew A', status: 'Active', variant: 'rapport', hire: 'Mar 2022', detail: 'Leads Crew A. Certified for pool coping and hardscape installs. Direct line for client walkthroughs.' },
+                          { name: 'Marcus Webb', role: 'Landscape Tech', cat: 'crew', crew: 'Crew A', status: 'Active', variant: 'rapport', hire: 'Jun 2023', detail: 'General labor + irrigation rough-in. Cross-trained on skid steer operation.' },
+                          { name: 'Jasmine Alvarez', role: 'Foreman', cat: 'foreman', crew: 'Crew B', status: 'Active', variant: 'rapport', hire: 'Jan 2021', detail: 'Leads Crew B\u2019s recurring maintenance routes. Manages the weekly route schedule directly.' },
+                          { name: 'Priya Anand', role: 'Maintenance Tech', cat: 'crew', crew: 'Crew B', status: 'Active', variant: 'rapport', hire: 'Aug 2024', detail: 'Runs Route 2 stops solo on Fridays. Recently certified on the new mower fleet.' },
+                          { name: 'Dmitri Sokolov', role: 'Foreman', cat: 'foreman', crew: 'Crew C', status: 'Active', variant: 'rapport', hire: 'Nov 2020', detail: 'Leads Crew C\u2019s hardscape installs. Longest-tenured foreman on staff.' },
+                          { name: 'Chloe Ferretti', role: 'Landscape Tech', cat: 'crew', crew: 'Crew C', status: 'On PTO', variant: 'follow', hire: 'Apr 2024', detail: 'Out through Jul 12 \u2014 approved vacation. Crew C is running one tech short until she\u2019s back.' },
+                          { name: 'Nadia Chen', role: 'Office Manager', cat: 'office', crew: '\u2014', status: 'Active', variant: 'rapport', hire: 'Feb 2022', detail: 'Handles invoicing follow-up, client portal invites, and AAR review triage.' },
+                          { name: 'Tyler', role: 'Owner / Admin', cat: 'office', crew: '\u2014', status: 'Active', variant: 'rapport', hire: 'Founder', detail: 'Full admin access \u2014 Budget & Rates, Client Portal, and Admin & Permissions.' },
+                          { name: 'Open: Crew C Tech', role: 'Landscape Tech', cat: 'crew', crew: 'Crew C', status: 'Hiring', variant: 'overdue', hire: '\u2014', detail: 'Posted 2 weeks ago to cover Chloe\u2019s route load during peak season. 4 applicants in review.' },
+                        ].map((e) => (
+                          <>
+                            <tr data-demo-table-row data-demo-status={e.cat} data-demo-searchable={`${e.name.toLowerCase()} ${e.role.toLowerCase()} ${e.crew.toLowerCase()}`}>
+                              <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                  <span class="demo-avatar">{e.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}</span>
+                                  <span class="demo-table-name">{e.name}</span>
+                                </div>
+                              </td>
+                              <td style="color: var(--gw-ink-500);">{e.role}</td>
+                              <td style="color: var(--gw-ink-500);">{e.crew}</td>
+                              <td><span class={`tag tag-${e.variant}`}>{e.status}</span></td>
+                              <td style="color: var(--gw-ink-500);">{e.hire}</td>
+                              <td style="text-align: right;"><span class="btn btn-secondary" style="padding: 3px 9px; font-size: 10px;">View</span></td>
+                            </tr>
+                            <tr class="demo-table-detail-row hidden-row" data-demo-status={e.cat}>
+                              <td colspan={6}><div class="demo-table-detail-inner">{e.detail}</div></td>
+                            </tr>
+                          </>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <DemoGoto to="aar" label="See what these crews report at end of day" />
+                </div>
+
+                {/* ================= 17. AAR Reviews ================= */}
                 <div data-demo-panel="aar" hidden>
                   <PMTitleRow title="AAR Reviews" sub="SAMPLE WORKSPACE · OFFICE REVIEW QUEUE" />
                   <PMStats stats={[

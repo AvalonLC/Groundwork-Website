@@ -128,6 +128,23 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
           </svg>{' '}
           Work Orders
         </div>
+        <div class={cls('assets')} {...attr('assets')}>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="1" y="7" width="14" height="10" rx="1" />
+            <path d="M15 10h4l3 3v4h-7z" />
+            <circle cx="6" cy="18" r="2" />
+            <circle cx="17.5" cy="18" r="1.5" />
+          </svg>{' '}
+          Assets
+        </div>
+        <div class={cls('timetracker')} {...attr('timetracker')}>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="13" r="8" />
+            <path d="M12 9v4l3 2" />
+            <path d="M9 2h6" />
+          </svg>{' '}
+          Time Tracker
+        </div>
       </div>
       <div class="sb-group">
         <div class="sb-label">Admin</div>
@@ -137,6 +154,15 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
             <circle cx="17" cy="10" r="3" />
           </svg>{' '}
           Client Portal
+        </div>
+        <div class={cls('employees')} {...attr('employees')}>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="9" cy="8" r="4" />
+            <path d="M2 21c0-4 3-7 7-7s7 3 7 7" />
+            <circle cx="18" cy="8" r="2.6" />
+            <path d="M22 21c0-3.2-1.8-5.6-4.4-6.6" />
+          </svg>{' '}
+          Employees &amp; Teams
         </div>
         <div class={cls('aar')} {...attr('aar')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">

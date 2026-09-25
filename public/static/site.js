@@ -263,7 +263,7 @@
     var root = document.querySelector('[data-demo-root]')
     if (!root) return
 
-    var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'schedule', 'dispatch', 'workorders', 'clientportal', 'aar']
+    var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar']
     var visited = { command: true }
 
     function updateProgress() {
@@ -383,6 +383,87 @@
         var detail = row.querySelector('.demo-row-detail')
         if (detail) detail.hidden = !detail.hidden
         row.classList.toggle('demo-row-open', detail && !detail.hidden)
+      })
+    })
+
+    // Status-pill filter rows (Estimates, Assets) — click a pill to filter
+    // the nearest table/list by its data-demo-status; "All" (no filter
+    // attr) clears it. Cosmetic-but-functional, same spirit as the search
+    // filter: client-side substring/attr match, nothing persisted.
+    root.querySelectorAll('.demo-pill-row').forEach(function (rowGroup) {
+      var pills = rowGroup.querySelectorAll('[data-demo-pill]')
+      var scope = rowGroup.closest('div[data-demo-panel]') || root
+      pills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          pills.forEach(function (p) { p.classList.remove('active') })
+          pill.classList.add('active')
+          var filter = pill.getAttribute('data-demo-pill-filter')
+          scope.querySelectorAll('[data-demo-status]').forEach(function (row) {
+            var show = !filter || filter === 'all' || row.getAttribute('data-demo-status') === filter
+            row.classList.toggle('demo-search-hide', !show)
+          })
+        })
+      })
+    })
+
+    // Real <table> rows with an expandable detail row directly beneath
+    // them (Estimates, Assets, Employees & Teams) — click a data row to
+    // reveal/hide its paired .demo-table-detail-row sibling.
+    root.querySelectorAll('[data-demo-table-row]').forEach(function (row) {
+      row.addEventListener('click', function () {
+        var detail = row.nextElementSibling
+        if (detail && detail.classList.contains('demo-table-detail-row')) {
+          detail.classList.toggle('hidden-row')
+          row.classList.toggle('demo-row-open', !detail.classList.contains('hidden-row'))
+        }
+      })
+    })
+
+    // Time Tracker: a real running clock-in timer. Click to start/stop;
+    // while running, the elapsed time ticks up once a second. Purely
+    // client-side and resets to the starting value on reload.
+    root.querySelectorAll('[data-demo-clock-btn]').forEach(function (btn) {
+      var card = btn.closest('.demo-clock-card')
+      if (!card) return
+      var display = card.querySelector('[data-demo-clock-time]')
+      var sub = card.querySelector('[data-demo-clock-sub]')
+      var startBase = 4 * 3600 + 12 * 60 + 8 // resumes an in-progress 4h12m08s shift
+      var seconds = startBase
+      var timer = null
+      function fmt(total) {
+        var h = Math.floor(total / 3600)
+        var m = Math.floor((total % 3600) / 60)
+        var s = total % 60
+        return [h, m, s].map(function (n) { return String(n).padStart(2, '0') }).join(':')
+      }
+      function render() {
+        if (display) display.textContent = fmt(seconds)
+      }
+      function startTicking() {
+        if (timer) return
+        timer = setInterval(function () {
+          seconds++
+          render()
+        }, 1000)
+      }
+      // Sample workspace loads mid-shift, already clocked in — matches the
+      // real product's live running timer rather than a static zero state.
+      var running = true
+      render()
+      startTicking()
+      btn.addEventListener('click', function () {
+        running = !running
+        if (running) {
+          btn.textContent = 'Clock Out'
+          btn.classList.add('running')
+          if (sub) sub.textContent = 'Clocked in \u00b7 Pool Coping \u00b7 N. Knesley'
+          startTicking()
+        } else {
+          btn.textContent = 'Clock In'
+          btn.classList.remove('running')
+          if (sub) sub.textContent = 'Clocked out \u00b7 shift saved to today\u2019s timesheet'
+          if (timer) { clearInterval(timer); timer = null }
+        }
       })
     })
 
