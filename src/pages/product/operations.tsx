@@ -104,20 +104,109 @@ export function OperationsPage() {
             </PMMain>
           </MockFrameWithLink>
           <SplitContent
-            eyebrow="Work orders, assets & time"
+            eyebrow="Work Orders & Recurring Services"
             title="Every job has a paper trail."
-            lede="Work orders that carry the sales scope, materials list, safety checklist, and time budget into the field. Assets and tools tracked with service intervals. Time captured from the truck."
+            lede="Work orders that carry the sales scope, materials list, safety checklist, and time budget into the field — plus recurring service contracts and tool inventory that never fall off the schedule."
           >
             <SplitList
               items={[
                 { num: '→', title: 'Work Orders', body: 'Scope, materials, checklist, budget — all in one document.' },
                 { num: '→', title: 'Recurring Services', body: 'Maintenance contracts that never fall off the schedule.' },
-                { num: '→', title: 'Assets & Maintenance', body: 'Equipment tracked with service intervals and cost history.' },
                 { num: '→', title: 'Inventory & Tools', body: 'Know what is on which truck. Reorder before you run out.' },
-                { num: '→', title: 'Time Tracker', body: 'Clock in / out from the truck. Timesheet review at the office.' },
               ]}
             />
           </SplitContent>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <MockFrameWithLink panel="assets" label="Try Assets yourself">
+            <PMMain>
+              <PMTitleRow title="Assets & Equipment" sub="FLEET & TOOLS" />
+              <PMStats
+                stats={[
+                  { label: 'Total Assets', value: '42' },
+                  { label: 'On a Job Today', value: '9', variant: 'sold' },
+                  { label: 'Due for Service', value: '3', variant: 'overdue' },
+                ]}
+              />
+              <PMCard heading="Fleet & Equipment" chip="Flagged first">
+                {[
+                  { name: 'Truck 04 · F-250', sub: 'Assigned · Crew A', status: 'Active', variant: 'rapport' },
+                  { name: 'Mower · Toro Z Master', sub: 'Service due · 12 hrs overdue', status: 'Due', variant: 'overdue' },
+                  { name: 'Trailer 02 · 16ft Dump', sub: 'Assigned · Crew C', status: 'Active', variant: 'rapport' },
+                  { name: 'Skid Steer · Bobcat S70', sub: 'In shop · new blade', status: 'In Shop', variant: 'follow' },
+                ].map((a, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 3 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{a.name}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{a.sub}</div>
+                    </div>
+                    <span class={`tag tag-${a.variant}`}>{a.status}</span>
+                  </div>
+                ))}
+              </PMCard>
+            </PMMain>
+          </MockFrameWithLink>
+          <SplitContent
+            eyebrow="Assets & Maintenance"
+            title="Every truck, tool, and trailer — accounted for."
+            lede="Groundwork tracks equipment the way a fleet manager would, not just a spreadsheet with serial numbers. Service intervals, assignment history, and cost per asset, all tied back to the jobs that used them."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Service Intervals', body: 'Get flagged before a mower blows a belt mid-route.' },
+                { num: '→', title: 'Assignment History', body: 'See which crew has which asset, and for how long.' },
+                { num: '→', title: 'Cost Tracking', body: 'Fuel, repairs, and depreciation rolled up per asset.' },
+              ]}
+            />
+          </SplitContent>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Time Tracker"
+            title="Clock in from the truck. Approve from the office."
+            lede="Crews clock in and out per job, right from Field Mode — no separate timesheet app, no re-typing hours at the end of the week. The office reviews and approves before anything hits payroll or job costing."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'One-Tap Clock In/Out', body: 'Time is tied to the job, not just the day.' },
+                { num: '→', title: 'Timesheet Review', body: 'Office approves hours before they reach payroll.' },
+                { num: '→', title: 'Rolls into Job Costing', body: 'Labor hours feed straight into real job margins.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrameWithLink panel="timetracker" label="Try Time Tracker yourself">
+            <PMMain>
+              <PMTitleRow title="Time Tracker" sub="TODAY · JUL 8" />
+              <PMStats
+                stats={[
+                  { label: 'Clocked In', value: '6', variant: 'sold' },
+                  { label: 'Hours Today', value: '38.5' },
+                  { label: 'Pending Approval', value: '2', variant: 'overdue' },
+                ]}
+              />
+              <PMCard heading="On The Clock" chip="Live">
+                {[
+                  { name: 'N. Knesley · Crew A', job: 'Pool Coping', time: '4h 12m' },
+                  { name: 'D. Patel · Crew C', job: 'Hardscape', time: '3h 48m' },
+                  { name: 'J. Ozawa · Crew B', job: 'Recurring maint. · stop 3', time: '1h 05m' },
+                ].map((r, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{r.name}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{r.job}</div>
+                    </div>
+                    <span style="font-weight: 600; font-size: 12px; color: var(--gw-green-600);">{r.time}</span>
+                  </div>
+                ))}
+              </PMCard>
+            </PMMain>
+          </MockFrameWithLink>
         </div>
       </section>
 

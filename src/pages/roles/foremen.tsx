@@ -1,6 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
-import { WithTryItLink } from '../../components/SplitFeature'
+import { WithTryItLink, SplitContent, MockFrameWithLink } from '../../components/SplitFeature'
+import { PMMain, PMTitleRow, PMStats, PMCard } from '../../components/ProductMock'
 
 export function ForemenPage() {
   const stops = [
@@ -90,6 +91,50 @@ export function ForemenPage() {
             </main>
           </div>
           </WithTryItLink>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <MockFrameWithLink panel="timetracker" label="Try Time Tracker yourself">
+            <PMMain>
+              <PMTitleRow title="Time Tracker" sub="CREW A · TODAY" />
+              <PMStats
+                stats={[
+                  { label: 'Clocked In', value: '4', variant: 'sold' },
+                  { label: 'Hours So Far', value: '4h 12m' },
+                ]}
+              />
+              <PMCard heading="Crew A · On The Clock" chip="Live">
+                {[
+                  { name: 'N. Knesley (you)', job: 'Pool Coping · Stop 1', time: '4h 12m' },
+                  { name: 'R. Chavez', job: 'Pool Coping · Stop 1', time: '4h 12m' },
+                  { name: 'S. Muñoz', job: 'Pool Coping · Stop 1', time: '3h 50m' },
+                ].map((r, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{r.name}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{r.job}</div>
+                    </div>
+                    <span style="font-weight: 600; font-size: 12px; color: var(--gw-green-600);">{r.time}</span>
+                  </div>
+                ))}
+              </PMCard>
+            </PMMain>
+          </MockFrameWithLink>
+          <SplitContent
+            eyebrow="Time Tracker"
+            title="Clock the crew in once. Everyone rides along."
+            lede="A foreman clocks the crew in from the truck at the first stop — no chasing down four separate timesheets at the end of the week. Time is tied to the job it was worked, ready for the office to review."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'One tap for the crew', body: 'Clock in the whole crew at once, per stop.' },
+                { num: '→', title: 'Tied to the job', body: 'Hours land against the right work order automatically.' },
+                { num: '→', title: 'No more paper timesheets', body: 'The office reviews digital hours, not handwriting.' },
+              ]}
+            />
+          </SplitContent>
         </div>
       </section>
 

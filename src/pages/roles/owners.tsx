@@ -1,7 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { PM, PMMain, PMTitleRow, PMStats, PMCard, PMTask } from '../../components/ProductMock'
-import { WithTryItLink } from '../../components/SplitFeature'
+import { WithTryItLink, SplitContent, MockFrameWithLink } from '../../components/SplitFeature'
 
 export function OwnersPage() {
   const stageBars = [
@@ -116,6 +116,42 @@ export function OwnersPage() {
                 ]}
               />
           </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Team View"
+            title="Every rep's pipeline. Every crew's status."
+            lede="Team View sits on top of Employees & Teams — the roster of who's on staff, what role they hold, and which crew they belong to. Owners filter it by team, role, or status without digging through Admin."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Filter by team or role', body: 'See sales, estimators, or a single crew in isolation.' },
+                { num: '→', title: 'Status at a glance', body: 'Active, on leave, or offboarded — no guessing.' },
+                { num: '→', title: 'One roster for the business', body: 'The same list Admin uses to assign roles and permissions.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrameWithLink panel="employees" label="Try Employees & Teams yourself">
+            <PMMain>
+              <PMTitleRow title="Employees & Teams" sub="OWNER · FULL ROSTER" />
+              <PMStats
+                stats={[
+                  { label: 'Active', value: '22', variant: 'sold' },
+                  { label: 'On Leave', value: '1' },
+                  { label: 'Teams', value: '5' },
+                ]}
+              />
+              <PMCard heading="Team Leads">
+                <PMTask title="Marcus Reyes · Sales Team" />
+                <PMTask title="N. Knesley · Crew A (Foreman)" />
+                <PMTask title="D. Patel · Estimating" />
+                <PMTask title="Angela Cho · Office" />
+              </PMCard>
+            </PMMain>
+          </MockFrameWithLink>
         </div>
       </section>
 

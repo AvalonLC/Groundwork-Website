@@ -33,6 +33,13 @@ export function AdminPage() {
     { title: 'Refund request · $340', sub: 'Ozawa · Maintenance · Angela (Office)' },
   ]
 
+  const roster = [
+    { name: 'Marcus Reyes', role: 'Sales', team: 'Sales Team', status: 'Active' },
+    { name: 'N. Knesley', role: 'Foreman', team: 'Crew A', status: 'Active' },
+    { name: 'D. Patel', role: 'Estimator', team: 'Estimating', status: 'Active' },
+    { name: 'J. Ozawa', role: 'Field', team: 'Crew B', status: 'On Leave' },
+  ]
+
   return (
     <Layout
       title="Admin & Permissions — Groundwork CRM"
@@ -120,6 +127,49 @@ export function AdminPage() {
               ]}
             />
           </SplitContent>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Employees & Teams"
+            title="Everyone's role, team, and access — in one roster."
+            lede="Employees & Teams is where staff get created, assigned to a role and a crew, and tied to the permission model above. It's the roster the rest of Admin points back to."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'One roster, every seat', body: 'Office, sales, estimators, and field crews in one place.' },
+                { num: '→', title: 'Team assignment', body: 'Every person tied to a crew or department for scheduling.' },
+                { num: '→', title: 'Status at a glance', body: 'Active, on leave, or offboarded — no guessing who is available.' },
+                { num: '→', title: 'Feeds Roles & Permissions', body: 'Assign a role here; the access matrix applies automatically.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrameWithLink panel="employees" label="Try Employees & Teams yourself">
+            <PMMain>
+              <PMTitleRow title="Employees & Teams" sub="ROSTER · 24 PEOPLE" />
+              <PMStats
+                stats={[
+                  { label: 'Active', value: '22', variant: 'sold' },
+                  { label: 'On Leave', value: '1' },
+                  { label: 'Teams', value: '5' },
+                ]}
+              />
+              <div class="pm-card">
+                <div class="pm-card-h">Roster <span class="chip">Recently active</span></div>
+                {roster.map((p, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < roster.length - 1 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{p.name}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{p.role} · {p.team}</div>
+                    </div>
+                    <span class={`tag ${p.status === 'Active' ? 'tag-rapport' : 'tag-follow'}`}>{p.status}</span>
+                  </div>
+                ))}
+              </div>
+            </PMMain>
+          </MockFrameWithLink>
         </div>
       </section>
 
