@@ -594,7 +594,7 @@
     // grounded in this sample workspace's own data. Anything that doesn't
     // match a known question gets a graceful catch-all reply rather than
     // silently doing nothing.
-    (function bindAiChat() {
+    ;(function bindAiChat() {
       var log = root.querySelector('[data-demo-ai-chat-log]')
       var input = root.querySelector('[data-demo-ai-chat-input]')
       var sendBtn = root.querySelector('[data-demo-ai-chat-send]')
@@ -663,9 +663,17 @@
         items.push({ title: titleEl ? titleEl.textContent : 'Overdue task', sub: 'Overdue \u00b7 Command Center', el: task })
       })
       root.querySelectorAll('[data-demo-handle]:not(.demo-handled)').forEach(function (row) {
-        var nameEl = row.querySelector('strong, .demo-row-main div div, .demo-row-sub')
-        var text = row.textContent.trim().split('\n')[0].slice(0, 60)
-        items.push({ title: text || 'Needs attention', sub: 'Open item', el: row })
+        // Handle rows are consistently a bold name/title div followed by a
+        // .demo-row-sub detail div — read them as two separate strings
+        // (rather than the row's combined textContent) so the dropdown
+        // doesn't run them together with no separator.
+        var titleEl = row.querySelector(':scope > div:first-child > div:first-child')
+        var subEl = row.querySelector('.demo-row-sub')
+        items.push({
+          title: titleEl ? titleEl.textContent.trim() : 'Needs attention',
+          sub: subEl ? subEl.textContent.trim() : 'Open item',
+          el: row,
+        })
       })
       return items
     }
@@ -824,7 +832,7 @@
     // the drop target; dropping moves the real DOM node into the new
     // column, updates both columns' header counts, swaps the empty-state
     // placeholder in/out as needed, and confirms with a toast.
-    (function bindKanbanDnD() {
+    ;(function bindKanbanDnD() {
       var cols = root.querySelectorAll('[data-demo-kanban-col]')
       if (!cols.length) return
       var draggedCard = null
@@ -904,7 +912,7 @@
     // the active row, Enter navigates (and opens the matching lead card's
     // slide-over when the record carries one), Escape or an outside click
     // closes it without navigating.
-    (function bindCommandPalette() {
+    ;(function bindCommandPalette() {
       var overlay = root.querySelector('[data-demo-cmdk-overlay]')
       var trigger = root.querySelector('[data-demo-cmdk-trigger]')
       var input = root.querySelector('[data-demo-cmdk-input]')
