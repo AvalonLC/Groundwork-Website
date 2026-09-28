@@ -86,7 +86,41 @@ export function InteractiveDemoPage() {
     { key: 'aar', label: 'AAR Reviews' },
   ]
 
-  const sidebarStops = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar']
+  const sidebarStops = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
+
+  // Command palette (Cmd/Ctrl+K) — "jump to panel" covers all 19 sidebar
+  // stops; "clients & deals" / "records" let the search reach into specific
+  // entities (a lead, an estimate, a work order) rather than just a panel.
+  const cmdkPanels: { key: string; label: string; icon: string; sub: string }[] = [
+    { key: 'command', label: 'Command Center', icon: 'home', sub: "Today's tasks" },
+    { key: 'pipeline', label: 'Pipeline', icon: 'trending', sub: 'Sales · kanban board' },
+    { key: 'leads', label: 'Leads', icon: 'users', sub: 'Intake queue' },
+    { key: 'clients', label: 'Clients', icon: 'users', sub: 'Client roster' },
+    { key: 'properties', label: 'Properties', icon: 'home', sub: 'Every address serviced' },
+    { key: 'estimates', label: 'Estimates', icon: 'file-text', sub: 'Proposals out' },
+    { key: 'money', label: 'Money Loop', icon: 'dollar', sub: "What needs doing" },
+    { key: 'budget', label: 'Budget & Rates', icon: 'dollar', sub: 'Pricing engine' },
+    { key: 'invoicing', label: 'Invoice Reporting', icon: 'invoice', sub: 'Sent · paid · overdue' },
+    { key: 'reports', label: 'Reports & Analytics', icon: 'chart', sub: 'Company-wide numbers' },
+    { key: 'schedule', label: 'Schedule', icon: 'calendar', sub: 'Week view' },
+    { key: 'dispatch', label: 'Dispatch Board', icon: 'truck', sub: "Today's crews" },
+    { key: 'workorders', label: 'Work Orders', icon: 'clipboard', sub: 'Field checklist' },
+    { key: 'assets', label: 'Assets', icon: 'truck', sub: 'Vehicles · equipment · tools' },
+    { key: 'timetracker', label: 'Time Tracker', icon: 'clock', sub: 'Live clock' },
+    { key: 'clientportal', label: 'Client Portal', icon: 'users', sub: 'Portal access' },
+    { key: 'employees', label: 'Employees & Teams', icon: 'users', sub: 'Roster · approvals' },
+    { key: 'aar', label: 'AAR Reviews', icon: 'clipboard', sub: 'End-of-day reports' },
+    { key: 'audit', label: 'Audit Log', icon: 'shield-check', sub: 'Append-only activity' },
+  ]
+  const cmdkRecords: { label: string; sub: string; icon: string; goto: string; lead?: string }[] = [
+    { label: 'Nicole Knesley', sub: 'Client · Pool Coping · $58.2k', icon: 'user', goto: 'pipeline', lead: 'knesley' },
+    { label: 'Julie Grumley', sub: 'Client · Tree Removal · $8.2k', icon: 'user', goto: 'pipeline', lead: 'grumley' },
+    { label: 'Vijay Dhulipala', sub: 'Client · Backyard Redesign · $32k', icon: 'user', goto: 'pipeline', lead: 'dhulipala' },
+    { label: 'Sydney Lampard', sub: 'Client · Deck Lighting · $18k', icon: 'user', goto: 'pipeline', lead: 'lampard' },
+    { label: 'EST-1042', sub: 'Estimate · N. Knesley · Pool Coping Replacement', icon: 'file-text', goto: 'estimates' },
+    { label: 'EST-1039', sub: 'Estimate · V. Dhulipala · Backyard Redesign', icon: 'file-text', goto: 'estimates' },
+    { label: 'WO-2264', sub: 'Work Order · Knesley · Pool Coping · Crew A', icon: 'clipboard', goto: 'workorders' },
+  ]
 
   return (
     <Layout
@@ -149,20 +183,44 @@ export function InteractiveDemoPage() {
                       style="background: none; border: none; outline: none; font: inherit; color: inherit; width: 100%;"
                     />
                   </div>
+                  <span class="demo-cmdk-trigger" data-demo-cmdk-trigger title="Search anything (Ctrl/Cmd+K)">
+                    <Icon name="search" size={12} />
+                    <span class="demo-cmdk-trigger-label">Jump to…</span>
+                    <span class="demo-cmdk-kbd">⌘K</span>
+                  </span>
                   <span class="new-btn">+ New</span>
                   <span class="demo-ai-trigger" data-demo-ai-trigger title="Groundwork AI">
                     <Icon name="sparkle" size={13} />
                     <span class="demo-ai-trigger-label">Groundwork AI</span>
                   </span>
-                  <span class="demo-bell" data-demo-bell title="Notifications">
-                    <Icon name="bell" size={15} />
-                    <span class="demo-bell-badge" data-demo-bell-badge>3</span>
+                  <span class="demo-bell-wrap">
+                    <span class="demo-bell" data-demo-bell title="Notifications">
+                      <Icon name="bell" size={15} />
+                      <span class="demo-bell-badge" data-demo-bell-badge>3</span>
+                    </span>
+                    <div class="demo-bell-dropdown" data-demo-bell-dropdown>
+                      <div class="demo-bell-dropdown-head">Notifications</div>
+                      <div class="demo-bell-dropdown-list" data-demo-bell-dropdown-list></div>
+                    </div>
                   </span>
                   <span style="opacity: 0.7;">Tyler</span>
                 </div>
                 <div class="demo-search-empty" data-demo-search-empty hidden>
                   No matches in this sample workspace for “<span data-demo-search-empty-term></span>”. Try “Knesley,”
                   “invoice,” or clear the search to keep exploring.
+                </div>
+
+                <div class="demo-panels-wrap" data-demo-panels-wrap>
+                <div class="demo-skeleton-overlay" aria-hidden="true">
+                  <div class="demo-skeleton-row" style="width: 40%; height: 22px; margin-bottom: 18px;"></div>
+                  <div class="demo-skeleton-stats">
+                    <div class="demo-skeleton-block" style="height: 54px;"></div>
+                    <div class="demo-skeleton-block" style="height: 54px;"></div>
+                    <div class="demo-skeleton-block" style="height: 54px;"></div>
+                    <div class="demo-skeleton-block" style="height: 54px;"></div>
+                  </div>
+                  <div class="demo-skeleton-block" style="margin-bottom: 10px;"></div>
+                  <div class="demo-skeleton-block"></div>
                 </div>
 
                 {/* ================= 1. Command Center (Today) ================= */}
@@ -240,44 +298,45 @@ export function InteractiveDemoPage() {
                   </PMCard>
                   <div style="height: 14px;"></div>
                   <div class="demo-workspace" style="min-height: 380px;">
+                    <div class="demo-kanban-hint"><Icon name="arrow" size={10} style="opacity: 0.6;" /> Drag a card to move it to another stage</div>
                     <div class="demo-kanban-wide">
-                      <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-forest-600);">New Lead · 1</div>
-                        <div class="demo-lead-card" data-demo-lead="grumley" data-demo-searchable="julie grumley tree removal" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
+                      <div data-demo-kanban-col="newlead">
+                        <div class="demo-kanban-h" data-demo-kanban-h style="border-bottom-color: var(--gw-forest-600);">New Lead · <span data-demo-kanban-count>1</span></div>
+                        <div class="demo-lead-card" draggable="true" data-demo-lead="grumley" data-demo-searchable="julie grumley tree removal" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
                           <div style="font-size: 12px; font-weight: 600;">Julie Grumley</div>
                           <div style="font-size: 10.5px; color: var(--gw-ink-500);">Tree Removal · $8.2k</div>
                           <div class="demo-kanban-meta"><span class="demo-avatar">JG</span><span>2d in stage</span></div>
                         </div>
                       </div>
-                      <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-green-500);">Intro Call · 1</div>
-                        <div class="demo-lead-card" data-demo-lead="dhulipala" data-demo-searchable="vijay dhulipala backyard redesign" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
+                      <div data-demo-kanban-col="introcall">
+                        <div class="demo-kanban-h" data-demo-kanban-h style="border-bottom-color: var(--gw-green-500);">Intro Call · <span data-demo-kanban-count>1</span></div>
+                        <div class="demo-lead-card" draggable="true" data-demo-lead="dhulipala" data-demo-searchable="vijay dhulipala backyard redesign" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
                           <div style="font-size: 12px; font-weight: 600;">Vijay Dhulipala</div>
                           <div style="font-size: 10.5px; color: var(--gw-ink-500);">Backyard · $32k</div>
                           <div class="demo-kanban-meta"><span class="demo-avatar">TR</span><span>4d in stage</span></div>
                           <div class="demo-kanban-nextup">Next: 2nd measurement visit</div>
                         </div>
                       </div>
-                      <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-blue-500);">On-Site Consult · 0</div>
-                        <div class="demo-jobpool-item" style="cursor: default; opacity: 0.5; text-align: center; font-size: 10.5px; color: var(--gw-ink-400); padding: 16px 8px;">No deals in this stage</div>
+                      <div data-demo-kanban-col="onsite">
+                        <div class="demo-kanban-h" data-demo-kanban-h style="border-bottom-color: var(--gw-blue-500);">On-Site Consult · <span data-demo-kanban-count>0</span></div>
+                        <div class="demo-jobpool-item demo-kanban-empty" style="cursor: default; opacity: 0.5; text-align: center; font-size: 10.5px; color: var(--gw-ink-400); padding: 16px 8px;">No deals in this stage</div>
                       </div>
-                      <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-amber-500);">Estimate Dev. · 1</div>
-                        <div class="demo-lead-card" data-demo-lead="knesley" data-demo-searchable="nicole knesley pool coping" style="background: var(--gw-green-050); border: 1px solid #C5DDCC; border-radius: 6px; padding: 10px;">
+                      <div data-demo-kanban-col="estimatedev">
+                        <div class="demo-kanban-h" data-demo-kanban-h style="border-bottom-color: var(--gw-amber-500);">Estimate Dev. · <span data-demo-kanban-count>1</span></div>
+                        <div class="demo-lead-card" draggable="true" data-demo-lead="knesley" data-demo-searchable="nicole knesley pool coping" style="background: var(--gw-green-050); border: 1px solid #C5DDCC; border-radius: 6px; padding: 10px;">
                           <div style="font-size: 12px; font-weight: 600;">Nicole Knesley</div>
                           <div style="font-size: 10.5px; color: var(--gw-ink-500);">Pool Coping · $58k</div>
                           <div style="margin-top: 4px;"><span class="tag tag-qual">Qualified</span></div>
                           <div class="demo-kanban-meta"><span class="demo-avatar">TR</span><span>6d in stage</span></div>
                         </div>
                       </div>
-                      <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-clay-500);">Presentation · 0</div>
-                        <div class="demo-jobpool-item" style="cursor: default; opacity: 0.5; text-align: center; font-size: 10.5px; color: var(--gw-ink-400); padding: 16px 8px;">No deals in this stage</div>
+                      <div data-demo-kanban-col="presentation">
+                        <div class="demo-kanban-h" data-demo-kanban-h style="border-bottom-color: var(--gw-clay-500);">Presentation · <span data-demo-kanban-count>0</span></div>
+                        <div class="demo-jobpool-item demo-kanban-empty" style="cursor: default; opacity: 0.5; text-align: center; font-size: 10.5px; color: var(--gw-ink-400); padding: 16px 8px;">No deals in this stage</div>
                       </div>
-                      <div>
-                        <div class="demo-kanban-h" style="border-bottom-color: var(--gw-red-500);">Decision Pending · 1</div>
-                        <div class="demo-lead-card" data-demo-lead="lampard" data-demo-searchable="sydney lampard deck lighting" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
+                      <div data-demo-kanban-col="decision">
+                        <div class="demo-kanban-h" data-demo-kanban-h style="border-bottom-color: var(--gw-red-500);">Decision Pending · <span data-demo-kanban-count>1</span></div>
+                        <div class="demo-lead-card" draggable="true" data-demo-lead="lampard" data-demo-searchable="sydney lampard deck lighting" style="background: var(--gw-cream-200); border-radius: 6px; padding: 10px;">
                           <div style="font-size: 12px; font-weight: 600;">Sydney Lampard</div>
                           <div style="font-size: 10.5px; color: var(--gw-ink-500);">Deck lighting · $18k</div>
                           <div class="demo-kanban-meta"><span class="demo-avatar">TR</span><span>9d in stage</span></div>
@@ -479,9 +538,10 @@ export function InteractiveDemoPage() {
                     <span class="demo-pill" data-demo-pill data-demo-pill-filter="draft">Draft</span>
                   </div>
                   <div class="demo-table-wrap">
-                    <table class="demo-table">
+                    <table class="demo-table" data-demo-bulk-scope="estimates">
                       <thead>
                         <tr>
+                          <th style="width: 26px;"><input type="checkbox" data-demo-bulk-selectall="estimates" /></th>
                           <th>Number</th>
                           <th>Customer</th>
                           <th>Title / Service</th>
@@ -500,6 +560,7 @@ export function InteractiveDemoPage() {
                         ].map((e) => (
                           <>
                             <tr data-demo-table-row data-demo-status={e.status} data-demo-searchable={`${e.title.toLowerCase()} ${e.client.toLowerCase()} ${e.num.toLowerCase()}`}>
+                              <td data-demo-nostop><input type="checkbox" data-demo-row-check /></td>
                               <td style="color: var(--gw-ink-500);">{e.num}</td>
                               <td class="demo-table-name">{e.client}</td>
                               <td>{e.title}</td>
@@ -509,7 +570,7 @@ export function InteractiveDemoPage() {
                               <td style="color: var(--gw-ink-500);">{e.updated}</td>
                             </tr>
                             <tr class="demo-table-detail-row hidden-row" data-demo-status={e.status}>
-                              <td colspan={7}>
+                              <td colspan={8}>
                                 <div class="demo-table-detail-inner">Materials {e.materials} · Labor {e.labor} · Margin {e.margin} — priced from the same Budget &amp; Rates engine used company-wide.</div>
                               </td>
                             </tr>
@@ -517,6 +578,14 @@ export function InteractiveDemoPage() {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                  <div class="demo-bulkbar" data-demo-bulkbar="estimates">
+                    <span data-demo-bulkbar-count>0 selected</span>
+                    <div class="demo-bulkbar-actions">
+                      <button type="button" class="btn btn-secondary" data-demo-bulk-action="Send reminder">Send reminder</button>
+                      <button type="button" class="btn btn-secondary" data-demo-bulk-action="Export">Export</button>
+                      <button type="button" class="btn btn-ghost" data-demo-bulk-clear>Clear</button>
+                    </div>
                   </div>
                   <DemoGoto to="budget" label="See the rate engine behind these numbers" />
                 </div>
@@ -874,9 +943,10 @@ export function InteractiveDemoPage() {
                     <span class="demo-pill" data-demo-pill data-demo-pill-filter="tool">Power Tools</span>
                   </div>
                   <div class="demo-table-wrap">
-                    <table class="demo-table">
+                    <table class="demo-table" data-demo-bulk-scope="assets">
                       <thead>
                         <tr>
+                          <th style="width: 26px;"><input type="checkbox" data-demo-bulk-selectall="assets" /></th>
                           <th>Asset</th>
                           <th>Category</th>
                           <th>Assigned Crew</th>
@@ -899,6 +969,7 @@ export function InteractiveDemoPage() {
                         ].map((a) => (
                           <>
                             <tr data-demo-table-row data-demo-status={a.cat} data-demo-searchable={`${a.name.toLowerCase()} ${a.tagline.toLowerCase()} ${a.crew.toLowerCase()}`}>
+                              <td data-demo-nostop><input type="checkbox" data-demo-row-check /></td>
                               <td>
                                 <div class="demo-table-name">{a.name}</div>
                                 <div class="demo-table-sub">{a.tagline}</div>
@@ -910,12 +981,20 @@ export function InteractiveDemoPage() {
                               <td style={a.next === 'Overdue' ? 'color: var(--gw-red-500); font-weight: 700;' : 'color: var(--gw-ink-500);'}>{a.next}</td>
                             </tr>
                             <tr class="demo-table-detail-row hidden-row" data-demo-status={a.cat}>
-                              <td colspan={6}><div class="demo-table-detail-inner">{a.detail}</div></td>
+                              <td colspan={7}><div class="demo-table-detail-inner">{a.detail}</div></td>
                             </tr>
                           </>
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                  <div class="demo-bulkbar" data-demo-bulkbar="assets">
+                    <span data-demo-bulkbar-count>0 selected</span>
+                    <div class="demo-bulkbar-actions">
+                      <button type="button" class="btn btn-secondary" data-demo-bulk-action="Schedule service">Schedule service</button>
+                      <button type="button" class="btn btn-secondary" data-demo-bulk-action="Reassign crew">Reassign crew</button>
+                      <button type="button" class="btn btn-ghost" data-demo-bulk-clear>Clear</button>
+                    </div>
                   </div>
                   <DemoGoto to="timetracker" label="See who's clocked in right now" />
                 </div>
@@ -1044,6 +1123,23 @@ export function InteractiveDemoPage() {
                     { label: 'On PTO', value: '1' },
                     { label: 'Open Roles', value: '1', variant: 'overdue' },
                   ]} />
+                  <PMCard heading="Pending Approvals" chip="Click Approve or Deny">
+                    {[
+                      { title: 'PTO request \u00b7 Chloe Ferretti', sub: 'Jul 21\u201325 \u00b7 5 days \u00b7 Crew C', id: 'pto-1' },
+                      { title: 'Timesheet correction \u00b7 Jasmine Alvarez', sub: 'Wed Jul 9 \u00b7 +2.0 hrs \u00b7 overtime flagged', id: 'pto-2' },
+                    ].map((a) => (
+                      <div class="demo-row demo-approval-row" data-demo-approval-row={a.id}>
+                        <div>
+                          <div style="font-size: 12.5px; font-weight: 600;">{a.title}</div>
+                          <div class="demo-row-sub">{a.sub}</div>
+                        </div>
+                        <div class="demo-approval-actions">
+                          <button type="button" class="btn btn-primary" data-demo-approval-action="approve">Approve</button>
+                          <button type="button" class="btn btn-secondary" data-demo-approval-action="deny">Deny</button>
+                        </div>
+                      </div>
+                    ))}
+                  </PMCard>
                   <div class="demo-pill-row">
                     <span class="demo-pill active" data-demo-pill data-demo-pill-filter="all">All</span>
                     <span class="demo-pill" data-demo-pill data-demo-pill-filter="foreman">Foremen</span>
@@ -1051,9 +1147,10 @@ export function InteractiveDemoPage() {
                     <span class="demo-pill" data-demo-pill data-demo-pill-filter="office">Office</span>
                   </div>
                   <div class="demo-table-wrap">
-                    <table class="demo-table">
+                    <table class="demo-table" data-demo-bulk-scope="employees">
                       <thead>
                         <tr>
+                          <th style="width: 26px;"><input type="checkbox" data-demo-bulk-selectall="employees" /></th>
                           <th>Name</th>
                           <th>Role</th>
                           <th>Crew</th>
@@ -1076,6 +1173,7 @@ export function InteractiveDemoPage() {
                         ].map((e) => (
                           <>
                             <tr data-demo-table-row data-demo-status={e.cat} data-demo-searchable={`${e.name.toLowerCase()} ${e.role.toLowerCase()} ${e.crew.toLowerCase()}`}>
+                              <td data-demo-nostop><input type="checkbox" data-demo-row-check /></td>
                               <td>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                   <span class="demo-avatar">{e.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}</span>
@@ -1089,12 +1187,20 @@ export function InteractiveDemoPage() {
                               <td style="text-align: right;"><span class="btn btn-secondary" style="padding: 3px 9px; font-size: 10px;">View</span></td>
                             </tr>
                             <tr class="demo-table-detail-row hidden-row" data-demo-status={e.cat}>
-                              <td colspan={6}><div class="demo-table-detail-inner">{e.detail}</div></td>
+                              <td colspan={7}><div class="demo-table-detail-inner">{e.detail}</div></td>
                             </tr>
                           </>
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                  <div class="demo-bulkbar" data-demo-bulkbar="employees">
+                    <span data-demo-bulkbar-count>0 selected</span>
+                    <div class="demo-bulkbar-actions">
+                      <button type="button" class="btn btn-secondary" data-demo-bulk-action="Message">Message</button>
+                      <button type="button" class="btn btn-secondary" data-demo-bulk-action="Assign to crew">Assign to crew</button>
+                      <button type="button" class="btn btn-ghost" data-demo-bulk-clear>Clear</button>
+                    </div>
                   </div>
                   <DemoGoto to="aar" label="See what these crews report at end of day" />
                 </div>
@@ -1127,41 +1233,263 @@ export function InteractiveDemoPage() {
                     The question set these reports answer (Yes/No, rating, text, checklist) is configured once in{' '}
                     <a href="/product/admin" style="color: var(--gw-forest-700); font-weight: 600;">Admin &amp; Permissions</a> — see the template builder there.
                   </p>
+                  <DemoGoto to="reports" label="See the company-wide numbers" />
+                </div>
+
+                {/* ================= 18. Reports & Analytics =================
+                    New panel: revenue trend line chart, rep leaderboard,
+                    and crew utilization bars — the "how's the business
+                    doing over time" screen referenced by Owners' Business
+                    Pulse but never built as its own panel before. */}
+                <div data-demo-panel="reports" hidden>
+                  <PMTitleRow title="Reports & Analytics" sub="SAMPLE WORKSPACE · LAST 6 MONTHS" />
+                  <PMStatRow columns={4} stats={[
+                    { label: 'Revenue (6mo)', value: '$612k', trend: { direction: 'up', label: '18% vs prior 6mo' } },
+                    { label: 'Close Rate', value: '58%', trend: { direction: 'up', label: '4pt vs prior 6mo' } },
+                    { label: 'Avg. Job Value', value: '$29.1k', trend: { direction: 'up', label: '6% vs prior 6mo' } },
+                    { label: 'Crew Utilization', value: '91%', trend: { direction: 'down', label: '2pt vs prior 6mo' } },
+                  ]} />
+                  <PMCard heading="Revenue Trend" chip="Sold, by month · hover a point">
+                    <div class="demo-linechart-wrap">
+                      {(() => {
+                        const points = [
+                          { m: 'Feb', v: 78 },
+                          { m: 'Mar', v: 92 },
+                          { m: 'Apr', v: 86 },
+                          { m: 'May', v: 104 },
+                          { m: 'Jun', v: 118 },
+                          { m: 'Jul', v: 134 },
+                        ]
+                        const w = 560, h = 130, pad = 14
+                        const max = Math.max(...points.map((p) => p.v))
+                        const min = Math.min(...points.map((p) => p.v))
+                        const xStep = (w - pad * 2) / (points.length - 1)
+                        const yFor = (v: number) => h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2)
+                        const coords = points.map((p, i) => [pad + i * xStep, yFor(p.v)] as [number, number])
+                        const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c[0].toFixed(1)} ${c[1].toFixed(1)}`).join(' ')
+                        const areaPath = `${linePath} L ${coords[coords.length - 1][0].toFixed(1)} ${h} L ${coords[0][0].toFixed(1)} ${h} Z`
+                        return (
+                          <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
+                            <defs>
+                              <linearGradient id="repRevGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="var(--gw-green-500)" stop-opacity="0.28" />
+                                <stop offset="100%" stop-color="var(--gw-green-500)" stop-opacity="0" />
+                              </linearGradient>
+                            </defs>
+                            <path d={areaPath} fill="url(#repRevGrad)" />
+                            <path d={linePath} fill="none" stroke="var(--gw-forest-600)" stroke-width="2.5" />
+                            {coords.map((c, i) => (
+                              <g class="demo-linechart-pt" data-demo-searchable={`revenue ${points[i].m.toLowerCase()}`}>
+                                <circle class="demo-linechart-dot" cx={c[0]} cy={c[1]} r="3.5" fill="var(--gw-forest-700)" stroke="var(--gw-cream-100)" stroke-width="2" />
+                                <title>{points[i].m}: ${points[i].v}k sold</title>
+                              </g>
+                            ))}
+                          </svg>
+                        )
+                      })()}
+                      <div class="demo-linechart-axis">
+                        <span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span>
+                      </div>
+                    </div>
+                  </PMCard>
+                  <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 14px;">
+                    <PMCard heading="Rep Leaderboard" chip="Sold this quarter">
+                      {[
+                        { name: 'Tyler Reyes', value: '$186k', pct: 100 },
+                        { name: 'Marcus Webb', value: '$94k', pct: 51 },
+                        { name: 'D. Patel (Estimator)', value: '$52k', pct: 28 },
+                      ].map((r, i) => (
+                        <div class="demo-leaderboard-row">
+                          <span class="demo-leaderboard-rank">{i + 1}</span>
+                          <span>
+                            <div style="font-weight: 600;">{r.name}</div>
+                            <div class="demo-hbar-track" style="height: 5px; margin-top: 4px;"><div class="demo-hbar-fill" style={`width: ${r.pct}%;`}></div></div>
+                          </span>
+                          <span style="font-weight: 700; color: var(--gw-ink-900);">{r.value}</span>
+                        </div>
+                      ))}
+                    </PMCard>
+                    <PMCard heading="Crew Utilization" chip="This week">
+                      <div class="demo-hbars" style="margin-bottom: 4px;">
+                        {[
+                          { label: 'Crew A', pct: 95, value: '38/40h' },
+                          { label: 'Crew B', pct: 100, value: '40/40h' },
+                          { label: 'Crew C', pct: 85, value: '34/40h' },
+                        ].map((s) => (
+                          <div class="demo-hbar-row">
+                            <span class="demo-hbar-label">{s.label}</span>
+                            <div class="demo-hbar-track"><div class="demo-hbar-fill" style={`width: ${s.pct}%; background: var(--gw-green-500);`}></div></div>
+                            <span class="demo-hbar-value">{s.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </PMCard>
+                  </div>
+                  <DemoGoto to="audit" label="See who changed what, and when" />
+                </div>
+
+                {/* ================= 19. Audit Log =================
+                    New panel: immutable change history — already listed
+                    as an access-matrix row on /product/admin, never built
+                    as an actual panel before. Read-only feed, filterable
+                    by action type. */}
+                <div data-demo-panel="audit" hidden>
+                  <PMTitleRow title="Audit Log" sub="SAMPLE WORKSPACE · IMMUTABLE HISTORY" />
+                  <PMStatRow columns={3} stats={[
+                    { label: 'Events (7d)', value: '142' },
+                    { label: 'Unique Actors', value: '6' },
+                    { label: 'Permission Changes', value: '2' },
+                  ]} />
+                  <div class="demo-pill-row">
+                    <span class="demo-pill active" data-demo-pill data-demo-pill-filter="all">All</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="financial">Financial</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="access">Access</span>
+                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="schedule">Schedule</span>
+                  </div>
+                  <div class="demo-table-wrap">
+                    <table class="demo-table">
+                      <thead>
+                        <tr>
+                          <th>Event</th>
+                          <th>Actor</th>
+                          <th>Detail</th>
+                          <th>IP</th>
+                          <th>When</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { event: 'Estimate discounted −15%', cat: 'financial', actor: 'Tyler', detail: 'EST-1035 · S. Lampard', ip: '73.14.xx.xx', when: '2m ago', full: 'Discount required Owner-level approval per the Financial Overview permission rule — logged automatically, cannot be edited or deleted.' },
+                          { event: 'Role permission changed', cat: 'access', actor: 'Tyler', detail: "Estimator role: revoked Payments view", ip: '73.14.xx.xx', when: '18m ago', full: 'Changed via Admin & Permissions → Roles & Permissions matrix. Applies to all 2 users currently on the Estimator role.' },
+                          { event: 'Client Portal access revoked', cat: 'access', actor: 'Tyler', detail: 'R. Aleman', ip: '73.14.xx.xx', when: '1h ago', full: 'Revoked from the Client Portal admin screen. R. Aleman can no longer log in to view job status.' },
+                          { event: 'Job rescheduled', cat: 'schedule', actor: 'Nadia Chen', detail: 'Crew B · Recurring Route 1 → Wed 8:00 AM', ip: '108.2.xx.xx', when: '2h ago', full: 'Moved via drag-and-drop on the Schedule calendar to resolve a capacity conflict with an emergency callout.' },
+                          { event: 'Invoice sent', cat: 'financial', actor: 'Nadia Chen', detail: 'J. Grumley · $8,200', ip: '108.2.xx.xx', when: '3h ago', full: 'Generated from the accepted estimate EST-1041 and emailed directly from Invoice Reporting.' },
+                          { event: 'Work order reassigned', cat: 'schedule', actor: 'Tyler', detail: 'WO-2264 · Crew A → Crew A (no change, confirmed)', ip: '73.14.xx.xx', when: '5h ago', full: 'Dispatcher confirmed the existing crew assignment after a client reschedule request — no crew change, timestamp logged regardless.' },
+                          { event: 'Login', cat: 'access', actor: 'Tyler', detail: 'Owner / Admin', ip: '73.14.xx.xx', when: 'Yesterday, 6:58 AM', full: 'Standard daily login — no MFA challenge (device already trusted for 30 days).' },
+                        ].map((a) => (
+                          <>
+                            <tr data-demo-table-row data-demo-status={a.cat} data-demo-searchable={`${a.event.toLowerCase()} ${a.actor.toLowerCase()} ${a.detail.toLowerCase()}`}>
+                              <td class="demo-table-name">{a.event}</td>
+                              <td style="color: var(--gw-ink-500);">{a.actor}</td>
+                              <td style="color: var(--gw-ink-500);">{a.detail}</td>
+                              <td style="color: var(--gw-ink-400); font-size: 10.5px;">{a.ip}</td>
+                              <td style="color: var(--gw-ink-500); white-space: nowrap;">{a.when}</td>
+                            </tr>
+                            <tr class="demo-table-detail-row hidden-row" data-demo-status={a.cat}>
+                              <td colspan={5}><div class="demo-table-detail-inner">{a.full}</div></td>
+                            </tr>
+                          </>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p style="font-size: 11.5px; color: var(--gw-ink-400); margin-top: 12px;">
+                    Audit entries are append-only — nothing here can be edited or deleted, including by an Owner.
+                  </p>
+                </div>
                 </div>
               </PMMain>
             </PM>
 
+            {/* Command palette (Cmd/Ctrl+K) — jump straight to any of the 19
+                sidebar panels or a named record (client, estimate, work
+                order) without touching the sidebar. Pure client-side filter
+                over the two lists below; Enter/click navigates and closes. */}
+            <div class="demo-cmdk-overlay" data-demo-cmdk-overlay>
+              <div class="demo-cmdk-modal">
+                <div class="demo-cmdk-inputwrap">
+                  <Icon name="search" size={14} style="opacity: 0.5; flex: none;" />
+                  <input type="text" data-demo-cmdk-input placeholder="Jump to a panel, client, estimate…" autocomplete="off" />
+                  <span class="demo-cmdk-esc">ESC</span>
+                </div>
+                <div class="demo-cmdk-list" data-demo-cmdk-list>
+                  <div data-demo-cmdk-group="panels">
+                    <div class="demo-cmdk-group-label">Panels</div>
+                    {cmdkPanels.map((p) => (
+                      <div class="demo-cmdk-item" data-demo-cmdk-item data-demo-cmdk-goto={p.key} data-demo-cmdk-text={`${p.label.toLowerCase()} ${p.sub.toLowerCase()}`}>
+                        <Icon name={p.icon} size={14} />
+                        <div class="demo-cmdk-item-main">
+                          <div class="demo-cmdk-item-label">{p.label}</div>
+                          <div class="demo-cmdk-item-sub">{p.sub}</div>
+                        </div>
+                        <span class="demo-cmdk-item-kbd">↵</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div data-demo-cmdk-group="records">
+                    <div class="demo-cmdk-group-label">Clients &amp; Records</div>
+                    {cmdkRecords.map((r) => (
+                      <div class="demo-cmdk-item" data-demo-cmdk-item data-demo-cmdk-goto={r.goto} data-demo-cmdk-lead={r.lead} data-demo-cmdk-text={`${r.label.toLowerCase()} ${r.sub.toLowerCase()}`}>
+                        <Icon name={r.icon} size={14} />
+                        <div class="demo-cmdk-item-main">
+                          <div class="demo-cmdk-item-label">{r.label}</div>
+                          <div class="demo-cmdk-item-sub">{r.sub}</div>
+                        </div>
+                        <span class="demo-cmdk-item-kbd">↵</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div class="demo-cmdk-empty" data-demo-cmdk-empty hidden>No matches. Try a panel name like “reports” or a client like “Knesley.”</div>
+                </div>
+              </div>
+            </div>
+
             {/* Groundwork AI — not a sidebar item in the real product; it's a
                 slide-over available from anywhere, so it's triggered from the
-                topbar button above rather than living in the sidebar list. */}
+                topbar button above rather than living in the sidebar list.
+                Coach and Chat are both real, switchable sub-panels here
+                (data-demo-ai-panel); Home/Suggestions/Setup stay toast-only
+                illustrative tabs, same as before. */}
             <div class="demo-ai-overlay" data-demo-ai-overlay>
               <div class="demo-slideover-close demo-ai-overlay-close" data-demo-ai-overlay-close aria-label="Close"><Icon name="x" size={13} /></div>
               <div style="display: flex; gap: 4px; margin-bottom: 4px;">
-                {['Home', 'Suggestions', 'Coach', 'Setup', 'Chat'].map((t, i) => (
-                  <span
-                    class={i !== 2 ? 'demo-ai-tab' : undefined}
-                    data-demo-ai-tab={i !== 2 ? t : undefined}
-                    style={`font-size: 10px; letter-spacing: 0.04em; padding: 6px 9px; border-radius: 5px 5px 0 0; cursor: pointer; ${i === 2 ? 'background: rgba(255,255,255,0.08); color: white; font-weight: 600;' : 'color: #7A9788;'}`}
-                  >{t}</span>
-                ))}
+                {['Home', 'Suggestions', 'Coach', 'Setup', 'Chat'].map((t, i) => {
+                  const isReal = t === 'Coach' || t === 'Chat'
+                  return (
+                    <span
+                      class={isReal ? 'demo-ai-tab-real' : 'demo-ai-tab'}
+                      data-demo-ai-tab={!isReal ? t : undefined}
+                      data-demo-ai-panel-tab={isReal ? t.toLowerCase() : undefined}
+                      style={`font-size: 10px; letter-spacing: 0.04em; padding: 6px 9px; border-radius: 5px 5px 0 0; cursor: pointer; ${t === 'Coach' ? 'background: rgba(255,255,255,0.08); color: white; font-weight: 600;' : 'color: #7A9788;'}`}
+                    >{t}</span>
+                  )
+                })}
               </div>
               <div style="padding: 16px 2px 4px; border-top: 1px solid rgba(255,255,255,0.08);">
-                <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Coach · Deals going quiet · Click a card</div>
-                {aiDeals.map((d, i) => (
-                  <div class="demo-ai-card" data-demo-ai-card style={`background: rgba(255,255,255,0.05); border-left: 3px solid var(--gw-red-500); border-radius: 6px; padding: 10px 12px;${i < aiDeals.length - 1 ? ' margin-bottom: 8px;' : ''}`}>
-                    <div style="font-size: 12.5px; font-weight: 600; color: white; margin-bottom: 2px;">{d.name}</div>
-                    <div style="font-size: 11px; color: #B7CFC1; margin-bottom: 4px;">{d.detail}</div>
-                    <div style="font-size: 10.5px; color: #F0A8A0; font-weight: 600;">{d.risk}</div>
-                    <div class="demo-ai-thinking" data-demo-ai-thinking hidden>
-                      <span class="demo-ai-dot"></span><span class="demo-ai-dot"></span><span class="demo-ai-dot"></span>
-                      Groundwork AI is thinking…
+                <div data-demo-ai-panel="coach">
+                  <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Coach · Deals going quiet · Click a card</div>
+                  {aiDeals.map((d, i) => (
+                    <div class="demo-ai-card" data-demo-ai-card style={`background: rgba(255,255,255,0.05); border-left: 3px solid var(--gw-red-500); border-radius: 6px; padding: 10px 12px;${i < aiDeals.length - 1 ? ' margin-bottom: 8px;' : ''}`}>
+                      <div style="font-size: 12.5px; font-weight: 600; color: white; margin-bottom: 2px;">{d.name}</div>
+                      <div style="font-size: 11px; color: #B7CFC1; margin-bottom: 4px;">{d.detail}</div>
+                      <div style="font-size: 10.5px; color: #F0A8A0; font-weight: 600;">{d.risk}</div>
+                      <div class="demo-ai-thinking" data-demo-ai-thinking hidden>
+                        <span class="demo-ai-dot"></span><span class="demo-ai-dot"></span><span class="demo-ai-dot"></span>
+                        Groundwork AI is thinking…
+                      </div>
+                      <div class="demo-ai-detail" data-demo-ai-detail hidden>
+                        <Icon name="sparkle" size={11} style="margin-right: 5px; vertical-align: -1px; opacity: 0.85;" />
+                        {d.action}
+                      </div>
                     </div>
-                    <div class="demo-ai-detail" data-demo-ai-detail hidden>
-                      <Icon name="sparkle" size={11} style="margin-right: 5px; vertical-align: -1px; opacity: 0.85;" />
-                      {d.action}
-                    </div>
+                  ))}
+                </div>
+                <div data-demo-ai-panel="chat" hidden>
+                  <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Chat · Ask about this workspace</div>
+                  <div class="demo-ai-chat-log" data-demo-ai-chat-log>
+                    <div class="demo-ai-chat-bubble ai">Ask me anything about this sample workspace — try one of the suggestions below, or type your own question.</div>
                   </div>
-                ))}
+                  <div class="demo-ai-chat-suggestions" data-demo-ai-chat-suggestions>
+                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Which deals are at risk?">Which deals are at risk?</span>
+                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="What's outstanding right now?">What's outstanding right now?</span>
+                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Are we hitting the month?">Are we hitting the month?</span>
+                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Who's behind on hours?">Who's behind on hours?</span>
+                  </div>
+                  <div class="demo-ai-chat-inputwrap">
+                    <input type="text" data-demo-ai-chat-input placeholder="Ask a question…" autocomplete="off" />
+                    <button type="button" class="demo-ai-chat-send" data-demo-ai-chat-send>Ask</button>
+                  </div>
+                </div>
               </div>
             </div>
 

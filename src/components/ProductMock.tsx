@@ -105,6 +105,18 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
         </div>
       </div>
       <div class="sb-group">
+        <div class="sb-label">Insights</div>
+        <div class={cls('reports')} {...attr('reports')}>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="4" y1="20" x2="4" y2="10" />
+            <line x1="10" y1="20" x2="10" y2="4" />
+            <line x1="16" y1="20" x2="16" y2="14" />
+            <line x1="3" y1="20" x2="21" y2="20" />
+          </svg>{' '}
+          Reports &amp; Analytics
+        </div>
+      </div>
+      <div class="sb-group">
         <div class="sb-label">Operations</div>
         <div class={cls('schedule')} {...attr('schedule')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -171,6 +183,13 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
           </svg>{' '}
           AAR Reviews
         </div>
+        <div class={cls('audit')} {...attr('audit')}>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M9 12l2 2 4-4" />
+            <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" />
+          </svg>{' '}
+          Audit Log
+        </div>
       </div>
     </aside>
   )
@@ -219,13 +238,33 @@ export function PMTitleRow({ title, sub, actions }: { title: string; sub?: strin
   )
 }
 
-export function PMStats({ stats }: { stats: { label: string; value: string; variant?: 'overdue' | 'sold' }[] }) {
+// Optional `trend` on a stat card renders a small up/down arrow + percentage
+// underneath the value (e.g. "↑ 12% vs last month") — `direction: 'up'`
+// colors it green, `'down'` colors it red, matching how a real analytics
+// dashboard signals whether a trend is favorable, not just its arithmetic
+// sign (a "down" trend on Overdue count is good; PMStat callers decide that).
+type StatTrend = { direction: 'up' | 'down'; label: string }
+
+function PMStatTrend({ trend }: { trend?: StatTrend }) {
+  if (!trend) return null
+  return (
+    <div class={`pm-stat-trend ${trend.direction}`}>
+      <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2.5">
+        {trend.direction === 'up' ? <polyline points="3 17 9 11 13 15 21 6" /> : <polyline points="3 7 9 13 13 9 21 18" />}
+      </svg>
+      {trend.label}
+    </div>
+  )
+}
+
+export function PMStats({ stats }: { stats: { label: string; value: string; variant?: 'overdue' | 'sold'; trend?: StatTrend }[] }) {
   return (
     <div class="pm-stats">
       {stats.map((s) => (
         <div class={`pm-stat${s.variant ? ' ' + s.variant : ''}`}>
           <div class="lbl">{s.label}</div>
           <div class="val">{s.value}</div>
+          <PMStatTrend trend={s.trend} />
         </div>
       ))}
     </div>
@@ -236,13 +275,14 @@ export function PMStats({ stats }: { stats: { label: string; value: string; vari
 // screens whose real stat row doesn't fit the 4-up grid (e.g. Money Loop's
 // 5-card "what needs doing" row, Dispatch Board's 4-card row reused at a
 // different width).
-export function PMStatRow({ stats, columns }: { stats: { label: string; value: string; variant?: 'overdue' | 'sold' }[]; columns?: number }) {
+export function PMStatRow({ stats, columns }: { stats: { label: string; value: string; variant?: 'overdue' | 'sold'; trend?: StatTrend }[]; columns?: number }) {
   return (
     <div style={`display: grid; grid-template-columns: repeat(${columns ?? stats.length}, 1fr); gap: 10px; margin-bottom: 18px;`}>
       {stats.map((s) => (
         <div class={`pm-stat${s.variant ? ' ' + s.variant : ''}`}>
           <div class="lbl">{s.label}</div>
           <div class="val">{s.value}</div>
+          <PMStatTrend trend={s.trend} />
         </div>
       ))}
     </div>

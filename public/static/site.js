@@ -263,7 +263,7 @@
     var root = document.querySelector('[data-demo-root]')
     if (!root) return
 
-    var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar']
+    var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
     var visited = { command: true }
 
     function updateProgress() {
@@ -291,9 +291,35 @@
       if (overlay) overlay.classList.remove('open')
     }
 
+    // Brief skeleton flash on panel switch — sells the feel of a real app
+    // fetching fresh data per-screen rather than instantly swapping DOM
+    // nodes. Purely cosmetic timing (~260ms), cancels cleanly if the
+    // visitor clicks through panels quickly (no stacked timers).
+    var panelsWrap = root.querySelector('[data-demo-panels-wrap]')
+    var skeletonTimer = null
+    function flashSkeleton() {
+      if (!panelsWrap) return
+      panelsWrap.classList.add('demo-panel-loading')
+      if (skeletonTimer) clearTimeout(skeletonTimer)
+      skeletonTimer = setTimeout(function () {
+        panelsWrap.classList.remove('demo-panel-loading')
+      }, 260)
+    }
+
     function showPanel(name) {
+      var alreadyActive = root.querySelector('.pm-sidebar [data-demo-sidebar-target].active')
+      var isChange = !alreadyActive || alreadyActive.getAttribute('data-demo-sidebar-target') !== name
       root.querySelectorAll('[data-demo-panel]').forEach(function (panel) {
-        panel.hidden = panel.getAttribute('data-demo-panel') !== name
+        var isTarget = panel.getAttribute('data-demo-panel') === name
+        panel.hidden = !isTarget
+        // Subtle fade+rise on the panel that just became visible — a fresh
+        // animation class each time (not just relying on `hidden` toggling)
+        // so re-visiting the same panel still re-triggers the motion.
+        if (isTarget && isChange) {
+          panel.classList.remove('demo-panel-fade-in')
+          void panel.offsetWidth // eslint-disable-line no-unused-expressions -- force reflow so the class re-applies
+          panel.classList.add('demo-panel-fade-in')
+        }
       })
       root.querySelectorAll('.pm-sidebar [data-demo-sidebar-target]').forEach(function (el) {
         el.classList.toggle('active', el.getAttribute('data-demo-sidebar-target') === name)
@@ -305,6 +331,7 @@
       if (slideover) slideover.classList.remove('open')
       closeAiOverlay()
       visited[name] = true
+      if (isChange) flashSkeleton()
       updateProgress()
     }
 
@@ -360,8 +387,9 @@
       row.addEventListener('click', function () {
         row.classList.toggle('demo-handled')
         var tag = row.querySelector('[data-demo-handle-tag]')
+        var justHandled = row.classList.contains('demo-handled')
         if (tag) {
-          if (row.classList.contains('demo-handled')) {
+          if (justHandled) {
             tag.dataset.originalText = tag.dataset.originalText || tag.textContent
             tag.textContent = row.getAttribute('data-demo-handled-label') || 'Handled'
             tag.className = 'tag tag-rapport'
@@ -369,6 +397,7 @@
             tag.textContent = tag.dataset.originalText
           }
         }
+        if (justHandled) showToast('Marked ' + (row.getAttribute('data-demo-handled-label') || 'handled'))
         updateBellBadge()
       })
     })
@@ -532,13 +561,88 @@
         }
       })
     })
-    // AI panel: Home / Suggestions / Setup / Chat tabs are illustrative —
-    // clicking surfaces a toast pointing back at the Coach tab being shown.
+    // AI panel: Home / Suggestions / Setup tabs are illustrative — clicking
+    // surfaces a toast pointing back at the Coach/Chat tabs, which are real.
     root.querySelectorAll('[data-demo-ai-tab]').forEach(function (tab) {
       tab.addEventListener('click', function () {
-        showToast('This sample only walks through the Coach tab \u2014 ' + tab.getAttribute('data-demo-ai-tab') + ' is live in your real workspace.')
+        showToast('This sample only walks through Coach & Chat \u2014 ' + tab.getAttribute('data-demo-ai-tab') + ' is live in your real workspace.')
       })
     })
+
+    // AI panel: Coach / Chat are both real, switchable sub-panels — click
+    // a tab to swap which one is visible and update the active tab style.
+    root.querySelectorAll('[data-demo-ai-panel-tab]').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var target = tab.getAttribute('data-demo-ai-panel-tab')
+        root.querySelectorAll('[data-demo-ai-panel-tab]').forEach(function (t) {
+          var active = t === tab
+          t.style.background = active ? 'rgba(255,255,255,0.08)' : ''
+          t.style.color = active ? 'white' : '#7A9788'
+          t.style.fontWeight = active ? '600' : ''
+        })
+        if (aiOverlay) {
+          aiOverlay.querySelectorAll('[data-demo-ai-panel]').forEach(function (panel) {
+            panel.hidden = panel.getAttribute('data-demo-ai-panel') !== target
+          })
+        }
+      })
+    })
+
+    // AI Chat tab: a small canned Q&A — clicking a suggestion chip (or
+    // typing a question that matches one and hitting Ask/Enter) appends a
+    // user bubble then, after a short "thinking" beat, an AI reply bubble
+    // grounded in this sample workspace's own data. Anything that doesn't
+    // match a known question gets a graceful catch-all reply rather than
+    // silently doing nothing.
+    (function bindAiChat() {
+      var log = root.querySelector('[data-demo-ai-chat-log]')
+      var input = root.querySelector('[data-demo-ai-chat-input]')
+      var sendBtn = root.querySelector('[data-demo-ai-chat-send]')
+      if (!log || !input || !sendBtn) return
+
+      var answers = [
+        { match: /at risk|risk|going quiet|quiet/i, reply: 'Two deals are flagged: Nicole Knesley\u2019s Pool Coping ($58,200, no contact 7 days) and Sydney Lampard\u2019s Deck Lighting ($18,000, missed follow-up). Both are on the Coach tab with a suggested next step.' },
+        { match: /outstanding|owe|unpaid|invoice/i, reply: 'Right now: R. Aleman\u2019s full landscape job is complete but not yet invoiced, and D. Patel\u2019s hardscape invoice has been unpaid for 12 days. Both are sitting in the Money Loop.' },
+        { match: /hitting|month|goal|target|quota/i, reply: 'Pipeline value is $202k with a weighted value of $96k and a 58% win rate over the last 90 days \u2014 tracking ahead of last month\u2019s close rate. See the Reports & Analytics panel for the full trend.' },
+        { match: /behind on hours|hours|overtime|timesheet/i, reply: 'Jasmine Alvarez logged 42.0 hrs this week (2.0 hrs overtime) after a recurring maintenance route ran long. There\u2019s also a pending timesheet correction for her waiting on approval in Employees & Teams.' },
+      ]
+      var fallback = 'I don\u2019t have a canned answer for that in this sample \u2014 in your real workspace, Groundwork AI reasons over your live pipeline, invoices, and crew data to answer questions like this directly.'
+
+      function addBubble(text, who) {
+        var bubble = document.createElement('div')
+        bubble.className = 'demo-ai-chat-bubble ' + who
+        bubble.textContent = text
+        log.appendChild(bubble)
+        log.scrollTop = log.scrollHeight
+      }
+
+      function ask(question) {
+        var q = (question || '').trim()
+        if (!q) return
+        addBubble(q, 'user')
+        input.value = ''
+        var thinking = document.createElement('div')
+        thinking.className = 'demo-ai-chat-bubble ai'
+        thinking.innerHTML = '<span class="demo-ai-dot"></span><span class="demo-ai-dot"></span><span class="demo-ai-dot"></span>'
+        log.appendChild(thinking)
+        log.scrollTop = log.scrollHeight
+        setTimeout(function () {
+          thinking.remove()
+          var hit = answers.filter(function (a) { return a.match.test(q) })[0]
+          addBubble(hit ? hit.reply : fallback, 'ai')
+        }, 650)
+      }
+
+      root.querySelectorAll('[data-demo-ai-chat-q]').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          ask(chip.getAttribute('data-demo-ai-chat-q'))
+        })
+      })
+      sendBtn.addEventListener('click', function () { ask(input.value) })
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); ask(input.value) }
+      })
+    })()
 
     // Topbar: notification bell badge count reflects what's still open —
     // overdue Today tasks not yet checked off, plus every "handle" row
@@ -546,6 +650,47 @@
     // Reporting, AAR queue). Ticks down (with a little pulse) as you work
     // through the sample, just like the real unread counter would.
     var bellBadge = root.querySelector('[data-demo-bell-badge]')
+    var bellDropdownList = root.querySelector('[data-demo-bell-dropdown-list]')
+    // Real notification items behind the badge count — same underlying
+    // open-overdue/open-handle rows the count is built from, so the two
+    // never disagree. Each item's own row is re-read live off the DOM
+    // (title text, task/handle label) rather than a separate hardcoded
+    // list, so checking a task off also removes its notification.
+    function buildBellItems() {
+      var items = []
+      root.querySelectorAll('[data-demo-task].overdue:not(.demo-task-done)').forEach(function (task) {
+        var titleEl = task.querySelector('.tk-title')
+        items.push({ title: titleEl ? titleEl.textContent : 'Overdue task', sub: 'Overdue \u00b7 Command Center', el: task })
+      })
+      root.querySelectorAll('[data-demo-handle]:not(.demo-handled)').forEach(function (row) {
+        var nameEl = row.querySelector('strong, .demo-row-main div div, .demo-row-sub')
+        var text = row.textContent.trim().split('\n')[0].slice(0, 60)
+        items.push({ title: text || 'Needs attention', sub: 'Open item', el: row })
+      })
+      return items
+    }
+    function renderBellDropdown() {
+      if (!bellDropdownList) return
+      var items = buildBellItems()
+      if (!items.length) {
+        bellDropdownList.innerHTML = '<div class="demo-bell-dropdown-empty">You\u2019re all caught up.</div>'
+        return
+      }
+      bellDropdownList.innerHTML = ''
+      items.slice(0, 8).forEach(function (item) {
+        var btn = document.createElement('button')
+        btn.type = 'button'
+        btn.className = 'demo-bell-dropdown-item'
+        btn.innerHTML = '<strong></strong><span></span>'
+        btn.querySelector('strong').textContent = item.title
+        btn.querySelector('span').textContent = item.sub
+        btn.addEventListener('click', function () {
+          if (item.el && item.el.scrollIntoView) item.el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          closeBellDropdown()
+        })
+        bellDropdownList.appendChild(btn)
+      })
+    }
     function updateBellBadge() {
       if (!bellBadge) return
       var openOverdue = root.querySelectorAll('[data-demo-task].overdue:not(.demo-task-done)').length
@@ -558,8 +703,307 @@
         bellBadge.classList.add('demo-bell-pulse')
         setTimeout(function () { bellBadge.classList.remove('demo-bell-pulse') }, 200)
       }
+      renderBellDropdown()
     }
     updateBellBadge()
+
+    // Notification bell: click to toggle the dropdown; click anywhere
+    // outside (or Escape) to close it. Opening the bell closes the AI
+    // overlay/palette so only one floating panel is ever open at once.
+    var bellTrigger = root.querySelector('[data-demo-bell]')
+    var bellDropdown = root.querySelector('[data-demo-bell-dropdown]')
+    function closeBellDropdown() {
+      if (bellDropdown) bellDropdown.classList.remove('open')
+    }
+    if (bellTrigger && bellDropdown) {
+      bellTrigger.addEventListener('click', function (e) {
+        e.stopPropagation()
+        var opening = !bellDropdown.classList.contains('open')
+        closeBellDropdown()
+        if (opening) {
+          renderBellDropdown()
+          bellDropdown.classList.add('open')
+        }
+      })
+      document.addEventListener('click', function (e) {
+        if (!bellDropdown.contains(e.target) && e.target !== bellTrigger && !bellTrigger.contains(e.target)) {
+          closeBellDropdown()
+        }
+      })
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeBellDropdown()
+      })
+    }
+
+    // Pending Approvals (Employees & Teams) — Approve/Deny resolves the
+    // row with a fade-and-collapse, decrements its stat card, and shows a
+    // confirmation toast. Independent of the generic handle-row pattern
+    // since these rows disappear entirely rather than flipping a tag.
+    root.querySelectorAll('[data-demo-approval-action]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation()
+        var row = btn.closest('[data-demo-approval-row]')
+        if (!row || row.classList.contains('demo-approval-resolved')) return
+        var action = btn.getAttribute('data-demo-approval-action')
+        var titleEl = row.querySelector('div > div')
+        var label = titleEl ? titleEl.textContent.split('\u00b7')[0].trim() : 'Request'
+        row.classList.add('demo-approval-resolved')
+        showToast((action === 'approve' ? 'Approved: ' : 'Denied: ') + label)
+        setTimeout(function () { row.remove() }, 260)
+      })
+    })
+
+    // Toast feedback on already-existing actions that changed state
+    // silently before — Clock In/Out and pill/status filter switches now
+    // get a small confirmation too, matching Approve/Deny and bulk actions.
+    root.querySelectorAll('[data-demo-clock-btn]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setTimeout(function () {
+          showToast(btn.classList.contains('running') ? 'Clocked in \u2014 timer running' : 'Clocked out \u2014 shift saved to today\u2019s timesheet')
+        }, 0)
+      })
+    })
+
+    // Bulk-select: checkbox column + floating action bar, scoped per
+    // table via data-demo-bulk-scope (Estimates, Assets, Employees).
+    // Select-all/row checkboxes toggle a "selected" state, drive the
+    // bulkbar's visibility + count, and each bulk action button just
+    // shows a toast (nothing to actually send in a client-only sample).
+    // Checkbox cells carry data-demo-nostop so clicking them doesn't also
+    // toggle the row's own expand/detail behavior.
+    root.querySelectorAll('[data-demo-nostop]').forEach(function (cell) {
+      cell.addEventListener('click', function (e) { e.stopPropagation() })
+    })
+    root.querySelectorAll('[data-demo-bulk-scope]').forEach(function (table) {
+      var scope = table.getAttribute('data-demo-bulk-scope')
+      var selectAll = table.querySelector('[data-demo-bulk-selectall="' + scope + '"]')
+      var bulkbar = root.querySelector('[data-demo-bulkbar="' + scope + '"]')
+      var countEl = bulkbar ? bulkbar.querySelector('[data-demo-bulkbar-count]') : null
+      function rowChecks() { return table.querySelectorAll('[data-demo-row-check]') }
+      function updateBar() {
+        var checks = rowChecks()
+        var checked = Array.prototype.filter.call(checks, function (c) { return c.checked })
+        if (bulkbar) bulkbar.classList.toggle('open', checked.length > 0)
+        if (countEl) countEl.textContent = checked.length + ' selected'
+        if (selectAll) {
+          selectAll.checked = checked.length > 0 && checked.length === checks.length
+          selectAll.indeterminate = checked.length > 0 && checked.length < checks.length
+        }
+      }
+      rowChecks().forEach(function (cb) {
+        cb.addEventListener('click', function (e) { e.stopPropagation() })
+        cb.addEventListener('change', updateBar)
+      })
+      if (selectAll) {
+        selectAll.addEventListener('click', function (e) { e.stopPropagation() })
+        selectAll.addEventListener('change', function () {
+          rowChecks().forEach(function (cb) { cb.checked = selectAll.checked })
+          updateBar()
+        })
+      }
+      if (bulkbar) {
+        bulkbar.querySelectorAll('[data-demo-bulk-action]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var checked = Array.prototype.filter.call(rowChecks(), function (c) { return c.checked }).length
+            showToast(btn.getAttribute('data-demo-bulk-action') + ': ' + checked + ' selected')
+          })
+        })
+        var clearBtn = bulkbar.querySelector('[data-demo-bulk-clear]')
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function () {
+            rowChecks().forEach(function (cb) { cb.checked = false })
+            if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false }
+            updateBar()
+          })
+        }
+      }
+    })
+
+    // Pipeline: drag-and-drop kanban cards between stages. Grabbing a
+    // card marks it .dragging (dims it); dragging over a column highlights
+    // the drop target; dropping moves the real DOM node into the new
+    // column, updates both columns' header counts, swaps the empty-state
+    // placeholder in/out as needed, and confirms with a toast.
+    (function bindKanbanDnD() {
+      var cols = root.querySelectorAll('[data-demo-kanban-col]')
+      if (!cols.length) return
+      var draggedCard = null
+
+      function colCount(col) {
+        return col.querySelectorAll('.demo-lead-card').length
+      }
+      function colLabel(col) {
+        var h = col.querySelector('[data-demo-kanban-h]')
+        if (!h) return col.getAttribute('data-demo-kanban-col')
+        return h.textContent.split('\u00b7')[0].trim()
+      }
+      function refreshColumn(col) {
+        var count = colCount(col)
+        var countEl = col.querySelector('[data-demo-kanban-count]')
+        if (countEl) countEl.textContent = String(count)
+        var empty = col.querySelector('.demo-kanban-empty')
+        if (count === 0 && !empty) {
+          var placeholder = document.createElement('div')
+          placeholder.className = 'demo-jobpool-item demo-kanban-empty'
+          placeholder.style.cursor = 'default'
+          placeholder.style.opacity = '0.5'
+          placeholder.style.textAlign = 'center'
+          placeholder.style.fontSize = '10.5px'
+          placeholder.style.color = 'var(--gw-ink-400)'
+          placeholder.style.padding = '16px 8px'
+          placeholder.textContent = 'No deals in this stage'
+          col.appendChild(placeholder)
+        } else if (count > 0 && empty) {
+          empty.remove()
+        }
+      }
+
+      root.querySelectorAll('.demo-lead-card[draggable="true"]').forEach(function (card) {
+        card.addEventListener('dragstart', function (e) {
+          draggedCard = card
+          card.classList.add('dragging')
+          if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = 'move'
+            try { e.dataTransfer.setData('text/plain', card.getAttribute('data-demo-lead') || '') } catch (err) { /* no-op */ }
+          }
+        })
+        card.addEventListener('dragend', function () {
+          card.classList.remove('dragging')
+          draggedCard = null
+        })
+      })
+
+      cols.forEach(function (col) {
+        col.addEventListener('dragover', function (e) {
+          if (!draggedCard) return
+          e.preventDefault()
+          col.classList.add('drag-over')
+        })
+        col.addEventListener('dragleave', function () {
+          col.classList.remove('drag-over')
+        })
+        col.addEventListener('drop', function (e) {
+          e.preventDefault()
+          col.classList.remove('drag-over')
+          if (!draggedCard) return
+          var fromCol = draggedCard.closest('[data-demo-kanban-col]')
+          if (fromCol === col) return
+          var emptyState = col.querySelector('.demo-kanban-empty')
+          if (emptyState) col.insertBefore(draggedCard, emptyState)
+          else col.appendChild(draggedCard)
+          if (fromCol) refreshColumn(fromCol)
+          refreshColumn(col)
+          showToast((draggedCard.querySelector('div') ? draggedCard.querySelector('div').textContent : 'Deal') + ' moved to ' + colLabel(col))
+        })
+      })
+    })()
+
+    // Command palette (Cmd/Ctrl+K) — jump to any sidebar panel or a named
+    // client/record. Opens from the topbar trigger or the Ctrl/Cmd+K
+    // shortcut from anywhere on the page; type to filter, arrow keys move
+    // the active row, Enter navigates (and opens the matching lead card's
+    // slide-over when the record carries one), Escape or an outside click
+    // closes it without navigating.
+    (function bindCommandPalette() {
+      var overlay = root.querySelector('[data-demo-cmdk-overlay]')
+      var trigger = root.querySelector('[data-demo-cmdk-trigger]')
+      var input = root.querySelector('[data-demo-cmdk-input]')
+      var list = root.querySelector('[data-demo-cmdk-list]')
+      var empty = root.querySelector('[data-demo-cmdk-empty]')
+      if (!overlay || !input || !list) return
+      var items = Array.prototype.slice.call(root.querySelectorAll('[data-demo-cmdk-item]'))
+
+      function setActive(el) {
+        items.forEach(function (i) { i.classList.remove('active') })
+        if (el) {
+          el.classList.add('active')
+          el.scrollIntoView({ block: 'nearest' })
+        }
+      }
+      function visibleItems() {
+        return items.filter(function (i) { return i.style.display !== 'none' })
+      }
+      function openPalette() {
+        overlay.classList.add('open')
+        closeAiOverlay()
+        closeBellDropdown()
+        input.value = ''
+        items.forEach(function (i) { i.style.display = '' })
+        root.querySelectorAll('[data-demo-cmdk-group]').forEach(function (g) { g.style.display = '' })
+        if (empty) empty.hidden = true
+        setActive(visibleItems()[0])
+        setTimeout(function () { input.focus() }, 10)
+      }
+      function closePalette() {
+        overlay.classList.remove('open')
+      }
+      function filterPalette() {
+        var term = input.value.trim().toLowerCase()
+        var anyVisible = false
+        items.forEach(function (i) {
+          var match = !term || (i.getAttribute('data-demo-cmdk-text') || '').indexOf(term) !== -1
+          i.style.display = match ? '' : 'none'
+          if (match) anyVisible = true
+        })
+        root.querySelectorAll('[data-demo-cmdk-group]').forEach(function (g) {
+          var hasVisible = Array.prototype.some.call(g.querySelectorAll('[data-demo-cmdk-item]'), function (i) { return i.style.display !== 'none' })
+          g.style.display = hasVisible ? '' : 'none'
+        })
+        if (empty) empty.hidden = anyVisible
+        setActive(visibleItems()[0])
+      }
+      function activate(item) {
+        if (!item) return
+        var goto = item.getAttribute('data-demo-cmdk-goto')
+        var lead = item.getAttribute('data-demo-cmdk-lead')
+        closePalette()
+        if (goto) {
+          showPanel(goto)
+          var pm = root.querySelector('.pm')
+          if (pm) pm.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+        if (lead && slideover) {
+          setTimeout(function () {
+            slideover.querySelectorAll('[data-lead-detail]').forEach(function (d) {
+              d.hidden = d.getAttribute('data-lead-detail') !== lead
+            })
+            slideover.classList.add('open')
+          }, 260)
+        }
+      }
+
+      if (trigger) trigger.addEventListener('click', openPalette)
+      document.addEventListener('keydown', function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault()
+          overlay.classList.contains('open') ? closePalette() : openPalette()
+        } else if (e.key === 'Escape' && overlay.classList.contains('open')) {
+          closePalette()
+        }
+      })
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closePalette()
+      })
+      input.addEventListener('input', filterPalette)
+      input.addEventListener('keydown', function (e) {
+        var visible = visibleItems()
+        var idx = visible.indexOf(list.querySelector('.demo-cmdk-item.active'))
+        if (e.key === 'ArrowDown') {
+          e.preventDefault()
+          setActive(visible[Math.min(visible.length - 1, idx + 1)] || visible[0])
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault()
+          setActive(visible[Math.max(0, idx - 1)] || visible[0])
+        } else if (e.key === 'Enter') {
+          e.preventDefault()
+          activate(list.querySelector('.demo-cmdk-item.active') || visible[0])
+        }
+      })
+      items.forEach(function (item) {
+        item.addEventListener('click', function () { activate(item) })
+        item.addEventListener('mouseenter', function () { setActive(item) })
+      })
+    })()
 
     // Topbar: live search filters tasks, pipeline lead cards, and every
     // other data-demo-searchable row across whichever panel is visible
