@@ -190,7 +190,23 @@ export function InteractiveDemoPage() {
                     <span class="demo-cmdk-trigger-label">Jump to…</span>
                     <span class="demo-cmdk-kbd">⌘K</span>
                   </span>
-                  <span class="new-btn">+ New</span>
+                  <span class="demo-new-wrap">
+                    <span class="new-btn" data-demo-new-trigger>+ New</span>
+                    <div class="demo-new-dropdown" data-demo-new-dropdown>
+                      <button type="button" class="demo-new-dropdown-item" data-demo-new-action="task">
+                        <Icon name="check" size={13} />
+                        <div><strong>New Task</strong><span>Adds to My Tasks on Command Center</span></div>
+                      </button>
+                      <button type="button" class="demo-new-dropdown-item" data-demo-new-action="lead">
+                        <Icon name="users" size={13} />
+                        <div><strong>New Lead</strong><span>Adds to the Leads intake queue</span></div>
+                      </button>
+                      <button type="button" class="demo-new-dropdown-item" data-demo-new-action="client">
+                        <Icon name="user" size={13} />
+                        <div><strong>New Client</strong><span>Adds to the Client Roster</span></div>
+                      </button>
+                    </div>
+                  </span>
                   <span class="demo-ai-trigger" data-demo-ai-trigger title="Groundwork AI">
                     <Icon name="sparkle" size={13} />
                     <span class="demo-ai-trigger-label">Groundwork AI</span>
@@ -250,15 +266,17 @@ export function InteractiveDemoPage() {
                     </div>
                   </div>
                   <PMCard heading="My Tasks" chip="Click a task to check it off">
-                    {tasks.map((t) => (
-                      <div class={`pm-task${t.overdue ? ' overdue' : ''}`} data-demo-task data-demo-searchable={t.title.toLowerCase()} style="cursor: pointer;">
-                        <span class="cb"></span>
-                        <span class="tk-title">{t.title}</span>
-                        <span class="tk-tags">
-                          {t.tags.map((tag) => <span class={`tag tag-${tag.variant}`}>{tag.label}</span>)}
-                        </span>
-                      </div>
-                    ))}
+                    <div data-demo-tasklist>
+                      {tasks.map((t) => (
+                        <div class={`pm-task${t.overdue ? ' overdue' : ''}`} data-demo-task data-demo-searchable={t.title.toLowerCase()} style="cursor: pointer;">
+                          <span class="cb"></span>
+                          <span class="tk-title">{t.title}</span>
+                          <span class="tk-tags">
+                            {t.tags.map((tag) => <span class={`tag tag-${tag.variant}`}>{tag.label}</span>)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </PMCard>
                   <DemoGoto to="pipeline" label="See the Sales Pipeline" />
                 </div>
@@ -414,19 +432,21 @@ export function InteractiveDemoPage() {
                     </div>
                   </PMCard>
                   <PMCard heading="Intake Queue" chip="Click a lead to mark it contacted">
-                    {[
-                      { name: 'Priya Anand', source: 'Website form · irrigation repair inquiry', tag: 'New', variant: 'website' },
-                      { name: 'Marcus Webb', source: 'Referral from D. Patel · fence + hardscape estimate', tag: 'New', variant: 'website' },
-                      { name: 'Chloe Ferretti', source: 'Called in · spring cleanup quote request', tag: 'Contacted', variant: 'rapport' },
-                    ].map((l) => (
-                      <div class="demo-row" data-demo-handle data-demo-searchable={`${l.name.toLowerCase()} ${l.source.toLowerCase()}`}>
-                        <div>
-                          <div style="font-size: 12.5px; font-weight: 600;">{l.name}</div>
-                          <div class="demo-row-sub demo-money-job">{l.source}</div>
+                    <div data-demo-leadlist>
+                      {[
+                        { name: 'Priya Anand', source: 'Website form · irrigation repair inquiry', tag: 'New', variant: 'website' },
+                        { name: 'Marcus Webb', source: 'Referral from D. Patel · fence + hardscape estimate', tag: 'New', variant: 'website' },
+                        { name: 'Chloe Ferretti', source: 'Called in · spring cleanup quote request', tag: 'Contacted', variant: 'rapport' },
+                      ].map((l) => (
+                        <div class="demo-row" data-demo-handle data-demo-searchable={`${l.name.toLowerCase()} ${l.source.toLowerCase()}`}>
+                          <div>
+                            <div style="font-size: 12.5px; font-weight: 600;">{l.name}</div>
+                            <div class="demo-row-sub demo-money-job">{l.source}</div>
+                          </div>
+                          <span data-demo-handle-tag class={`tag tag-${l.variant}`}>{l.tag}</span>
                         </div>
-                        <span data-demo-handle-tag class={`tag tag-${l.variant}`}>{l.tag}</span>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </PMCard>
                   <DemoGoto to="pipeline" label="See a qualified lead move through Pipeline" />
                 </div>
@@ -457,23 +477,25 @@ export function InteractiveDemoPage() {
                     </div>
                   </PMCard>
                   <PMCard heading="Client Roster" chip="Click a client to expand">
-                    {[
-                      { name: 'Nicole Knesley', addr: '6005 Chapman Rd, Lorton VA', value: '$59.9k lifetime', note: '2 properties on file · bi-weekly maintenance contract active since 2024.' },
-                      { name: 'Julie Grumley', addr: '412 Vale Ct, Fairfax VA', value: '$8.2k lifetime', note: 'New client — first job (tree removal) still in Discovery.' },
-                      { name: 'Vijay Dhulipala', addr: '88 Birchwood Ln, Vienna VA', value: '$32k lifetime', note: 'Backyard redesign in Discovery — second measurement visit pending.' },
-                      { name: 'Sydney Lampard', addr: '19 Duke St, Alexandria VA', value: '$18k lifetime', note: 'Deck lighting proposal sent — this is the deal Groundwork AI is flagging.' },
-                    ].map((c) => (
-                      <div class="demo-row demo-row-expand" data-demo-expand data-demo-searchable={`${c.name.toLowerCase()} ${c.addr.toLowerCase()}`}>
-                        <div class="demo-row-main">
-                          <div>
-                            <div style="font-size: 12.5px; font-weight: 600;">{c.name}</div>
-                            <div class="demo-row-sub">{c.addr}</div>
+                    <div data-demo-clientlist>
+                      {[
+                        { name: 'Nicole Knesley', addr: '6005 Chapman Rd, Lorton VA', value: '$59.9k lifetime', note: '2 properties on file · bi-weekly maintenance contract active since 2024.' },
+                        { name: 'Julie Grumley', addr: '412 Vale Ct, Fairfax VA', value: '$8.2k lifetime', note: 'New client — first job (tree removal) still in Discovery.' },
+                        { name: 'Vijay Dhulipala', addr: '88 Birchwood Ln, Vienna VA', value: '$32k lifetime', note: 'Backyard redesign in Discovery — second measurement visit pending.' },
+                        { name: 'Sydney Lampard', addr: '19 Duke St, Alexandria VA', value: '$18k lifetime', note: 'Deck lighting proposal sent — this is the deal Groundwork AI is flagging.' },
+                      ].map((c) => (
+                        <div class="demo-row demo-row-expand" data-demo-expand data-demo-searchable={`${c.name.toLowerCase()} ${c.addr.toLowerCase()}`}>
+                          <div class="demo-row-main">
+                            <div>
+                              <div style="font-size: 12.5px; font-weight: 600;">{c.name}</div>
+                              <div class="demo-row-sub">{c.addr}</div>
+                            </div>
+                            <span class="demo-row-value">{c.value}</span>
                           </div>
-                          <span class="demo-row-value">{c.value}</span>
+                          <div class="demo-row-detail" hidden>{c.note}</div>
                         </div>
-                        <div class="demo-row-detail" hidden>{c.note}</div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </PMCard>
                   <DemoGoto to="properties" label="See the properties behind these clients" />
                 </div>
@@ -750,14 +772,14 @@ export function InteractiveDemoPage() {
                     <span class="demo-crew-chip"><span class="dot" style="background: var(--gw-clay-500);"></span>Crew C · 3</span>
                   </div>
                   <div class="demo-schedule-layout">
-                    <div class="demo-jobpool">
+                    <div class="demo-jobpool" data-demo-jobpool>
                       <div class="demo-jobpool-head"><span>Job Pool</span><span>3</span></div>
                       {[
                         { name: 'M. Okafor', meta: 'Irrigation repair · unscheduled', prio: 'high' },
                         { name: 'Ferretti Cleanup', meta: 'Spring cleanup · needs crew', prio: 'normal' },
                         { name: 'Webb Fence Est.', meta: 'Site walk · tentative', prio: 'normal' },
                       ].map((j) => (
-                        <div class="demo-jobpool-item">
+                        <div class="demo-jobpool-item" draggable="true">
                           <div class="name">{j.name}</div>
                           <div class="meta">{j.meta}</div>
                           <span class={`prio ${j.prio}`}>{j.prio === 'high' ? 'Needs Crew' : 'Tentative'}</span>
@@ -813,6 +835,8 @@ export function InteractiveDemoPage() {
                                 <div
                                   class={`demo-schedule-cell demo-row-expand${j.conflict ? ' conflict' : ''}`}
                                   data-demo-expand
+                                  data-demo-schedule-cell
+                                  draggable="true"
                                   data-demo-searchable={`${j.client.toLowerCase()} ${j.job.toLowerCase()} ${crew.name.toLowerCase()}`}
                                 >
                                   <div class="demo-schedule-job-title">{j.client}</div>
@@ -822,7 +846,7 @@ export function InteractiveDemoPage() {
                                   <div class="demo-row-detail" hidden>{j.note}</div>
                                 </div>
                               ) : (
-                                <div class="demo-schedule-cell off">Open</div>
+                                <div class="demo-schedule-cell off" data-demo-schedule-cell data-demo-schedule-open>Open</div>
                               )
                             ))}
                           </>
@@ -830,7 +854,7 @@ export function InteractiveDemoPage() {
                       </div>
                     )
                   })()}
-                  <div style="font-size: 11px; color: var(--gw-ink-400); margin-bottom: 4px;">Click any job to see its dispatch note. Real Groundwork lets you drag a block to reschedule it — this sample view is click-only.</div>
+                  <div style="font-size: 11px; color: var(--gw-ink-400); margin-bottom: 4px;">Click any job to see its dispatch note, or drag a job block (or a Job Pool card) onto another cell to reschedule it — just like the real dispatch calendar.</div>
                     </div>
                   </div>
                   <DemoGoto to="recurring" label="See the recurring contracts behind these routes" />
@@ -1560,6 +1584,68 @@ export function InteractiveDemoPage() {
                   </p>
                 </div>
                 </div>
+
+                {/* Groundwork AI — not a sidebar item in the real product; it's
+                    a slide-over available from anywhere, so it's triggered
+                    from the topbar button above rather than living in the
+                    sidebar list. Coach and Chat are both real, switchable
+                    sub-panels here (data-demo-ai-panel); Home/Suggestions/
+                    Setup stay toast-only illustrative tabs, same as before.
+                    Lives inside PMMain (a descendant of the position:relative
+                    .pm box) so it opens as a panel of the sample workspace
+                    itself, not a drawer over the whole marketing site. */}
+                <div class="demo-ai-overlay" data-demo-ai-overlay>
+                  <div class="demo-slideover-close demo-ai-overlay-close" data-demo-ai-overlay-close aria-label="Close"><Icon name="x" size={13} /></div>
+                  <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                    {['Home', 'Suggestions', 'Coach', 'Setup', 'Chat'].map((t, i) => {
+                      const isReal = t === 'Coach' || t === 'Chat'
+                      return (
+                        <span
+                          class={isReal ? 'demo-ai-tab-real' : 'demo-ai-tab'}
+                          data-demo-ai-tab={!isReal ? t : undefined}
+                          data-demo-ai-panel-tab={isReal ? t.toLowerCase() : undefined}
+                          style={`font-size: 10px; letter-spacing: 0.04em; padding: 6px 9px; border-radius: 5px 5px 0 0; cursor: pointer; ${t === 'Coach' ? 'background: rgba(255,255,255,0.08); color: white; font-weight: 600;' : 'color: #7A9788;'}`}
+                        >{t}</span>
+                      )
+                    })}
+                  </div>
+                  <div style="padding: 16px 2px 4px; border-top: 1px solid rgba(255,255,255,0.08);">
+                    <div data-demo-ai-panel="coach">
+                      <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Coach · Deals going quiet · Click a card</div>
+                      {aiDeals.map((d, i) => (
+                        <div class="demo-ai-card" data-demo-ai-card style={`background: rgba(255,255,255,0.05); border-left: 3px solid var(--gw-red-500); border-radius: 6px; padding: 10px 12px;${i < aiDeals.length - 1 ? ' margin-bottom: 8px;' : ''}`}>
+                          <div style="font-size: 12.5px; font-weight: 600; color: white; margin-bottom: 2px;">{d.name}</div>
+                          <div style="font-size: 11px; color: #B7CFC1; margin-bottom: 4px;">{d.detail}</div>
+                          <div style="font-size: 10.5px; color: #F0A8A0; font-weight: 600;">{d.risk}</div>
+                          <div class="demo-ai-thinking" data-demo-ai-thinking hidden>
+                            <span class="demo-ai-dot"></span><span class="demo-ai-dot"></span><span class="demo-ai-dot"></span>
+                            Groundwork AI is thinking…
+                          </div>
+                          <div class="demo-ai-detail" data-demo-ai-detail hidden>
+                            <Icon name="sparkle" size={11} style="margin-right: 5px; vertical-align: -1px; opacity: 0.85;" />
+                            {d.action}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div data-demo-ai-panel="chat" hidden>
+                      <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Chat · Ask about this workspace</div>
+                      <div class="demo-ai-chat-log" data-demo-ai-chat-log>
+                        <div class="demo-ai-chat-bubble ai">Ask me anything about this sample workspace — try one of the suggestions below, or type your own question.</div>
+                      </div>
+                      <div class="demo-ai-chat-suggestions" data-demo-ai-chat-suggestions>
+                        <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Which deals are at risk?">Which deals are at risk?</span>
+                        <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="What's outstanding right now?">What's outstanding right now?</span>
+                        <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Are we hitting the month?">Are we hitting the month?</span>
+                        <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Who's behind on hours?">Who's behind on hours?</span>
+                      </div>
+                      <div class="demo-ai-chat-inputwrap">
+                        <input type="text" data-demo-ai-chat-input placeholder="Ask a question…" autocomplete="off" />
+                        <button type="button" class="demo-ai-chat-send" data-demo-ai-chat-send>Ask</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </PMMain>
             </PM>
 
@@ -1602,65 +1688,6 @@ export function InteractiveDemoPage() {
                     ))}
                   </div>
                   <div class="demo-cmdk-empty" data-demo-cmdk-empty hidden>No matches. Try a panel name like “reports” or a client like “Knesley.”</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Groundwork AI — not a sidebar item in the real product; it's a
-                slide-over available from anywhere, so it's triggered from the
-                topbar button above rather than living in the sidebar list.
-                Coach and Chat are both real, switchable sub-panels here
-                (data-demo-ai-panel); Home/Suggestions/Setup stay toast-only
-                illustrative tabs, same as before. */}
-            <div class="demo-ai-overlay" data-demo-ai-overlay>
-              <div class="demo-slideover-close demo-ai-overlay-close" data-demo-ai-overlay-close aria-label="Close"><Icon name="x" size={13} /></div>
-              <div style="display: flex; gap: 4px; margin-bottom: 4px;">
-                {['Home', 'Suggestions', 'Coach', 'Setup', 'Chat'].map((t, i) => {
-                  const isReal = t === 'Coach' || t === 'Chat'
-                  return (
-                    <span
-                      class={isReal ? 'demo-ai-tab-real' : 'demo-ai-tab'}
-                      data-demo-ai-tab={!isReal ? t : undefined}
-                      data-demo-ai-panel-tab={isReal ? t.toLowerCase() : undefined}
-                      style={`font-size: 10px; letter-spacing: 0.04em; padding: 6px 9px; border-radius: 5px 5px 0 0; cursor: pointer; ${t === 'Coach' ? 'background: rgba(255,255,255,0.08); color: white; font-weight: 600;' : 'color: #7A9788;'}`}
-                    >{t}</span>
-                  )
-                })}
-              </div>
-              <div style="padding: 16px 2px 4px; border-top: 1px solid rgba(255,255,255,0.08);">
-                <div data-demo-ai-panel="coach">
-                  <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Coach · Deals going quiet · Click a card</div>
-                  {aiDeals.map((d, i) => (
-                    <div class="demo-ai-card" data-demo-ai-card style={`background: rgba(255,255,255,0.05); border-left: 3px solid var(--gw-red-500); border-radius: 6px; padding: 10px 12px;${i < aiDeals.length - 1 ? ' margin-bottom: 8px;' : ''}`}>
-                      <div style="font-size: 12.5px; font-weight: 600; color: white; margin-bottom: 2px;">{d.name}</div>
-                      <div style="font-size: 11px; color: #B7CFC1; margin-bottom: 4px;">{d.detail}</div>
-                      <div style="font-size: 10.5px; color: #F0A8A0; font-weight: 600;">{d.risk}</div>
-                      <div class="demo-ai-thinking" data-demo-ai-thinking hidden>
-                        <span class="demo-ai-dot"></span><span class="demo-ai-dot"></span><span class="demo-ai-dot"></span>
-                        Groundwork AI is thinking…
-                      </div>
-                      <div class="demo-ai-detail" data-demo-ai-detail hidden>
-                        <Icon name="sparkle" size={11} style="margin-right: 5px; vertical-align: -1px; opacity: 0.85;" />
-                        {d.action}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div data-demo-ai-panel="chat" hidden>
-                  <div style="font-size: 10px; letter-spacing: 0.1em; color: #7CC9A3; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;">Chat · Ask about this workspace</div>
-                  <div class="demo-ai-chat-log" data-demo-ai-chat-log>
-                    <div class="demo-ai-chat-bubble ai">Ask me anything about this sample workspace — try one of the suggestions below, or type your own question.</div>
-                  </div>
-                  <div class="demo-ai-chat-suggestions" data-demo-ai-chat-suggestions>
-                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Which deals are at risk?">Which deals are at risk?</span>
-                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="What's outstanding right now?">What's outstanding right now?</span>
-                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Are we hitting the month?">Are we hitting the month?</span>
-                    <span class="demo-ai-chat-suggestion" data-demo-ai-chat-q="Who's behind on hours?">Who's behind on hours?</span>
-                  </div>
-                  <div class="demo-ai-chat-inputwrap">
-                    <input type="text" data-demo-ai-chat-input placeholder="Ask a question…" autocomplete="off" />
-                    <button type="button" class="demo-ai-chat-send" data-demo-ai-chat-send>Ask</button>
-                  </div>
                 </div>
               </div>
             </div>

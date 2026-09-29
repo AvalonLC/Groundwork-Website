@@ -382,8 +382,11 @@
     // Generic "handle" rows (Money Loop, Leads intake, Invoice Reporting
     // reminders, AAR review queue) — click to mark handled/reviewed/etc.
     // The label used while handled defaults to "Handled" but can be
-    // overridden per-row via data-demo-handled-label.
-    root.querySelectorAll('[data-demo-handle]').forEach(function (row) {
+    // overridden per-row via data-demo-handled-label. Pulled into a named
+    // function (rather than an inline forEach callback) so the "+ New"
+    // dropdown can bind the exact same behavior onto a lead row it
+    // creates at runtime, not just the ones present at page load.
+    function bindHandleRow(row) {
       row.addEventListener('click', function () {
         row.classList.toggle('demo-handled')
         var tag = row.querySelector('[data-demo-handle-tag]')
@@ -400,20 +403,31 @@
         if (justHandled) showToast('Marked ' + (row.getAttribute('data-demo-handled-label') || 'handled'))
         updateBellBadge()
       })
-    })
+    }
+    root.querySelectorAll('[data-demo-handle]').forEach(bindHandleRow)
 
     // Generic expandable rows (Clients, Properties, Estimates, Budget &
     // Rates, Schedule, Dispatch) — click the row to reveal a detail line
     // without leaving the panel. Clicking a handle/portal control inside
     // an expandable row must not also toggle the expand — stopPropagation
-    // on those inner controls handles that.
-    root.querySelectorAll('[data-demo-expand]').forEach(function (row) {
+    // on those inner controls handles that. Named function for the same
+    // reason as bindHandleRow above — the "+ New" dropdown's client row
+    // reuses it.
+    function bindExpandRow(row) {
+      // Guard against double-binding: the Schedule drag-and-drop handler
+      // below re-runs this on cells whose content just got swapped, and
+      // those cells may already carry a listener from this same initial
+      // pass (an innerHTML content swap doesn't remove listeners already
+      // attached to the cell node itself).
+      if (row.dataset.demoExpandBound) return
+      row.dataset.demoExpandBound = '1'
       row.addEventListener('click', function () {
         var detail = row.querySelector('.demo-row-detail')
         if (detail) detail.hidden = !detail.hidden
         row.classList.toggle('demo-row-open', detail && !detail.hidden)
       })
-    })
+    }
+    root.querySelectorAll('[data-demo-expand]').forEach(bindExpandRow)
 
     // Status-pill filter rows (Estimates, Assets) — click a pill to filter
     // the nearest table/list by its data-demo-status; "All" (no filter
@@ -520,6 +534,92 @@
         }
       })
     })
+
+    // Topbar "+ New" dropdown — each item performs a real, tiny action
+    // (creates a row in the sample data and jumps to the panel that owns
+    // it) rather than just showing a toast. Same floating-panel pattern
+    // as the notification bell: toggled by its trigger, closed by an
+    // outside click or Escape, and mutually exclusive with the bell
+    // dropdown / AI overlay / command palette so only one is ever open.
+    ;(function bindNewDropdown() {
+      var trigger = root.querySelector('[data-demo-new-trigger]')
+      var dropdown = root.querySelector('[data-demo-new-dropdown]')
+      if (!trigger || !dropdown) return
+
+      function closeNewDropdown() {
+        dropdown.classList.remove('open')
+      }
+
+      function prependRow(listSelector, node) {
+        var list = root.querySelector(listSelector)
+        if (!list) return
+        list.insertBefore(node, list.firstChild)
+        node.classList.add('demo-panel-fade-in')
+      }
+
+      trigger.addEventListener('click', function (e) {
+        e.stopPropagation()
+        var opening = !dropdown.classList.contains('open')
+        closeNewDropdown()
+        if (opening) {
+          closeAiOverlay()
+          closeBellDropdown()
+          dropdown.classList.add('open')
+        }
+      })
+      document.addEventListener('click', function (e) {
+        if (!dropdown.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+          closeNewDropdown()
+        }
+      })
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeNewDropdown()
+      })
+
+      dropdown.querySelectorAll('[data-demo-new-action]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var action = btn.getAttribute('data-demo-new-action')
+          closeNewDropdown()
+
+          if (action === 'task') {
+            var task = document.createElement('div')
+            task.className = 'pm-task'
+            task.setAttribute('data-demo-task', '')
+            task.setAttribute('data-demo-searchable', 'new task')
+            task.style.cursor = 'pointer'
+            task.innerHTML = '<span class="cb"></span><span class="tk-title">New task</span><span class="tk-tags"><span class="tag tag-website">Just added</span></span>'
+            task.addEventListener('click', function () {
+              task.classList.toggle('demo-task-done')
+              updateBellBadge()
+            })
+            prependRow('[data-demo-tasklist]', task)
+            showPanel('command')
+            showToast('Task added to My Tasks')
+          } else if (action === 'lead') {
+            var lead = document.createElement('div')
+            lead.className = 'demo-row'
+            lead.setAttribute('data-demo-handle', '')
+            lead.setAttribute('data-demo-searchable', 'new lead')
+            lead.innerHTML = '<div><div style="font-size: 12.5px; font-weight: 600;">New Lead</div><div class="demo-row-sub demo-money-job">Just added \u00b7 not yet contacted</div></div><span data-demo-handle-tag class="tag tag-website">New</span>'
+            bindHandleRow(lead)
+            prependRow('[data-demo-leadlist]', lead)
+            showPanel('leads')
+            showToast('Lead added to the Intake Queue')
+          } else if (action === 'client') {
+            var client = document.createElement('div')
+            client.className = 'demo-row demo-row-expand'
+            client.setAttribute('data-demo-expand', '')
+            client.setAttribute('data-demo-searchable', 'new client')
+            client.innerHTML = '<div class="demo-row-main"><div><div style="font-size: 12.5px; font-weight: 600;">New Client</div><div class="demo-row-sub">No address on file yet</div></div><span class="demo-row-value">$0 lifetime</span></div><div class="demo-row-detail" hidden>Just added \u2014 no jobs or properties on file yet.</div>'
+            bindExpandRow(client)
+            prependRow('[data-demo-clientlist]', client)
+            showPanel('clients')
+            showToast('Client added to the Client Roster')
+          }
+          updateBellBadge()
+        })
+      })
+    })()
 
     // Groundwork AI overlay — triggered from the topbar button (AI isn't a
     // sidebar item in the real product; it's available from anywhere).
@@ -904,6 +1004,168 @@
           showToast((draggedCard.querySelector('div') ? draggedCard.querySelector('div').textContent : 'Deal') + ' moved to ' + colLabel(col))
         })
       })
+    })()
+
+    // Schedule: drag-and-drop calendar cells + Job Pool cards — same
+    // grab/highlight/drop pattern as the Pipeline kanban above, adapted
+    // to a fixed grid instead of a flexible list. Two drag sources:
+    //   1. A scheduled job cell dragged onto another cell SWAPS the two
+    //      cells' content (both are real crew/day slots, so "moving" one
+    //      job into an occupied slot means something has to give — a
+    //      swap is the only sensible outcome, same as the real calendar).
+    //      Dragging a job onto an "Open" cell just relocates it there and
+    //      leaves the origin cell Open.
+    //   2. A Job Pool card dragged onto an "Open" cell schedules it:
+    //      the cell becomes a real job block (using the pool card's own
+    //      name/meta as the client/job text) and the pool card is
+    //      removed from the pool (with the pool count updated).
+    // Pool cards and non-empty cells only ever expect one drop target
+    // type (cells) since the pool itself never receives drops.
+    ;(function bindScheduleDnD() {
+      var jobpool = root.querySelector('[data-demo-jobpool]')
+      var cells = root.querySelectorAll('[data-demo-schedule-cell]')
+      if (!cells.length) return
+      var draggedCell = null
+      var draggedPoolCard = null
+
+      function cellIsOpen(cell) {
+        return cell.hasAttribute('data-demo-schedule-open')
+      }
+
+      // Re-wires a cell that just became a real (non-open) job block —
+      // needed both when two cells swap content and when a pool card
+      // gets dropped into a formerly-open cell, since in both cases the
+      // resulting DOM node needs draggable + the expand-row click
+      // handler bound fresh (bindExpandRow is safe to call more than
+      // once on the same node; addEventListener doesn't double-fire for
+      // an identical function reference).
+      function makeCellJob(cell) {
+        cell.removeAttribute('data-demo-schedule-open')
+        cell.classList.add('demo-row-expand')
+        cell.classList.remove('off')
+        cell.setAttribute('draggable', 'true')
+        cell.setAttribute('data-demo-expand', '')
+        bindExpandRow(cell)
+        bindCellDrag(cell)
+      }
+
+      function makeCellOpen(cell) {
+        cell.innerHTML = 'Open'
+        cell.className = 'demo-schedule-cell off'
+        cell.setAttribute('data-demo-schedule-cell', '')
+        cell.setAttribute('data-demo-schedule-open', '')
+        cell.removeAttribute('draggable')
+        cell.removeAttribute('data-demo-expand')
+        cell.removeAttribute('data-demo-searchable')
+        bindCellDropTarget(cell)
+      }
+
+      // Both binders guard against double-attaching listeners: cell DOM
+      // nodes are permanent (only their content/class/attrs change on a
+      // swap or pool-drop), and makeCellJob/makeCellOpen re-call these
+      // on cells that were already bound once in the initial cells.forEach
+      // pass below.
+      function bindCellDrag(cell) {
+        if (cellIsOpen(cell) || cell.dataset.demoDragBound) return
+        cell.dataset.demoDragBound = '1'
+        cell.addEventListener('dragstart', function (e) {
+          draggedCell = cell
+          cell.classList.add('dragging')
+          if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move'
+        })
+        cell.addEventListener('dragend', function () {
+          cell.classList.remove('dragging')
+          draggedCell = null
+        })
+      }
+
+      function bindCellDropTarget(cell) {
+        if (cell.dataset.demoDropBound) return
+        cell.dataset.demoDropBound = '1'
+        cell.addEventListener('dragover', function (e) {
+          if (!draggedCell && !draggedPoolCard) return
+          if (draggedCell === cell) return
+          e.preventDefault()
+          cell.classList.add('drag-over')
+        })
+        cell.addEventListener('dragleave', function () {
+          cell.classList.remove('drag-over')
+        })
+        cell.addEventListener('drop', function (e) {
+          e.preventDefault()
+          cell.classList.remove('drag-over')
+
+          if (draggedPoolCard) {
+            if (!cellIsOpen(cell)) return
+            var name = draggedPoolCard.querySelector('.name')
+            var meta = draggedPoolCard.querySelector('.meta')
+            var label = name ? name.textContent : 'Job'
+            var sub = meta ? meta.textContent : ''
+            cell.innerHTML =
+              '<div class="demo-schedule-job-title">' + label + '</div>' +
+              '<div class="demo-schedule-job-meta">' + sub + '</div>' +
+              '<div class="demo-schedule-job-time">Newly scheduled</div>' +
+              '<div class="demo-row-detail" hidden>Scheduled just now by dragging it off the Job Pool \u2014 in the real product this also removes the job from the pool and notifies the assigned crew.</div>'
+            cell.setAttribute('data-demo-searchable', label.toLowerCase() + ' ' + sub.toLowerCase())
+            makeCellJob(cell)
+            draggedPoolCard.remove()
+            updateJobPoolCount()
+            showToast(label + ' scheduled')
+            draggedPoolCard = null
+            return
+          }
+
+          if (!draggedCell || draggedCell === cell) return
+
+          if (cellIsOpen(cell)) {
+            // Job moved onto an empty slot: relocate it, leave the
+            // origin Open.
+            cell.innerHTML = draggedCell.innerHTML
+            cell.setAttribute('data-demo-searchable', draggedCell.getAttribute('data-demo-searchable') || '')
+            makeCellJob(cell)
+            makeCellOpen(draggedCell)
+          } else {
+            // Both slots are occupied: swap their content (and detail
+            // open/closed state resets cleanly since innerHTML swap
+            // recreates the hidden .demo-row-detail on both sides).
+            var fromHTML = draggedCell.innerHTML
+            var fromSearch = draggedCell.getAttribute('data-demo-searchable') || ''
+            draggedCell.innerHTML = cell.innerHTML
+            draggedCell.setAttribute('data-demo-searchable', cell.getAttribute('data-demo-searchable') || '')
+            cell.innerHTML = fromHTML
+            cell.setAttribute('data-demo-searchable', fromSearch)
+            bindExpandRow(draggedCell)
+            bindExpandRow(cell)
+          }
+          showToast('Job rescheduled')
+        })
+      }
+
+      function updateJobPoolCount() {
+        if (!jobpool) return
+        var countEl = jobpool.querySelector('.demo-jobpool-head span:last-child')
+        var remaining = jobpool.querySelectorAll('.demo-jobpool-item').length
+        if (countEl) countEl.textContent = String(remaining)
+      }
+
+      cells.forEach(function (cell) {
+        bindCellDrag(cell)
+        bindCellDropTarget(cell)
+      })
+
+      if (jobpool) {
+        jobpool.querySelectorAll('.demo-jobpool-item[draggable="true"]').forEach(function (card) {
+          card.addEventListener('dragstart', function (e) {
+            draggedPoolCard = card
+            card.classList.add('dragging')
+            if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move'
+          })
+          card.addEventListener('dragend', function () {
+            card.classList.remove('dragging')
+            draggedPoolCard = null
+          })
+        })
+      }
     })()
 
     // Command palette (Cmd/Ctrl+K) — jump to any sidebar panel or a named
