@@ -1,7 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
-import { PMMain, PMTitleRow, PMStats, PMCard, PMTask } from '../../components/ProductMock'
+import { PMMain, PMTitleRow, PMStats, PMCard, PMTask, PMStatRow } from '../../components/ProductMock'
 
 export function OperationsPage() {
 
@@ -104,15 +104,59 @@ export function OperationsPage() {
             </PMMain>
           </MockFrameWithLink>
           <SplitContent
-            eyebrow="Work Orders & Recurring Services"
+            eyebrow="Work Orders"
             title="Every job has a paper trail."
-            lede="Work orders that carry the sales scope, materials list, safety checklist, and time budget into the field — plus recurring service contracts and tool inventory that never fall off the schedule."
+            lede="Work orders carry the sales scope, materials list, safety checklist, and time budget into the field, so nothing gets left to memory once a crew is on-site."
           >
             <SplitList
               items={[
                 { num: '→', title: 'Work Orders', body: 'Scope, materials, checklist, budget — all in one document.' },
-                { num: '→', title: 'Recurring Services', body: 'Maintenance contracts that never fall off the schedule.' },
-                { num: '→', title: 'Inventory & Tools', body: 'Know what is on which truck. Reorder before you run out.' },
+              ]}
+            />
+          </SplitContent>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <MockFrameWithLink panel="recurring" label="Try Recurring Services yourself">
+            <PMMain>
+              <PMTitleRow title="Recurring Services" sub="MAINTENANCE CONTRACTS" />
+              <PMStatRow
+                columns={3}
+                stats={[
+                  { label: 'Active Contracts', value: '6' },
+                  { label: 'Recurring Revenue / mo', value: '$18.4k', variant: 'sold' },
+                  { label: 'Flagged for Review', value: '1', variant: 'overdue' },
+                ]}
+              />
+              <PMCard heading="Contracts on Autopilot" chip="Auto-invoices on completion">
+                {[
+                  { name: 'Bi-Weekly Maintenance', sub: 'N. Knesley · Crew B', status: 'Active', variant: 'rapport' },
+                  { name: 'Weekly Route 1', sub: '6 stops · Crew B', status: 'Active', variant: 'rapport' },
+                  { name: 'Monthly Irrigation Check', sub: 'L. Ozawa · Crew A', status: 'Needs Review', variant: 'red' },
+                ].map((c, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{c.name}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{c.sub}</div>
+                    </div>
+                    <span class={`tag tag-${c.variant}`}>{c.status}</span>
+                  </div>
+                ))}
+              </PMCard>
+            </PMMain>
+          </MockFrameWithLink>
+          <SplitContent
+            eyebrow="Recurring Services"
+            title="Set once. Runs on autopilot."
+            lede="Weekly, bi-weekly, monthly, and seasonal maintenance contracts stay on the schedule without a human re-entering them every cycle. Each visit auto-invoices the morning after completion — and Groundwork flags a contract for review if the numbers don't match its rate card."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Any Cadence', body: 'Weekly, bi-weekly, monthly, quarterly, or seasonal.' },
+                { num: '→', title: 'Auto-Invoicing', body: 'Bills itself the morning after the visit is complete.' },
+                { num: '→', title: 'Anomaly Flags', body: "Catches a contract whose invoice doesn't match its rate card." },
               ]}
             />
           </SplitContent>
@@ -162,6 +206,52 @@ export function OperationsPage() {
               ]}
             />
           </SplitContent>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Inventory & Tools"
+            title="Know what's on which truck."
+            lede="Power tools get tracked like mini-assets, service status and all. Consumable stock — mulch, fittings, chemicals — gets a reorder point, so a crew never finds out they're out of fittings mid-job."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Tool Tracking', body: 'Which crew has which tool, and whether it needs service.' },
+                { num: '→', title: 'Reorder Points', body: 'Flags stock before it runs out, not after.' },
+                { num: '→', title: 'Purchase Orders', body: 'Raise a PO straight from a flagged, low-stock item.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrameWithLink panel="inventory" label="Try Inventory & Tools yourself">
+            <PMMain>
+              <PMTitleRow title="Inventory & Tools" sub="TOOLS & CONSUMABLE STOCK" />
+              <PMStatRow
+                columns={3}
+                stats={[
+                  { label: 'Tools Needing Service', value: '2', variant: 'overdue' },
+                  { label: 'Stock Below Reorder', value: '2', variant: 'overdue' },
+                  { label: 'Open Purchase Orders', value: '1' },
+                ]}
+              />
+              <PMCard heading="Consumable Stock" chip="Below reorder flagged in red">
+                {[
+                  { name: 'Pre-Emergent Herbicide', sub: '2.5-gal jugs · 3 on hand', status: 'Reorder Now', variant: 'red' },
+                  { name: 'Irrigation Fittings Kit', sub: '¾" PVC · 5 on hand', status: 'Reorder Now', variant: 'red' },
+                  { name: 'Mulch (Dyed Brown)', sub: '18 cu yd on hand', status: 'In Stock', variant: 'rapport' },
+                ].map((s, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{s.name}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{s.sub}</div>
+                    </div>
+                    <span class={`tag tag-${s.variant}`}>{s.status}</span>
+                  </div>
+                ))}
+              </PMCard>
+            </PMMain>
+          </MockFrameWithLink>
         </div>
       </section>
 

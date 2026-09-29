@@ -263,7 +263,7 @@
     var root = document.querySelector('[data-demo-root]')
     if (!root) return
 
-    var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
+    var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'recurring', 'dispatch', 'workorders', 'assets', 'inventory', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
     var visited = { command: true }
 
     function updateProgress() {

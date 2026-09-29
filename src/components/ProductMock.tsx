@@ -127,6 +127,15 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
           </svg>{' '}
           Schedule
         </div>
+        <div class={cls('recurring')} {...attr('recurring')}>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+            <path d="M3 21v-5h5" />
+          </svg>{' '}
+          Recurring Services
+        </div>
         <div class={cls('dispatch')} {...attr('dispatch')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M9 20l-5-9 5-9M15 4l5 9-5 9" />
@@ -148,6 +157,14 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
             <circle cx="17.5" cy="18" r="1.5" />
           </svg>{' '}
           Assets
+        </div>
+        <div class={cls('inventory')} {...attr('inventory')}>
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 8l-9-5-9 5 9 5 9-5z" />
+            <path d="M3 8v8l9 5 9-5V8" />
+            <path d="M12 13v8" />
+          </svg>{' '}
+          Inventory &amp; Tools
         </div>
         <div class={cls('timetracker')} {...attr('timetracker')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">

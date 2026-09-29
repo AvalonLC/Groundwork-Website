@@ -86,9 +86,9 @@ export function InteractiveDemoPage() {
     { key: 'aar', label: 'AAR Reviews' },
   ]
 
-  const sidebarStops = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'dispatch', 'workorders', 'assets', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
+  const sidebarStops = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'recurring', 'dispatch', 'workorders', 'assets', 'inventory', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
 
-  // Command palette (Cmd/Ctrl+K) — "jump to panel" covers all 19 sidebar
+  // Command palette (Cmd/Ctrl+K) — "jump to panel" covers all 21 sidebar
   // stops; "clients & deals" / "records" let the search reach into specific
   // entities (a lead, an estimate, a work order) rather than just a panel.
   const cmdkPanels: { key: string; label: string; icon: string; sub: string }[] = [
@@ -103,9 +103,11 @@ export function InteractiveDemoPage() {
     { key: 'invoicing', label: 'Invoice Reporting', icon: 'invoice', sub: 'Sent · paid · overdue' },
     { key: 'reports', label: 'Reports & Analytics', icon: 'chart', sub: 'Company-wide numbers' },
     { key: 'schedule', label: 'Schedule', icon: 'calendar', sub: 'Week view' },
+    { key: 'recurring', label: 'Recurring Services', icon: 'calendar', sub: 'Contracts on autopilot' },
     { key: 'dispatch', label: 'Dispatch Board', icon: 'truck', sub: "Today's crews" },
     { key: 'workorders', label: 'Work Orders', icon: 'clipboard', sub: 'Field checklist' },
-    { key: 'assets', label: 'Assets', icon: 'truck', sub: 'Vehicles · equipment · tools' },
+    { key: 'assets', label: 'Assets', icon: 'truck', sub: 'Vehicles · equipment' },
+    { key: 'inventory', label: 'Inventory & Tools', icon: 'clipboard', sub: 'Stock · reorder levels' },
     { key: 'timetracker', label: 'Time Tracker', icon: 'clock', sub: 'Live clock' },
     { key: 'clientportal', label: 'Client Portal', icon: 'users', sub: 'Portal access' },
     { key: 'employees', label: 'Employees & Teams', icon: 'users', sub: 'Roster · approvals' },
@@ -831,6 +833,98 @@ export function InteractiveDemoPage() {
                   <div style="font-size: 11px; color: var(--gw-ink-400); margin-bottom: 4px;">Click any job to see its dispatch note. Real Groundwork lets you drag a block to reschedule it — this sample view is click-only.</div>
                     </div>
                   </div>
+                  <DemoGoto to="recurring" label="See the recurring contracts behind these routes" />
+                </div>
+
+                {/* ================= 10b. Recurring Services =================
+                    Maintenance-contract detail: cadence, assigned route/crew,
+                    next-run date, and auto-invoice status per contract.
+                    Reuses the generic data-demo-expand row handler — every
+                    row's detail note is just a hidden .demo-row-detail, no
+                    new JS needed. */}
+                <div data-demo-panel="recurring" hidden>
+                  <PMTitleRow title="Recurring Services" sub="SAMPLE WORKSPACE · MAINTENANCE CONTRACTS" />
+                  <PMStatRow columns={4} stats={[
+                    { label: 'Active Contracts', value: '6' },
+                    { label: 'Recurring Revenue / mo', value: '$18.4k', variant: 'sold' },
+                    { label: 'Next Service', value: 'Tomorrow' },
+                    { label: 'Flagged for Review', value: '1', variant: 'overdue' },
+                  ]} />
+                  <PMCard heading="Contracts on Autopilot" chip="Click a contract to see its detail · auto-invoice fires the morning after each visit">
+                    {[
+                      {
+                        name: 'Bi-Weekly Maintenance',
+                        client: 'N. Knesley',
+                        freq: 'Bi-weekly',
+                        crew: 'Crew B · Route 2',
+                        next: 'Jul 14',
+                        status: 'Active',
+                        variant: 'rapport',
+                        detail: 'Active since 2024. 2 properties on file, both serviced on the same visit. Auto-invoices the morning after completion — no manual billing step.',
+                      },
+                      {
+                        name: 'Weekly Maintenance Route 1',
+                        client: '6 stops · Crew B',
+                        freq: 'Weekly',
+                        crew: 'Crew B · Route 1',
+                        next: 'Jul 8',
+                        status: 'Active',
+                        variant: 'rapport',
+                        detail: 'Set once, runs on autopilot until a client cancels or the season ends. Crew B services all 6 stops in a single Monday run.',
+                      },
+                      {
+                        name: 'Bi-Weekly Maintenance Route 2',
+                        client: '5 stops · Crew B',
+                        freq: 'Bi-weekly',
+                        crew: 'Crew B · Route 2',
+                        next: 'Jul 9',
+                        status: 'Active',
+                        variant: 'rapport',
+                        detail: 'Second week of the cycle. Auto-invoices the morning after completion, same as Route 1.',
+                      },
+                      {
+                        name: 'Monthly Irrigation Check',
+                        client: 'L. Ozawa',
+                        freq: 'Monthly',
+                        crew: 'Crew A',
+                        next: 'Jul 20',
+                        status: 'Needs Review',
+                        variant: 'red',
+                        detail: 'The last auto-generated invoice amount doesn\u2019t match this contract\u2019s rate card — flagged by the Money Loop before it went out. Review the line items before the next run bills automatically.',
+                      },
+                      {
+                        name: 'Seasonal Cleanup',
+                        client: 'R. Aleman',
+                        freq: 'Seasonal · Spring & Fall',
+                        crew: 'Crew C',
+                        next: 'Oct 1',
+                        status: 'Active',
+                        variant: 'rapport',
+                        detail: 'Two visits a year, scheduled automatically at the start of each season window. Auto-invoices on completion, not on a fixed date.',
+                      },
+                      {
+                        name: 'Quarterly Fertilization',
+                        client: 'D. Patel',
+                        freq: 'Quarterly',
+                        crew: 'Crew A',
+                        next: 'Sep 1',
+                        status: 'Scheduled',
+                        variant: 'website',
+                        detail: 'Next application falls in the September service window. Materials for this round are already reserved against the job\u2019s bill of materials.',
+                      },
+                    ].map((c) => (
+                      <div class="demo-row demo-row-expand" data-demo-expand data-demo-searchable={`${c.name.toLowerCase()} ${c.client.toLowerCase()} ${c.crew.toLowerCase()}`}>
+                        <div class="demo-row-main">
+                          <div><strong style="font-size: 12.5px;">{c.name}</strong><div class="demo-row-sub">{c.client} · {c.freq} · {c.crew}</div></div>
+                          <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="demo-row-value" style="font-size: 11.5px; white-space: nowrap;">Next: {c.next}</span>
+                            <span class={`tag tag-${c.variant}`}>{c.status}</span>
+                          </div>
+                        </div>
+                        <div class="demo-row-detail" hidden>{c.detail}</div>
+                      </div>
+                    ))}
+                  </PMCard>
                   <DemoGoto to="dispatch" label="See today's dispatch board" />
                 </div>
 
@@ -925,22 +1019,23 @@ export function InteractiveDemoPage() {
                 </div>
 
                 {/* ================= 13. Assets =================
-                    Equipment/vehicle tracking table — stat cards, category
-                    filter pills, and a real <table> (Asset/Category/
-                    Assigned Crew/Status/Last Service/Next Service). */}
+                    Vehicles & heavy equipment only — power tools and
+                    consumable stock now live on their own Inventory & Tools
+                    panel below. Stat cards, category filter pills, and a
+                    real <table> (Asset/Category/Assigned Crew/Status/Last
+                    Service/Next Service). */}
                 <div data-demo-panel="assets" hidden>
-                  <PMTitleRow title="Assets" sub="SAMPLE WORKSPACE · EQUIPMENT &amp; VEHICLES" />
+                  <PMTitleRow title="Assets" sub="SAMPLE WORKSPACE · VEHICLES &amp; EQUIPMENT" />
                   <PMStatRow columns={4} stats={[
-                    { label: 'Total Assets', value: '9' },
+                    { label: 'Total Assets', value: '7' },
                     { label: 'In Use Today', value: '5', variant: 'sold' },
-                    { label: 'Needs Service', value: '2', variant: 'overdue' },
+                    { label: 'Needs Service', value: '0' },
                     { label: 'Out of Service', value: '0' },
                   ]} />
                   <div class="demo-pill-row">
                     <span class="demo-pill active" data-demo-pill data-demo-pill-filter="all">All</span>
                     <span class="demo-pill" data-demo-pill data-demo-pill-filter="vehicle">Vehicles</span>
                     <span class="demo-pill" data-demo-pill data-demo-pill-filter="equipment">Equipment</span>
-                    <span class="demo-pill" data-demo-pill data-demo-pill-filter="tool">Power Tools</span>
                   </div>
                   <div class="demo-table-wrap">
                     <table class="demo-table" data-demo-bulk-scope="assets">
@@ -960,10 +1055,8 @@ export function InteractiveDemoPage() {
                           { name: '¾-Ton Dump Truck', tagline: 'Ford F-350 · Unit 04', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Crew A', status: 'In Use', variant: 'rapport', last: 'Jun 2', next: 'Sep 2', detail: 'Oil change + brake inspection done Jun 2. Mileage 41,208 — next service due at 45,000 mi or Sep 2, whichever comes first.' },
                           { name: 'Skid Steer', tagline: 'Bobcat S650', cat: 'equipment', catLabel: 'Equipment', crew: 'Crew C', status: 'In Use', variant: 'rapport', last: 'May 20', next: 'Aug 20', detail: 'Hydraulic fluid + filter service last done May 20. 612 hours on the meter — quarterly service interval.' },
                           { name: 'Enclosed Trailer', tagline: '20ft · Unit 11', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Crew B', status: 'In Use', variant: 'rapport', last: 'Apr 8', next: 'Oct 8', detail: 'Tire rotation + bearing pack Apr 8. Registration renews Nov 1.' },
-                          { name: 'Stihl Chainsaw', tagline: 'MS 271 · Tag #14', cat: 'tool', catLabel: 'Power Tool', crew: 'Crew C', status: 'Needs Service', variant: 'follow', last: 'Mar 1', next: 'Overdue', detail: 'Chain sharpening + carb tune overdue by 3 weeks. Flagged after crew reported reduced cutting speed.' },
                           { name: 'Zero-Turn Mower', tagline: 'Exmark 60"', cat: 'equipment', catLabel: 'Equipment', crew: 'Crew B', status: 'In Use', variant: 'rapport', last: 'Jun 15', next: 'Sep 15', detail: 'Blade sharpening + deck cleaning Jun 15. 288 hours on the meter.' },
                           { name: '½-Ton Pickup', tagline: 'Ford F-150 · Unit 02', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Unassigned', status: 'Available', variant: 'website', last: 'May 30', next: 'Aug 30', detail: 'Standard oil change interval. Currently parked at the yard — available for next dispatch.' },
-                          { name: 'Backpack Blower', tagline: 'Echo PB-580T · Tag #22', cat: 'tool', catLabel: 'Power Tool', crew: 'Crew A', status: 'Needs Service', variant: 'follow', last: 'Feb 12', next: 'Overdue', detail: 'Carburetor cleaning overdue. Starting intermittently in cold mornings per crew report.' },
                           { name: 'Compact Excavator', tagline: 'Kubota KX040', cat: 'equipment', catLabel: 'Equipment', crew: 'Unassigned', status: 'Available', variant: 'website', last: 'Jun 1', next: 'Sep 1', detail: 'Undercarriage inspection Jun 1. Available for hardscape jobs starting next week.' },
                           { name: 'Utility Trailer', tagline: '12ft open · Unit 07', cat: 'vehicle', catLabel: 'Vehicle', crew: 'Crew A', status: 'In Use', variant: 'rapport', last: 'Apr 22', next: 'Oct 22', detail: 'Wheel bearing repack Apr 22. Hauling irrigation materials for the Knesley job this week.' },
                         ].map((a) => (
@@ -993,6 +1086,85 @@ export function InteractiveDemoPage() {
                     <div class="demo-bulkbar-actions">
                       <button type="button" class="btn btn-secondary" data-demo-bulk-action="Schedule service">Schedule service</button>
                       <button type="button" class="btn btn-secondary" data-demo-bulk-action="Reassign crew">Reassign crew</button>
+                      <button type="button" class="btn btn-ghost" data-demo-bulk-clear>Clear</button>
+                    </div>
+                  </div>
+                  <DemoGoto to="inventory" label="See power tools & consumable stock" />
+                </div>
+
+                {/* ================= 13b. Inventory & Tools =================
+                    Split out from Assets: hand/power tools tracked per-crew
+                    like a mini-asset (with service status), plus a separate
+                    consumable-stock table with reorder points — "know what
+                    is on which truck, reorder before you run out" per the
+                    /product/operations marketing copy. */}
+                <div data-demo-panel="inventory" hidden>
+                  <PMTitleRow title="Inventory & Tools" sub="SAMPLE WORKSPACE · TOOLS &amp; CONSUMABLE STOCK" />
+                  <PMStatRow columns={4} stats={[
+                    { label: 'Tools Tracked', value: '2' },
+                    { label: 'Tools Needing Service', value: '2', variant: 'overdue' },
+                    { label: 'Stock Items Below Reorder', value: '2', variant: 'overdue' },
+                    { label: 'Open Purchase Orders', value: '1' },
+                  ]} />
+                  <PMCard heading="Power Tools" chip="Assigned by crew · click for service note">
+                    {[
+                      { name: 'Stihl Chainsaw', tagline: 'MS 271 · Tag #14', crew: 'Crew C', status: 'Needs Service', variant: 'follow', detail: 'Chain sharpening + carb tune overdue by 3 weeks. Flagged after crew reported reduced cutting speed.' },
+                      { name: 'Backpack Blower', tagline: 'Echo PB-580T · Tag #22', crew: 'Crew A', status: 'Needs Service', variant: 'follow', detail: 'Carburetor cleaning overdue. Starting intermittently in cold mornings per crew report.' },
+                    ].map((t) => (
+                      <div class="demo-row demo-row-expand" data-demo-expand data-demo-searchable={`${t.name.toLowerCase()} ${t.tagline.toLowerCase()} ${t.crew.toLowerCase()}`}>
+                        <div class="demo-row-main">
+                          <div><strong style="font-size: 12.5px;">{t.name}</strong><div class="demo-row-sub">{t.tagline} · {t.crew}</div></div>
+                          <span class={`tag tag-${t.variant}`}>{t.status}</span>
+                        </div>
+                        <div class="demo-row-detail" hidden>{t.detail}</div>
+                      </div>
+                    ))}
+                  </PMCard>
+                  <PMCard heading="Consumable Stock" chip="Below-reorder items flagged in red · click a row to see supplier detail">
+                    <div class="demo-table-wrap">
+                      <table class="demo-table" data-demo-bulk-scope="inventory">
+                        <thead>
+                          <tr>
+                            <th style="width: 26px;"><input type="checkbox" data-demo-bulk-selectall="inventory" /></th>
+                            <th>Item</th>
+                            <th>On Hand</th>
+                            <th>Reorder Point</th>
+                            <th>Status</th>
+                            <th>Supplier</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { name: 'Pre-Emergent Herbicide', tagline: '2.5-gal jugs', onhand: '3', reorder: '6', low: true, supplier: 'Turf Supply Co.', detail: 'Below reorder point — flagged after last week\u2019s spring cleanup round used more than forecast. A purchase order was opened Jul 5 for 12 more jugs.' },
+                            { name: 'Paver Base Gravel', tagline: 'Yard bulk · tons', onhand: '4', reorder: '3', low: false, supplier: 'Cedar Grove Aggregate', detail: 'Comfortably above reorder point. Reserved 1.5 tons against D. Patel\u2019s hardscape install this week.' },
+                            { name: 'Irrigation Fittings Kit', tagline: '¾" PVC assortment', onhand: '5', reorder: '8', low: true, supplier: 'Turf Supply Co.', detail: 'Below reorder point after the Grumley emergency callout used most of the on-hand stock. Not yet on an open purchase order — needs one raised.' },
+                            { name: 'Mulch (Dyed Brown)', tagline: 'Yard bulk · cubic yards', onhand: '18', reorder: '10', low: false, supplier: 'Cedar Grove Aggregate', detail: 'Well stocked for the current job list. Last restocked Jun 28.' },
+                          ].map((s) => (
+                            <>
+                              <tr data-demo-table-row data-demo-searchable={`${s.name.toLowerCase()} ${s.tagline.toLowerCase()} ${s.supplier.toLowerCase()}`}>
+                                <td data-demo-nostop><input type="checkbox" data-demo-row-check /></td>
+                                <td>
+                                  <div class="demo-table-name">{s.name}</div>
+                                  <div class="demo-table-sub">{s.tagline}</div>
+                                </td>
+                                <td style={s.low ? 'color: var(--gw-red-500); font-weight: 700;' : 'color: var(--gw-ink-500);'}>{s.onhand}</td>
+                                <td style="color: var(--gw-ink-500);">{s.reorder}</td>
+                                <td><span class={`tag tag-${s.low ? 'red' : 'rapport'}`}>{s.low ? 'Reorder Now' : 'In Stock'}</span></td>
+                                <td style="color: var(--gw-ink-500);">{s.supplier}</td>
+                              </tr>
+                              <tr class="demo-table-detail-row hidden-row">
+                                <td colspan={6}><div class="demo-table-detail-inner">{s.detail}</div></td>
+                              </tr>
+                            </>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </PMCard>
+                  <div class="demo-bulkbar" data-demo-bulkbar="inventory">
+                    <span data-demo-bulkbar-count>0 selected</span>
+                    <div class="demo-bulkbar-actions">
+                      <button type="button" class="btn btn-secondary" data-demo-bulk-action="Raise purchase order">Raise purchase order</button>
                       <button type="button" class="btn btn-ghost" data-demo-bulk-clear>Clear</button>
                     </div>
                   </div>
