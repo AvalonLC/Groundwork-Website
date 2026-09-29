@@ -883,14 +883,14 @@ export function InteractiveDemoPage() {
                         detail: 'Second week of the cycle. Auto-invoices the morning after completion, same as Route 1.',
                       },
                       {
-                        name: 'Monthly Irrigation Check',
+                        name: 'Maint. Contract',
                         client: 'L. Ozawa',
                         freq: 'Monthly',
                         crew: 'Crew A',
                         next: 'Jul 20',
                         status: 'Needs Review',
                         variant: 'red',
-                        detail: 'The last auto-generated invoice amount doesn\u2019t match this contract\u2019s rate card — flagged by the Money Loop before it went out. Review the line items before the next run bills automatically.',
+                        detail: 'The last auto-generated invoice ($1,200) doesn\u2019t match this contract\u2019s rate card — flagged by the Money Loop before it went out, and now 12 days past due while it sits under review. Check Money Loop and Invoice Reporting for the same flag.',
                       },
                       {
                         name: 'Seasonal Cleanup',

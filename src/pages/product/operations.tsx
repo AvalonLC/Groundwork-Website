@@ -134,7 +134,7 @@ export function OperationsPage() {
                 {[
                   { name: 'Bi-Weekly Maintenance', sub: 'N. Knesley · Crew B', status: 'Active', variant: 'rapport' },
                   { name: 'Weekly Route 1', sub: '6 stops · Crew B', status: 'Active', variant: 'rapport' },
-                  { name: 'Monthly Irrigation Check', sub: 'L. Ozawa · Crew A', status: 'Needs Review', variant: 'red' },
+                  { name: 'Maint. Contract', sub: 'L. Ozawa · Crew A', status: 'Needs Review', variant: 'red' },
                 ].map((c, i) => (
                   <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
                     <div>
