@@ -1,7 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
-import { PMMain, PMTitleRow, PMStats } from '../../components/ProductMock'
+import { PMMain, PMTitleRow, PMStats, PMStatRow } from '../../components/ProductMock'
 import { Icon } from '../../components/Icon'
 import { AccessMatrix } from '../../components/Matrix'
 
@@ -124,6 +124,48 @@ export function AdminPage() {
                 { num: '→', title: 'Audit Log', body: 'Who changed what, when, and from where. Immutable.' },
                 { num: '→', title: 'Access Modes', body: 'Company-wide policies: SSO, IP restrictions, 2FA enforcement.' },
                 { num: '→', title: 'Integrations', body: 'QuickBooks, Google, Stripe, Twilio, Zapier, and open API.' },
+              ]}
+            />
+          </SplitContent>
+        </div>
+      </section>
+
+      <section class="section" style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);">
+        <div class="wrap split">
+          <MockFrameWithLink panel="audit" label="Try the Audit Log yourself" minHeight={340}>
+            <PMMain>
+              <PMTitleRow title="Audit Log" sub="IMMUTABLE HISTORY" />
+              <PMStatRow columns={3} stats={[
+                { label: 'Events (7d)', value: '142' },
+                { label: 'Unique Actors', value: '6' },
+                { label: 'Permission Changes', value: '2' },
+              ]} />
+              <div class="pm-card">
+                <div class="pm-card-h">Recent Events</div>
+                {[
+                  { event: 'Estimate discounted −15%', actor: 'Tyler', when: '2m ago' },
+                  { event: 'Role permission changed', actor: 'Tyler', when: '18m ago' },
+                  { event: 'Client Portal access revoked', actor: 'Tyler', when: '1h ago' },
+                ].map((a, i) => (
+                  <div style={`display: flex; justify-content: space-between; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <span style="font-size: 12px;">{a.event}</span>
+                    <span style="font-size: 11px; color: var(--gw-ink-500); white-space: nowrap;">{a.actor} · {a.when}</span>
+                  </div>
+                ))}
+              </div>
+            </PMMain>
+          </MockFrameWithLink>
+          <SplitContent
+            eyebrow="Audit Log"
+            title="Who changed what, when, and from where. Immutable."
+            lede="Every discount, permission change, and portal-access revocation is logged automatically — append-only, visible to Owners, and impossible to edit or delete, including by an Owner."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Append-only by design', body: 'Nothing in the log can be edited or deleted after the fact.' },
+                { num: '→', title: 'Filterable by category', body: 'Financial, access, and schedule events, filtered at a glance.' },
+                { num: '→', title: 'Full detail on demand', body: 'Every entry expands to the underlying record it changed.' },
+                { num: '→', title: 'Built for compliance-conscious operators', body: 'The paper trail exists whether or not you ever need it.' },
               ]}
             />
           </SplitContent>

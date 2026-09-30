@@ -1,7 +1,7 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
 import { SplitContent, MockFrame, MockFrameWithLink } from '../../components/SplitFeature'
-import { PMCard, PMMain, PMTitleRow } from '../../components/ProductMock'
+import { PMCard, PMMain, PMTitleRow, PMStats } from '../../components/ProductMock'
 import { Icon } from '../../components/Icon'
 
 export function SalesPage() {
@@ -90,6 +90,94 @@ export function SalesPage() {
                 { num: '→', title: 'Properties', body: 'Every address you have serviced. Notes on soil, access, equipment, dogs.' },
                 { num: '→', title: 'Opportunities', body: 'A lead lives on a property. Won deals become jobs. Nothing gets lost.' },
                 { num: '→', title: 'Estimates & proposals', body: 'Attached to the property. Sent from the deal. Tracked to close.' },
+              ]}
+            />
+          </SplitContent>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Properties"
+            title="Every address you have ever serviced, with the notes that matter."
+            lede="A property is its own record, not a text field on a client. Access notes, soil conditions, gate codes, and every job ever performed there travel with the address — not with whichever rep happened to write them down."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'One record per address', body: 'Multiple properties can belong to the same client — each with its own history.' },
+                { num: '→', title: 'Access & site notes', body: 'Gate codes, dogs, utility markouts, HOA approvals — visible before anyone drives out.' },
+                { num: '→', title: 'Full service history', body: 'Every job, estimate, and invoice tied to that address, in one place.' },
+                { num: '→', title: 'Feeds Recurring Services', body: 'A property under a maintenance contract shows its cadence right on the record.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrameWithLink panel="properties" label="Try Properties yourself">
+            <PMMain>
+              <PMTitleRow title="Properties" sub="EVERY ADDRESS SERVICED" />
+              <div class="pm-card">
+                <div class="pm-card-h">Property Records <span class="chip">4 on file</span></div>
+                {[
+                  { addr: '6005 Chapman Rd, Lorton VA', client: 'Nicole Knesley', status: 'Pool coping in progress' },
+                  { addr: '412 Vale Ct, Fairfax VA', client: 'Julie Grumley', status: 'Site walk scheduled' },
+                  { addr: '88 Birchwood Ln, Vienna VA', client: 'Vijay Dhulipala', status: 'Awaiting 2nd measurement' },
+                ].map((p, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{p.addr}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{p.client}</div>
+                    </div>
+                    <span style="font-size: 11px; color: var(--gw-ink-500);">{p.status}</span>
+                  </div>
+                ))}
+              </div>
+            </PMMain>
+          </MockFrameWithLink>
+        </div>
+      </section>
+
+      <section class="section" style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);">
+        <div class="wrap split">
+          <MockFrameWithLink panel="estimates" label="Try Estimates yourself">
+            <PMMain>
+              <PMTitleRow title="Estimates" sub="PROPOSALS OUT" />
+              <PMStats
+                stats={[
+                  { label: 'Total Active', value: '4' },
+                  { label: 'Awaiting Response', value: '2' },
+                  { label: 'Accepted', value: '1', variant: 'sold' },
+                  { label: 'Drafts', value: '1' },
+                ]}
+              />
+              <div class="pm-card">
+                <div class="pm-card-h">Open Estimates <span class="chip">Sorted by last updated</span></div>
+                {[
+                  { num: 'EST-1042', client: 'N. Knesley', title: 'Pool Coping Replacement', amount: '$58,200', tag: 'Follow-up needed', variant: 'follow' },
+                  { num: 'EST-1039', client: 'V. Dhulipala', title: 'Backyard Redesign', amount: '$32,000', tag: 'Viewed', variant: 'website' },
+                  { num: 'EST-1035', client: 'S. Lampard', title: 'Deck Lighting', amount: '$18,000', tag: 'Accepted', variant: 'rapport' },
+                ].map((e, i) => (
+                  <div style={`display: flex; justify-content: space-between; align-items: center; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <div>
+                      <div style="font-size: 12.5px; font-weight: 600;">{e.title}</div>
+                      <div style="font-size: 11px; color: var(--gw-ink-500);">{e.num} · {e.client} · {e.amount}</div>
+                    </div>
+                    <span class={`tag tag-${e.variant}`}>{e.tag}</span>
+                  </div>
+                ))}
+              </div>
+            </PMMain>
+          </MockFrameWithLink>
+          <SplitContent
+            eyebrow="Estimates"
+            title="From proposal to signed deal — tracked the whole way."
+            lede="Estimates live on the property and the deal, not as a loose PDF in someone's inbox. Groundwork tracks whether it's been opened, how many times, and flags it the moment a client goes quiet."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Open/view tracking', body: 'Know the moment a client opens a proposal — and how many times.' },
+                { num: '→', title: 'Follow-up flags', body: 'Sent-but-quiet estimates surface automatically, no manual tracking.' },
+                { num: '→', title: 'Priced from the same rate engine', body: 'Every line item pulls from Budget & Rates — no guessing at margin.' },
+                { num: '→', title: 'One click to invoice', body: 'An accepted estimate becomes the invoice — no re-entry.' },
               ]}
             />
           </SplitContent>

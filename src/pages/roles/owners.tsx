@@ -1,6 +1,6 @@
 import { Layout } from '../../components/Layout'
 import { SubpageHero, CTABand, SplitList, RelatedCards } from '../../components/Blocks'
-import { PM, PMMain, PMTitleRow, PMStats, PMCard, PMTask } from '../../components/ProductMock'
+import { PM, PMMain, PMTitleRow, PMStats, PMStatRow, PMCard, PMTask } from '../../components/ProductMock'
 import { WithTryItLink, SplitContent, MockFrameWithLink } from '../../components/SplitFeature'
 
 export function OwnersPage() {
@@ -116,6 +116,46 @@ export function OwnersPage() {
                 ]}
               />
           </div>
+        </div>
+      </section>
+
+      <section class="section" style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);">
+        <div class="wrap split">
+          <SplitContent
+            eyebrow="Reports & Analytics"
+            title="The trend line behind the snapshot."
+            lede="Business Pulse tells you where things stand right now. Reports & Analytics tells you whether that's actually getting better — revenue over time, who's closing, and which crews are running hot or idle."
+          >
+            <SplitList
+              items={[
+                { num: '→', title: 'Revenue trend', body: 'Sold, by month, with the direction clearly marked — no spreadsheet required.' },
+                { num: '→', title: 'Rep leaderboard', body: 'Who is actually closing this quarter, ranked by dollars sold.' },
+                { num: '→', title: 'Crew utilization', body: 'Hours booked vs. hours available, by crew, this week.' },
+                { num: '→', title: 'Same numbers as everywhere else', body: 'Pulled from the live pipeline and schedule — not a separate export.' },
+              ]}
+            />
+          </SplitContent>
+          <MockFrameWithLink panel="reports" label="Try Reports & Analytics yourself">
+            <PMMain>
+              <PMTitleRow title="Reports & Analytics" sub="LAST 6 MONTHS" />
+              <PMStatRow columns={2} stats={[
+                { label: 'Revenue (6mo)', value: '$612k', trend: { direction: 'up', label: '18% vs prior 6mo' } },
+                { label: 'Close Rate', value: '58%', trend: { direction: 'up', label: '4pt vs prior 6mo' } },
+              ]} />
+              <PMCard heading="Rep Leaderboard" chip="Sold this quarter">
+                {[
+                  { name: 'Tyler Reyes', value: '$186k' },
+                  { name: 'Marcus Webb', value: '$94k' },
+                  { name: 'D. Patel (Estimator)', value: '$52k' },
+                ].map((r, i) => (
+                  <div style={`display: flex; justify-content: space-between; padding: 8px 0;${i < 2 ? ' border-bottom: 1px solid var(--gw-cream-300);' : ''}`}>
+                    <span style="font-size: 12.5px; font-weight: 600;">{r.name}</span>
+                    <span style="font-size: 12.5px; font-weight: 700; color: var(--gw-ink-900);">{r.value}</span>
+                  </div>
+                ))}
+              </PMCard>
+            </PMMain>
+          </MockFrameWithLink>
         </div>
       </section>
 
