@@ -11,7 +11,7 @@ import { PlatformPage } from './pages/product/platform'
 import { FeaturesPage } from './pages/features'
 import { TradesHubPage } from './pages/trades/hub'
 import { TradePage } from './components/TradePage'
-import { getTradeBySlug } from './data/trades'
+import { getTradeBySlug, TRADES } from './data/trades'
 import { MultiCrewOpsPage } from './pages/multi-crew-ops'
 import { RolesHubPage } from './pages/roles/hub'
 import { OwnersPage } from './pages/roles/owners'
@@ -190,6 +190,75 @@ app.post('/api/signup-request', async (c) => {
   }
 
   return c.json({ ok: true })
+})
+
+// --- robots.txt & sitemap.xml -----------------------------------------------
+// Both are Hono routes rather than static files in public/. This project
+// builds to a single dist/_worker.js (Cloudflare Pages "Advanced Mode"), and
+// dist/_routes.json excludes only "/static/*" from the Worker — every other
+// path, including a would-be /robots.txt at the dist root, is routed to this
+// Worker rather than served from disk, so a static public/robots.txt file is
+// silently never reached (confirmed: returns 404 despite existing in dist/).
+// Sitemap is generated dynamically (not static either, for the same reason)
+// so the /trades/:slug list stays in sync with src/data/trades.ts automatically.
+// Excludes from the sitemap: auth/account flows (/login, /signup, /start),
+// the real-product redirect endpoints (/app, /workspace), and old /solutions
+// redirect paths — none of those are pages search engines should index.
+const SITE_ORIGIN = 'https://groundwork-crm.info'
+
+app.get('/robots.txt', (c) =>
+  c.text(
+    ['User-agent: *', 'Allow: /', '', `Sitemap: ${SITE_ORIGIN}/sitemap.xml`, ''].join('\n'),
+    200,
+    { 'Content-Type': 'text/plain' }
+  )
+)
+
+app.get('/sitemap.xml', (c) => {
+  const staticPaths = [
+    '/',
+    '/product',
+    '/product/my-day',
+    '/product/sales',
+    '/product/financial',
+    '/product/operations',
+    '/product/admin',
+    '/product/mobile',
+    '/product/platform',
+    '/features',
+    '/trades',
+    '/multi-crew-ops',
+    '/roles',
+    '/roles/owners',
+    '/roles/office-managers',
+    '/roles/sales-reps',
+    '/roles/foremen',
+    '/roles/laborers',
+    '/pricing',
+    '/customers',
+    '/case-studies',
+    '/resources',
+    '/explore',
+    '/academy',
+    '/academy/sales',
+    '/academy/estimating-101',
+    '/academy/financial-literacy',
+    '/academy/crm-guide',
+    '/faq',
+    '/security',
+    '/about',
+    '/contact',
+    '/demo',
+  ]
+  const tradePaths = TRADES.map((t) => `/trades/${t.slug}`)
+  const urls = [...staticPaths, ...tradePaths]
+
+  const body = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((p) => `  <url><loc>${SITE_ORIGIN}${p}</loc></url>`).join('\n')}
+</urlset>`
+
+  return c.text(body, 200, { 'Content-Type': 'application/xml' })
 })
 
 app.get('/', (c) => c.html(<HomePage />))
