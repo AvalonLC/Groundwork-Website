@@ -266,6 +266,21 @@
     var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'recurring', 'dispatch', 'workorders', 'assets', 'inventory', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
     var visited = { command: true }
 
+    // Maps every sidebar panel to the mobile bottom tab bar group that
+    // owns it, so the tab bar's active state stays in sync no matter how
+    // a panel was reached (sidebar, quicklink chip, Cmd+K, "see next"
+    // button) — not just clicks on the tab bar itself. Mirrors the real
+    // product's five top-level groups (Home / Sales / Ops / Finance /
+    // Admin); Insights (Reports) rides along with Admin since the real
+    // bar doesn't carry a 6th slot.
+    var PANEL_TO_TABBAR_GROUP = {
+      command: 'home',
+      pipeline: 'sales', leads: 'sales', clients: 'sales', properties: 'sales', estimates: 'sales',
+      money: 'finance', budget: 'finance', invoicing: 'finance',
+      schedule: 'ops', recurring: 'ops', dispatch: 'ops', workorders: 'ops', assets: 'ops', inventory: 'ops', timetracker: 'ops',
+      clientportal: 'admin', employees: 'admin', aar: 'admin', audit: 'admin', reports: 'admin',
+    }
+
     function updateProgress() {
       var count = STOPS.filter(function (s) { return visited[s] }).length
       var fill = root.querySelector('[data-demo-progress-fill]')
@@ -290,6 +305,50 @@
       var overlay = root.querySelector('[data-demo-ai-overlay]')
       if (overlay) overlay.classList.remove('open')
     }
+
+    // Mobile sidebar drawer — replaces the old "hide .pm-sidebar entirely
+    // on mobile" behavior with the real product's slide-in drawer + dimmed
+    // scrim pattern. Toggled on the .pm box itself (data-demo-drawer-open)
+    // rather than a body-level class, so it stays scoped to the sample
+    // workspace box — consistent with how .demo-ai-overlay is contained —
+    // and the persistent bottom tab bar (a sibling of the sidebar inside
+    // that same box) is never hidden by it, matching the user-reported
+    // real-product behavior where the bottom bar stays visible under any
+    // open overlay.
+    var workspacePm = root.querySelector('.pm-workspace')
+    function openDrawer() {
+      if (!workspacePm) return
+      closeAiOverlay()
+      closeBellDropdown()
+      var newDropdown = root.querySelector('[data-demo-new-dropdown]')
+      if (newDropdown) newDropdown.classList.remove('open')
+      workspacePm.setAttribute('data-demo-drawer-open', '')
+    }
+    function closeDrawer() {
+      if (!workspacePm) return
+      workspacePm.removeAttribute('data-demo-drawer-open')
+    }
+    ;(function bindDrawer() {
+      if (!workspacePm) return
+      var trigger = root.querySelector('[data-demo-drawer-trigger]')
+      var closeBtn = root.querySelector('[data-demo-sidebar-close]')
+      var scrim = root.querySelector('[data-demo-drawer-scrim]')
+      if (trigger) {
+        trigger.addEventListener('click', function (e) {
+          e.stopPropagation()
+          if (workspacePm.hasAttribute('data-demo-drawer-open')) {
+            closeDrawer()
+          } else {
+            openDrawer()
+          }
+        })
+      }
+      if (closeBtn) closeBtn.addEventListener('click', closeDrawer)
+      if (scrim) scrim.addEventListener('click', closeDrawer)
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeDrawer()
+      })
+    })()
 
     // Brief skeleton flash on panel switch — sells the feel of a real app
     // fetching fresh data per-screen rather than instantly swapping DOM
@@ -327,9 +386,14 @@
       root.querySelectorAll('.demo-quicklink').forEach(function (btn) {
         btn.classList.toggle('active', btn.getAttribute('data-demo-goto') === name)
       })
+      var activeGroup = PANEL_TO_TABBAR_GROUP[name] || 'home'
+      root.querySelectorAll('[data-demo-tabbar-group]').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-demo-tabbar-group') === activeGroup)
+      })
       var slideover = root.querySelector('[data-demo-slideover]')
       if (slideover) slideover.classList.remove('open')
       closeAiOverlay()
+      closeDrawer()
       visited[name] = true
       if (isChange) flashSkeleton()
       updateProgress()
@@ -564,6 +628,7 @@
         if (opening) {
           closeAiOverlay()
           closeBellDropdown()
+          closeDrawer()
           dropdown.classList.add('open')
         }
       })
@@ -628,6 +693,7 @@
     if (aiTrigger && aiOverlay) {
       aiTrigger.addEventListener('click', function () {
         if (slideover) slideover.classList.remove('open')
+        closeDrawer()
         aiOverlay.classList.toggle('open')
       })
     }
@@ -829,6 +895,7 @@
         var opening = !bellDropdown.classList.contains('open')
         closeBellDropdown()
         if (opening) {
+          closeDrawer()
           renderBellDropdown()
           bellDropdown.classList.add('open')
         }
@@ -1197,6 +1264,7 @@
         overlay.classList.add('open')
         closeAiOverlay()
         closeBellDropdown()
+        closeDrawer()
         input.value = ''
         items.forEach(function (i) { i.style.display = '' })
         root.querySelectorAll('[data-demo-cmdk-group]').forEach(function (g) { g.style.display = '' })

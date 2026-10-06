@@ -171,10 +171,28 @@ export function InteractiveDemoPage() {
               ))}
             </div>
 
-            <PM large minHeight={560} shadow="var(--shadow-lg)">
-              <PMSidebar active="command" interactive />
+            <PM large minHeight={560} shadow="var(--shadow-lg)" className="pm-workspace">
+              {/* Dimmed backdrop behind the mobile drawer — only ever visible
+                  below the 720px breakpoint (CSS gates display:none above
+                  it) and only when data-demo-drawer-open is toggled on the
+                  .pm box. Clicking it closes the drawer, matching the real
+                  product's tap-outside-to-dismiss behavior. */}
+              <div class="pm-drawer-scrim" data-demo-drawer-scrim></div>
+              <PMSidebar active="command" interactive showMobileChrome />
               <PMMain>
                 <div class="pm-topbar">
+                  {/* Hamburger — opens the sidebar as a slide-in drawer.
+                      CSS-only hidden above 720px (the sidebar is already
+                      visible as a permanent column there); below it, this
+                      replaces the old "hide the sidebar entirely" mobile
+                      behavior with the real product's drawer pattern. */}
+                  <button type="button" class="pm-hamburger" data-demo-drawer-trigger aria-label="Open menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                      <line x1="4" y1="7" x2="20" y2="7" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                      <line x1="4" y1="17" x2="20" y2="17" />
+                    </svg>
+                  </button>
                   <div class="search" data-demo-search-wrap>
                     <Icon name="search" size={12} style="opacity: 0.6; margin-right: 6px; vertical-align: -2px;" />
                     <input
@@ -1647,6 +1665,43 @@ export function InteractiveDemoPage() {
                   </div>
                 </div>
               </PMMain>
+
+              {/* Persistent bottom tab bar — mobile only (CSS hides it above
+                  720px). Mirrors the real product's always-visible Home /
+                  Sales / Ops / Finance / Admin bar: it never disappears
+                  behind the drawer, +New dropdown, or AI panel, it just sits
+                  on top of them (z-index below the drawer/AI overlay while
+                  they're open, which the real app does too — see the
+                  screenshots). Each tab jumps to that group's first panel
+                  via the same data-demo-goto showPanel() wiring the
+                  quicklinks chips already use; the active tab is kept in
+                  sync client-side with whichever panel is actually open,
+                  since one tab covers many panels (e.g. "Sales" covers
+                  Pipeline/Leads/Clients/Properties/Estimates).
+                  Edit markers data-demo-tabbar-group let site.js know which
+                  STOPS belong to which tab without duplicating the list. */}
+              <nav class="pm-tabbar" data-demo-tabbar aria-label="Workspace sections">
+                <button type="button" class="pm-tabbar-item" data-demo-goto="command" data-demo-tabbar-group="home">
+                  <Icon name="home" size={17} />
+                  <span>Home</span>
+                </button>
+                <button type="button" class="pm-tabbar-item" data-demo-goto="pipeline" data-demo-tabbar-group="sales">
+                  <Icon name="trending" size={17} />
+                  <span>Sales</span>
+                </button>
+                <button type="button" class="pm-tabbar-item" data-demo-goto="schedule" data-demo-tabbar-group="ops">
+                  <Icon name="truck" size={17} />
+                  <span>Ops</span>
+                </button>
+                <button type="button" class="pm-tabbar-item" data-demo-goto="money" data-demo-tabbar-group="finance">
+                  <Icon name="dollar" size={17} />
+                  <span>Finance</span>
+                </button>
+                <button type="button" class="pm-tabbar-item" data-demo-goto="employees" data-demo-tabbar-group="admin">
+                  <Icon name="settings" size={17} />
+                  <span>Admin</span>
+                </button>
+              </nav>
             </PM>
 
             {/* Command palette (Cmd/Ctrl+K) — jump straight to any of the 19

@@ -1,19 +1,25 @@
 import type { PropsWithChildren } from 'hono/jsx'
+import { Icon } from './Icon'
 
 // Product-mock building blocks — ported from styles.css .pm / .pm-sidebar /
 // .pm-stats / .pm-card / .pm-task / .tag component classes. These are
 // stylized recreations of the real Groundwork product UI, used throughout
 // the marketing site's hero and split-feature sections.
 
+// `className` is an optional extra class appended alongside `pm`/`pm-lg` —
+// used by /explore to tag its box `pm-workspace` so the mobile "phone
+// frame" + persistent bottom tab bar CSS (styles.css) applies only to the
+// interactive sample workspace, not every other page's smaller PM mock.
 export function PM({
   large = false,
   minHeight = 500,
   shadow,
+  className,
   children,
-}: PropsWithChildren<{ large?: boolean; minHeight?: number; shadow?: string }>) {
+}: PropsWithChildren<{ large?: boolean; minHeight?: number; shadow?: string; className?: string }>) {
   return (
     <div
-      class={`pm${large ? ' pm-lg' : ''}`}
+      class={`pm${large ? ' pm-lg' : ''}${className ? ' ' + className : ''}`}
       style={!large ? `grid-template-columns: 1fr; min-height: ${minHeight}px;${shadow ? ` box-shadow: ${shadow};` : ''}` : undefined}
     >
       {children}
@@ -26,11 +32,27 @@ export function PM({
 // true, tags EVERY item with data-demo-sidebar-target=<key> so the
 // /explore page's client-side JS can wire the whole sidebar up to a real
 // panel — not just a curated subset. Inert on any page that isn't /explore.
-export function PMSidebar({ active = 'command', interactive = false }: { active?: string; interactive?: boolean } = {}) {
+// `showMobileChrome`, when true, additionally renders a close button and a
+// user-profile footer that are display:none above the 720px breakpoint and
+// only appear when this same sidebar is repurposed into a mobile slide-in
+// drawer (see .pm-workspace .pm-sidebar in styles.css) — i.e. only passed
+// from /explore, never from the decorative, non-interactive PM mocks on
+// home.tsx or the role pages, which keep the plain "hidden on mobile"
+// behavior untouched.
+export function PMSidebar({
+  active = 'command',
+  interactive = false,
+  showMobileChrome = false,
+}: { active?: string; interactive?: boolean; showMobileChrome?: boolean } = {}) {
   const attr = (key: string) => (interactive ? { 'data-demo-sidebar-target': key } : {})
   const cls = (key: string) => `sb-item${active === key ? ' active' : ''}`
   return (
     <aside class="pm-sidebar">
+      {showMobileChrome && (
+        <button type="button" class="pm-sidebar-close" data-demo-sidebar-close aria-label="Close menu">
+          <Icon name="x" size={14} />
+        </button>
+      )}
       <div class="brand">
         <span class="brand-mark"></span> Groundwork
       </div>
@@ -208,6 +230,16 @@ export function PMSidebar({ active = 'command', interactive = false }: { active?
           Audit Log
         </div>
       </div>
+
+      {showMobileChrome && (
+        <div class="pm-sidebar-footer">
+          <span class="pm-sidebar-avatar">T</span>
+          <span class="pm-sidebar-footer-text">
+            <strong>Tyler</strong>
+            <small>Owner / Admin</small>
+          </span>
+        </div>
+      )}
     </aside>
   )
 }
