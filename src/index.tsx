@@ -49,26 +49,34 @@ const app = new Hono<{ Bindings: Bindings }>()
 // via a full grep of every http(s):// reference in src/ and public/ before
 // writing this): Google Fonts for the two webfonts in Layout.tsx, and a
 // Google Calendar <iframe> embed on /demo (the only cross-origin frame
-// anywhere on the site). No analytics/ads/trackers are loaded today, so
-// connect-src/script-src stay locked to 'self' — this list must be widened
-// if either is ever added (e.g. a future analytics provider's script + beacon
-// hosts). style-src needs 'unsafe-inline' because every page uses inline
-// style="..." attributes extensively (the ported design's convention); there
-// are no inline <script> tags anywhere (confirmed via grep), so script-src
-// stays strict with no unsafe-inline/unsafe-eval. frame-ancestors 'none'
-// (via xFrameOptions below) blocks this site from being iframed elsewhere —
-// not relevant in reverse (embedding the Google Calendar iframe is governed
-// by frameSrc, not frameAncestors).
+// anywhere on the site). No analytics/ads/trackers are loaded from OUR source
+// today — but Cloudflare itself auto-injects a Web Analytics "beacon" script
+// (static.cloudflareinsights.com/beacon.min.js) into every response on zones
+// where it's enabled, which this CSP's initial 'self'-only script-src/
+// connect-src blocked in production (confirmed via a live Playwright console
+// check right after first deploying this header — a real regression, not a
+// hypothetical one: Cloudflare Web Analytics turns out to already be enabled
+// on this zone, contradicting an earlier API-based check that suggested this
+// domain wasn't a zone on this account at all). Allowlisted both the script
+// host and its beacon-post host (cloudflareinsights.com) so that pre-existing
+// instrumentation keeps working. style-src needs 'unsafe-inline' because
+// every page uses inline style="..." attributes extensively (the ported
+// design's convention); there are no inline <script> tags anywhere
+// (confirmed via grep), so script-src otherwise stays strict with no
+// unsafe-inline/unsafe-eval. frame-ancestors 'none' (via xFrameOptions below)
+// blocks this site from being iframed elsewhere — not relevant in reverse
+// (embedding the Google Calendar iframe is governed by frameSrc, not
+// frameAncestors).
 app.use(
   '*',
   secureHeaders({
     contentSecurityPolicy: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", 'https://static.cloudflareinsights.com'],
       styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:'],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", 'https://cloudflareinsights.com', 'https://static.cloudflareinsights.com'],
       frameSrc: ['https://calendar.google.com'],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
