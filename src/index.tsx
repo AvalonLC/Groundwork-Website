@@ -40,6 +40,14 @@ import { SignupPage } from './pages/signup'
 import { LoginPage } from './pages/login'
 import { DownloadPage } from './pages/download'
 import { NotFoundPage } from './pages/not-found'
+import { BlogIndexPage } from './pages/blog/index'
+import { DiscoveryCallFrameworkPost } from './pages/blog/discovery-call-framework'
+import { DispatchBoardLeadershipToolPost } from './pages/blog/dispatch-board-leadership-tool'
+import { ThreeMorningDashboardsPost } from './pages/blog/three-morning-dashboards'
+import { BurdenedCostMathPost } from './pages/blog/burdened-cost-math'
+import { WhatA3WeekRolloutLooksLikePost } from './pages/blog/what-a-3-week-rollout-looks-like'
+import { TheFollowUpGapPost } from './pages/blog/the-follow-up-gap'
+import { AiAssistedNotAutomatedPost } from './pages/blog/ai-assisted-not-automated'
 import { sendMail, esc, type Bindings } from './lib/sendgrid'
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -281,6 +289,14 @@ app.get('/sitemap.xml', (c) => {
     '/customers',
     '/case-studies',
     '/resources',
+    '/blog',
+    '/blog/discovery-call-framework',
+    '/blog/dispatch-board-leadership-tool',
+    '/blog/three-morning-dashboards',
+    '/blog/burdened-cost-math',
+    '/blog/what-a-3-week-rollout-looks-like',
+    '/blog/the-follow-up-gap',
+    '/blog/ai-assisted-not-automated',
     '/explore',
     '/academy',
     '/academy/sales',
@@ -331,6 +347,14 @@ app.get('/pricing', (c) => c.html(<PricingPage />))
 app.get('/customers', (c) => c.html(<CustomersPage />))
 app.get('/case-studies', (c) => c.html(<CaseStudiesPage />))
 app.get('/resources', (c) => c.html(<ResourcesPage />))
+app.get('/blog', (c) => c.html(<BlogIndexPage />))
+app.get('/blog/discovery-call-framework', (c) => c.html(<DiscoveryCallFrameworkPost />))
+app.get('/blog/dispatch-board-leadership-tool', (c) => c.html(<DispatchBoardLeadershipToolPost />))
+app.get('/blog/three-morning-dashboards', (c) => c.html(<ThreeMorningDashboardsPost />))
+app.get('/blog/burdened-cost-math', (c) => c.html(<BurdenedCostMathPost />))
+app.get('/blog/what-a-3-week-rollout-looks-like', (c) => c.html(<WhatA3WeekRolloutLooksLikePost />))
+app.get('/blog/the-follow-up-gap', (c) => c.html(<TheFollowUpGapPost />))
+app.get('/blog/ai-assisted-not-automated', (c) => c.html(<AiAssistedNotAutomatedPost />))
 app.get('/explore', (c) => c.html(<InteractiveDemoPage />))
 app.get('/academy', (c) => c.html(<AcademyHubPage />))
 app.get('/academy/sales', (c) => c.html(<AcademySalesPage />))

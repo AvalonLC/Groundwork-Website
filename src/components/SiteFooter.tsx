@@ -103,7 +103,7 @@ export function SiteFooter() {
               <li><a href="/resources">Resource hub</a></li>
               <li><a href="/resources#academy">Academy</a></li>
               <li><a href="/faq">FAQ</a></li>
-              <li><a href="/resources#blog">Blog</a></li>
+              <li><a href="/blog">Blog</a></li>
               <li><a href="/resources#help">Help center</a></li>
               <li><a href="/resources#api">API docs</a></li>
               <li><a href="/download">Mobile app</a></li>

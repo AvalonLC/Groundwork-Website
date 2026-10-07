@@ -87,7 +87,7 @@ export const NAV: NavItem[] = [
       { label: 'Groundwork Academy', href: '/resources#academy', desc: 'Training for every role' },
       { label: 'Implementation guide', href: '/resources#implementation', desc: 'What to expect' },
       { label: 'FAQ', href: '/faq', desc: 'Common questions' },
-      { label: 'Blog', href: '/resources#blog', desc: 'Field notes & operator writing' },
+      { label: 'Blog', href: '/blog', desc: 'Field notes & operator writing' },
       { label: 'Help center', href: '/resources#help', desc: 'Product docs & support' },
       { label: 'API docs', href: '/resources#api', desc: 'Build on Groundwork' },
       { label: 'Security', href: '/security', desc: 'How we protect your data' },

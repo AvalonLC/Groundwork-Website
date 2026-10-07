@@ -68,7 +68,15 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/pricing` | Pricing — plans (each with a per-plan included-user allotment) + flat per-user rate for users beyond that, and Groundwork AI (allowance + paid packages + BYOK) |
 | `/customers` | Customer testimonials + logos |
 | `/case-studies` | Deeper case studies |
-| `/resources` | Resources hub (Academy/Implementation/Blog/Help/API/FAQ cards) + blog preview |
+| `/resources` | Resources hub (Academy/Implementation/Blog/Help/API/FAQ cards) + blog preview, now linking to real `/blog` posts |
+| `/blog` | Blog index — 7 full articles, grid of cards linking to each post |
+| `/blog/discovery-call-framework` | Sales · How to run a discovery call for a $50k landscape sale |
+| `/blog/dispatch-board-leadership-tool` | Operations · The dispatch board is a leadership tool |
+| `/blog/three-morning-dashboards` | Owner · The three dashboards every owner should open in the morning |
+| `/blog/burdened-cost-math` | Estimating · Why "competitive" and "profitable" are not the same number |
+| `/blog/what-a-3-week-rollout-looks-like` | Implementation · What a 2-3 week CRM rollout actually looks like |
+| `/blog/the-follow-up-gap` | Sales · The follow-up that never happens: your pipeline's biggest leak |
+| `/blog/ai-assisted-not-automated` | Product · "AI-assisted," not "AI-automated" — why we drew that line |
 | `/academy` | Groundwork Academy hub — links to all 4 training tracks |
 | `/academy/sales` | Sales Academy — Company Playbook (8 stages) + 3 training phases (9 modules), real lesson notes |
 | `/academy/estimating-101` | Estimating 101 — 6 lessons on scoping, pricing, and margin, real lesson notes |
@@ -246,6 +254,25 @@ User feedback, with 5 screenshots of the real, live Groundwork product's mobile 
 - `PM`'s component signature gained an optional `className` prop so only `/explore`'s mock box gets tagged `pm-workspace` (and therefore all of this new mobile chrome) — the decorative, non-interactive PM mocks elsewhere on the site (home.tsx hero, role pages) are unaffected and keep the simple "no sidebar on mobile" behavior from before.
 - Verified: `npm run build` clean; Playwright at 390×844 confirmed — the tab bar is visible on load, stays visible with the drawer open, the AI panel open, and the `+New` dropdown open; the scrim both displays correctly and closes the drawer on click; clicking a drawer nav item navigates to the correct panel, closes the drawer, and updates the correct tab-bar group to active; clicking a tab-bar button directly navigates correctly; all 21 sidebar panels are reachable via the drawer; zero console/page errors throughout. Re-verified at 375×667 (a narrower, below-480px phone) with the same checks passing. A separate desktop (1440px) regression pass confirmed the permanent sidebar column, hamburger, and tab bar all render with their correct default visibility (sidebar visible, hamburger/tab-bar absent) on `/explore`, `/`, and `/roles/owners`, with zero console/page errors.
 
+### Blog: 7 Full Articles, Real `/blog` Routes (2026-10-07)
+Closes the last content-dependent item from the "do it all" list that turned out not to actually need user-supplied material — unlike testimonials/case studies, blog topics could be scoped directly from the product's own existing, already-documented features, so this was written rather than left blocked.
+
+- **New `src/data/blog.ts`** — single source of truth for all 7 posts (slug, title, tag, date, read time, teaser description, author). `getPostBySlug()`/`getRelatedPosts()` helpers consumed by every post page and the index.
+- **New `src/components/Blog.tsx`** — shared article building blocks (`ArticleHero`, `ArticleBody`, `PullQuote`, `AuthorByline`, `RelatedPosts`), following the same "ported component, styles.css drives the visuals" pattern as `Blocks.tsx`/`Academy.tsx`. New `.article-*`/`.blog-index-card` rules appended to `public/static/styles.css` (serif pull-quotes, a readable ~700px-wide body column, byline avatars reusing the existing `.tm-avatar` visual language).
+- **7 new full-length posts** under `src/pages/blog/*.tsx`, each 800-1100 words of original writing (not placeholder/lorem copy) grounded in the site's own already-documented product mechanics and training-track content — not invented product claims:
+  - *How to run a discovery call for a $50k landscape sale* (Sales) — expands the intro-call/site-walk/decision-pending structure already taught in Sales Academy.
+  - *The dispatch board is a leadership tool* (Operations) — builds on the real Dispatch Board stat cards/activity feed from `/product/operations`.
+  - *The three dashboards every owner should open in the morning* (Owner) — Business Pulse, Financial Snapshot/Money Loop, Operations Snapshot, using the exact dashboard names/copy from `home.tsx`/`roles/owners.tsx`.
+  - *Why "competitive" and "profitable" are not the same number* (Estimating) — the fully-burdened labor-rate math ($24 wage → $37.90/hr burdened) already used in Estimating 101 and the `/explore` demo.
+  - *What a 2-3 week CRM rollout actually looks like* (Implementation) — week-by-week expansion of the existing 4-step homepage implementation timeline.
+  - *The follow-up that never happens* (Sales) — expands the pipeline follow-up-rhythm copy already on `/product/sales`, using the same "3x close rate" / "4 in 10 recovered" stats already present in the `/explore` AI Coach panel.
+  - *"AI-assisted," not "AI-automated"* (Product) — explains the real, already-implemented human-in-the-loop design of Groundwork AI (flags + suggests, never auto-sends/auto-prices), plus its actual company-wide allowance pricing model from `/pricing`.
+  - Each post gets its own `BlogPosting` JSON-LD node (headline/description/author/datePublished) via `Layout`'s existing `structuredData` prop — consistent with the `FAQPage` pattern added on `/faq` in the prior deploy.
+- **New `/blog` index page** (`src/pages/blog/index.tsx`) — grid of all 7 posts as cards (tag, read time, title, teaser, "Read the post →").
+- **Wired in real, not anchor, links everywhere a blog link previously pointed at `/resources#blog`**: `src/data/nav.ts` (Resources dropdown), `SiteFooter.tsx`, and `resources.tsx`'s "Latest from the blog" section (now a live `View all posts →` link plus 3 real post cards, sourced directly from `BLOG_POSTS` instead of a separately hand-maintained local array).
+- `src/index.tsx`: added `/blog` + all 7 `/blog/:slug` routes, and added all 8 new URLs to the dynamic `sitemap.xml` generator's `staticPaths` list.
+- Verified: `npm run build` clean (`dist/_worker.js` 539.31 kB / gzip 133.55 kB). Local curl confirmed all 8 new routes return 200, `BlogPosting` JSON-LD present and parseable, `sitemap.xml` lists all 8 new URLs, and zero stale `/resources#blog` references remain anywhere in `src/`. Playwright confirmed zero console errors on `/blog` and a sampled post (`/blog/burdened-cost-math`).
+
 ### Baseline Hardening: JSON-LD Structured Data, Styled 404 Page, Security Headers (2026-10-07)
 Follow-on to a general site-improvement audit (independent of the `/explore` mobile-nav work above). The audit found the site had no structured data for search engines, a bare unstyled default 404 response for any broken/typo'd link, and no security response headers at all (no CSP, no HSTS, no frame protection). Three self-contained, content-free items closed out together; analytics, real testimonials, and real blog posts were also identified in the same audit but are blocked on user decisions/material (see "Not Yet Implemented" below).
 
@@ -307,7 +334,7 @@ Follow-on to the Real-Product-Parity pass above: the 3 brand-new `/explore` pane
 ## Not Yet Implemented / Follow-ups
 - **Analytics** — basic traffic analytics already works: Cloudflare auto-injects its own Web Analytics beacon on this zone, and the CSP added 2026-10-07 now allowlists it (see changelog). The user may want to confirm they can see the resulting data in a Cloudflare dashboard (the `CLOUDFLARE_API_TOKEN` available in this sandbox can't confirm that independently — it errors on Cloudflare's `rum/site_info` API and its `GET /zones` call doesn't list `groundwork-crm.info`). A dedicated provider (Plausible/Fathom/GA) is only needed on top of this if the user wants analytics beyond what the built-in beacon provides.
 - Real customer testimonials/case studies/logos — current copy is explicitly marked illustrative ("Real testimonials to be added at launch"). Needs real customer material from the user; not something to invent.
-- Individual blog post pages under `/resources#blog` — currently 3 preview cards link back to the resources page anchor; no long-form post pages exist yet. Needs real content/drafts from the user.
+- ~~Individual blog post pages~~ — **done 2026-10-07**: 7 full posts live at `/blog/:slug` (see changelog above), not placeholders. More posts can be added by appending to `src/data/blog.ts` and following the existing post-file pattern.
 - A possible 12th trade page — the site currently covers 11 trades (hvac, plumbing, electrical, chimney, roofing, garage-door, septic, pest-control, irrigation, painting, landscaping) via one shared template + data-driven architecture (`TradePage.tsx` + `src/data/trades.ts`). Recommendation: don't add more speculatively — only if there's a real trade Groundwork serves today that's missing from this list.
 - App Store / Google Play download links on `/download` are placeholder `#` hrefs pending real app store listings.
 - Domain consolidation: moving the real product to `login.groundwork-crm.com` and this marketing site to the bare `groundwork-crm.com` (see "Domain status" above) — not started.

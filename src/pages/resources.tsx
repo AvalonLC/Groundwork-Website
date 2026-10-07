@@ -1,6 +1,7 @@
 import { Layout } from '../components/Layout'
 import { CTABand, SectionHead } from '../components/Blocks'
 import { PM, PMMain, PMTitleRow, PMStats, PMCard } from '../components/ProductMock'
+import { BLOG_POSTS } from '../data/blog'
 
 export function ResourcesPage() {
   const cards = [
@@ -15,7 +16,7 @@ export function ResourcesPage() {
       desc: 'What to expect from a Groundwork rollout — week-by-week, role-by-role. Data checklist, training plan, go-live protocol.',
     },
     {
-      href: '#blog',
+      href: '/blog',
       title: 'Blog · Field notes',
       desc: 'Writing about running service businesses well — process, people, systems, and the software that supports the work.',
     },
@@ -36,26 +37,7 @@ export function ResourcesPage() {
     },
   ]
 
-  const posts = [
-    {
-      tag: 'Sales',
-      time: '8 min read',
-      title: 'How to run a discovery call for a $50k landscape sale',
-      desc: 'A step-by-step framework for the discovery call that separates budget-qualified leads from tire-kickers.',
-    },
-    {
-      tag: 'Operations',
-      time: '6 min read',
-      title: 'The dispatch board is a leadership tool',
-      desc: 'Why your scheduling screen tells you more about the health of your ops than any KPI report.',
-    },
-    {
-      tag: 'Owner',
-      time: '10 min read',
-      title: 'The three dashboards every service business owner should open in the morning',
-      desc: 'Business Pulse, Financial Snapshot, Money Loop, Operations Snapshot — and what to do with each in the first 15 minutes of the day.',
-    },
-  ]
+  const posts = BLOG_POSTS.slice(0, 3)
 
   return (
     <Layout
@@ -149,18 +131,26 @@ export function ResourcesPage() {
         style="background: var(--gw-cream-100); border-top: 1px solid var(--gw-line); border-bottom: 1px solid var(--gw-line);"
       >
         <div class="wrap">
-          <SectionHead eyebrow="Latest from the blog" title="Field notes for operators." />
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 20px; margin-bottom: 0;">
+            <SectionHead eyebrow="Latest from the blog" title="Field notes for operators." />
+            <a
+              href="/blog"
+              style="flex: none; font-size: 13px; font-weight: 600; color: var(--gw-forest-700); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-top: -8px;"
+            >
+              View all posts →
+            </a>
+          </div>
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
             {posts.map((p) => (
               <a
-                href="/resources#blog"
+                href={`/blog/${p.slug}`}
                 style="display: block; background: var(--gw-cream-100); border: 1px solid var(--gw-line); border-radius: 12px; padding: 24px; text-decoration: none;"
               >
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                   <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gw-forest-600); font-weight: 600;">
                     {p.tag}
                   </span>
-                  <span style="font-size: 12px; color: var(--gw-ink-500);">{p.time}</span>
+                  <span style="font-size: 12px; color: var(--gw-ink-500);">{p.readTime}</span>
                 </div>
                 <div style="font-family: var(--font-serif); font-size: 20px; font-weight: 500; color: var(--gw-ink-900); margin-bottom: 10px; line-height: 1.25;">
                   {p.title}
