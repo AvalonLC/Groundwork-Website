@@ -1746,7 +1746,14 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
 
   /* Product mocks — key mobile fix.
      Sidebar hidden; main pane fits phone width.
-     Scale down dense internals. */
+     Scale down dense internals.
+     NOTE: .pm-sidebar is hidden entirely here for the decorative, static PM
+     mocks (home.tsx hero, role pages) — those have no mobile nav need since
+     nothing in them is actually clickable navigation. /explore's workspace
+     box opts OUT of this via the higher-specificity .pm-workspace overrides
+     below, which turn the same sidebar into a real slide-in drawer instead
+     of just erasing it — see the "/explore mobile workspace chrome" block
+     further down for the full drawer/scrim/tab-bar implementation. */
   .pm { grid-template-columns: 1fr; min-height: auto; font-size: 12px; }
   .pm-sidebar { display: none; }
   .pm-main { padding: 16px 14px; }
@@ -2128,6 +2135,161 @@ body.mobile-menu-open { overflow: hidden; }
 @media (max-width: 720px) {
   .demo-quicklinks { gap: 6px; }
   .demo-quicklink { padding: 8px 12px; font-size: 12.5px; }
+}
+
+/* ===========================================================
+   /explore mobile workspace chrome — persistent bottom tab bar +
+   hamburger slide-in drawer, replacing the generic ".pm-sidebar {
+   display:none}" treatment for this one interactive mock. Modeled
+   directly on screenshots of the real product's mobile UI: a tab bar
+   (Home/Sales/Ops/Finance/Admin) that's visible at all times, and a
+   hamburger-triggered left drawer (dimmed scrim, branding header, nested
+   nav groups, user-profile footer) for full navigation. Everything here
+   is scoped under .pm-workspace so it never touches the decorative PM
+   mocks elsewhere on the site (home.tsx hero, role pages), which keep
+   the simple "no sidebar on mobile" behavior above.
+   =========================================================== */
+
+/* Hamburger trigger — lives in the topbar; desktop keeps the permanent
+   sidebar column so this stays invisible/occupies no layout space above
+   the 720px breakpoint. */
+.pm-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  flex: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-right: 2px;
+  color: var(--gw-ink-700);
+  cursor: pointer;
+}
+.pm-hamburger svg { width: 18px; height: 18px; }
+
+/* Sidebar-internal mobile-only chrome (close button, profile footer) —
+   exists in the DOM at all sizes (PMSidebar renders it whenever
+   showMobileChrome is set) but only shown once the sidebar itself becomes
+   a drawer below 720px; see the .pm-workspace .pm-sidebar rules further
+   down for the display:flex that reveals them again on mobile. */
+.pm-sidebar-close {
+  display: none;
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: #D7E5DC;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.pm-sidebar-close:hover { background: rgba(255,255,255,0.15); }
+.pm-sidebar-footer {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.pm-sidebar-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--gw-forest-600);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.pm-sidebar-footer-text { display: flex; flex-direction: column; line-height: 1.3; }
+.pm-sidebar-footer-text strong { font-size: 12.5px; color: white; font-weight: 600; }
+.pm-sidebar-footer-text small { font-size: 10.5px; color: #8FAD9C; }
+
+/* Dimmed backdrop behind the open drawer — a direct sibling of
+   .pm-sidebar inside .pm-workspace, absolutely positioned to cover just
+   the mock box (not the full viewport), same containment idea as
+   .demo-ai-overlay. Hidden/non-interactive until the drawer opens. */
+.pm-drawer-scrim {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 26, 20, 0.5);
+  z-index: 190;
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+/* Persistent bottom tab bar — hidden entirely on desktop (the full
+   sidebar already covers this); fixed to the bottom edge of the
+   .pm-workspace box itself so it scrolls and scopes with the mock, not
+   the page. z-index deliberately sits ABOVE the drawer/scrim per the
+   real product's screenshots (the bar is still visible, dimmed, behind
+   an open AI panel/dropdown — but not covered by the drawer backdrop). */
+.pm-tabbar {
+  display: none;
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 58px;
+  background: var(--gw-cream-100);
+  border-top: 1px solid var(--gw-line);
+  z-index: 220;
+}
+.pm-tabbar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 100%;
+  border: none;
+  background: none;
+  color: var(--gw-ink-400);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pm-tabbar-item .icon-slot { width: 17px; height: 17px; }
+.pm-tabbar-item.active { color: var(--gw-forest-700); }
+
+@media (max-width: 720px) {
+  /* Reveal the mobile chrome this breakpoint is all about. */
+  .pm-hamburger { display: inline-flex; }
+  .pm-tabbar { display: flex; }
+
+  /* .pm-workspace needs room at the bottom for the fixed tab bar, and a
+     taller minimum height than the generic .pm mobile rule gives it so
+     panel content doesn't collide with the bar. */
+  .pm-workspace.pm { min-height: 620px; padding-bottom: 58px; }
+  .pm-workspace .pm-main { padding-bottom: 20px; }
+
+  /* The core fix: instead of `.pm-sidebar { display: none }`, the sidebar
+     becomes a real slide-in drawer — off-canvas by default, translated
+     into view when the .pm box carries data-demo-drawer-open. Positioned
+     absolute against .pm-workspace (which stays position:relative), so
+     it's contained to the mock box exactly like .demo-ai-overlay is. */
+  .pm-workspace .pm-sidebar {
+    display: block;
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: min(78%, 300px);
+    z-index: 230;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: 18px 0 40px -20px rgba(20,40,30,0.35);
+  }
+  .pm-workspace[data-demo-drawer-open] .pm-sidebar { transform: translateX(0); }
+  .pm-workspace[data-demo-drawer-open] .pm-drawer-scrim { display: block; opacity: 1; }
+  .pm-sidebar-close { display: flex; }
+  .pm-sidebar-footer { display: flex; }
 }
 
 /* Today panel: clickable tasks that check off */
