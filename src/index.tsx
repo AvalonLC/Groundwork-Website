@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { secureHeaders } from 'hono/secure-headers'
 import { HomePage } from './pages/home'
 import { ProductHubPage } from './pages/product/hub'
 import { MyDayPage } from './pages/product/my-day'
@@ -38,9 +39,43 @@ import { StartPage } from './pages/start'
 import { SignupPage } from './pages/signup'
 import { LoginPage } from './pages/login'
 import { DownloadPage } from './pages/download'
+import { NotFoundPage } from './pages/not-found'
 import { sendMail, esc, type Bindings } from './lib/sendgrid'
 
 const app = new Hono<{ Bindings: Bindings }>()
+
+// Security headers — applied to every response. CSP allowlist is deliberately
+// narrow and hand-matched to this site's actual external resources (checked
+// via a full grep of every http(s):// reference in src/ and public/ before
+// writing this): Google Fonts for the two webfonts in Layout.tsx, and a
+// Google Calendar <iframe> embed on /demo (the only cross-origin frame
+// anywhere on the site). No analytics/ads/trackers are loaded today, so
+// connect-src/script-src stay locked to 'self' — this list must be widened
+// if either is ever added (e.g. a future analytics provider's script + beacon
+// hosts). style-src needs 'unsafe-inline' because every page uses inline
+// style="..." attributes extensively (the ported design's convention); there
+// are no inline <script> tags anywhere (confirmed via grep), so script-src
+// stays strict with no unsafe-inline/unsafe-eval. frame-ancestors 'none'
+// (via xFrameOptions below) blocks this site from being iframed elsewhere —
+// not relevant in reverse (embedding the Google Calendar iframe is governed
+// by frameSrc, not frameAncestors).
+app.use(
+  '*',
+  secureHeaders({
+    contentSecurityPolicy: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:'],
+      connectSrc: ["'self'"],
+      frameSrc: ['https://calendar.google.com'],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+    },
+  })
+)
 
 const NOTIFY_TO = 'tyler@groundwork-crm.com'
 const NOTIFY_FROM = 'notifications@groundwork-crm.com'
@@ -328,5 +363,11 @@ app.get('/solutions/multi-crew-teams', (c) => c.redirect('/multi-crew-ops', 301)
 // Until that migration happens, send visitors to the real, live product.
 app.get('/app', (c) => c.redirect('https://groundwork-crm.com', 301))
 app.get('/workspace', (c) => c.redirect('https://groundwork-crm.com', 301))
+
+// Styled 404 — replaces Hono's bare default "404 Not Found" text response
+// for any route that doesn't match one of the app.get()s above (typos, old
+// bookmarks, broken external links). Still returns a real 404 status so
+// crawlers/monitoring treat it correctly — only the body is upgraded.
+app.notFound((c) => c.html(<NotFoundPage />, 404))
 
 export default app

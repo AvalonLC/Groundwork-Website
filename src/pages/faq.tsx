@@ -1,12 +1,88 @@
 import { Layout } from '../components/Layout'
 import { CTABand, FAQItem } from '../components/Blocks'
 
+// FAQPage structured data — one Question/Answer pair per <FAQItem /> below.
+// Kept as a plain array here (not auto-derived from the JSX) since the JSX
+// bodies include JSX elements (<strong>, <a>) that don't collapse cleanly
+// to the plain text schema.org expects; this is a hand-maintained parallel
+// list. If a question is added/changed below, mirror it here too — a stale
+// FAQPage schema is low-risk (search engines just show slightly outdated
+// rich-result text) but it's still worth keeping in sync.
+const FAQ_LD = [
+  {
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Is Groundwork built for a specific trade?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Groundwork is built for service businesses — landscape, home services, HVAC, plumbing, restoration, exteriors, and multi-service field operations. The stages, templates, and workflows are configurable to your service lines. It is not a general-purpose CRM re-marketed to contractors.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'How does Groundwork handle multiple roles across office, sales, and field?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Roles & permissions are configured at the screen level with an access matrix. Every role — Owner, Office Manager, Sales Rep, Estimator, Field, and View-Only — starts from a sensible company default and can be customized per person. Field crews get a distraction-free Field Mode designed for phones.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can we import our existing clients, properties, and open deals?',
+        acceptedAnswer: { '@type': 'Answer', text: "Yes. Our implementation team handles data migration from your current CRM, spreadsheets, or scheduling tools. We map your existing pipeline into Groundwork's stages, clean the data, and hand you a working system with your history intact." },
+      },
+      {
+        '@type': 'Question',
+        name: 'Does it integrate with QuickBooks and Google?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes — QuickBooks Online, Google Calendar, Gmail, Stripe for payments, Twilio for SMS, and more. We also expose an open API for custom integrations.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'What about the field crew? Do laborers need to learn a CRM?',
+        acceptedAnswer: { '@type': 'Answer', text: "No. Laborers and foremen get a purpose-built mobile view (Field Mode) that only shows today's assigned work, time tracking, and an end-of-day After Action Report. There's no pipeline, no pricing, no admin — just the job. Training a crew takes 15 minutes." },
+      },
+      {
+        '@type': 'Question',
+        name: 'How long does implementation take?',
+        acceptedAnswer: { '@type': 'Answer', text: "Most teams go live in 2–3 weeks. That includes discovery, configuration, data migration, role-based training, and the first 30 days of dedicated support. We don't do 90-day rollouts." },
+      },
+      {
+        '@type': 'Question',
+        name: 'How is Groundwork priced?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Two simple axes, plus a separate AI allowance. A plan — Core, Growth, Pro, or Enterprise — sets which workspaces your whole company can use (reporting, automation, the client portal) and includes a starting allotment of internal users (Core 1, Growth 5, Pro 10). Every additional internal user beyond that is a flat $25/mo — the same rate whether they are an owner, a rep, or a field crew member. Groundwork AI is priced separately, at the company level — every plan includes a monthly AI allowance at no extra charge, shared across your whole team rather than billed per user. Customer-portal and other external logins are always free and never count toward your bill.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can I try Groundwork before committing?',
+        acceptedAnswer: { '@type': 'Answer', text: "Every prospect gets a 30-minute personalized walkthrough followed by a sandboxed pilot workspace loaded with your data. We don't do generic free trials — the value shows up when it's your business inside the system." },
+      },
+      {
+        '@type': 'Question',
+        name: 'Where does the software live?',
+        acceptedAnswer: { '@type': 'Answer', text: 'The public brand lives at groundwork-crm.info. The product workspace lives at groundwork-crm.com. When you log in from the marketing site, you are handed off to the live product.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Do you have a mobile app?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes. iOS and Android apps for the field team. The web workspace also works on mobile browsers if you prefer.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'How secure is Groundwork?',
+        acceptedAnswer: { '@type': 'Answer', text: 'SOC 2 Type II, encryption at rest and in transit, SSO/MFA, screen-level permissions, immutable audit log.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'What if we outgrow Groundwork?',
+        acceptedAnswer: { '@type': 'Answer', text: 'You own your data. Full export is available at any time — clients, opportunities, properties, invoices, everything. No lock-in on data. We would rather earn your renewal than trap you.' },
+      },
+    ],
+  },
+]
+
 export function FAQPage() {
   return (
     <Layout
       title="FAQ — Groundwork CRM"
       description="Common questions from operators evaluating Groundwork."
       path="/faq"
+      structuredData={FAQ_LD}
     >
       <section class="section subpage-hero">
         <div class="wrap">
