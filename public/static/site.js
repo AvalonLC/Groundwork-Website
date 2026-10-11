@@ -264,7 +264,6 @@
     if (!root) return
 
     var STOPS = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'recurring', 'dispatch', 'workorders', 'assets', 'inventory', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
-    var visited = { command: true }
 
     // Maps every sidebar panel to the mobile bottom tab bar group that
     // owns it, so the tab bar's active state stays in sync no matter how
@@ -279,14 +278,6 @@
       money: 'finance', budget: 'finance', invoicing: 'finance',
       schedule: 'ops', recurring: 'ops', dispatch: 'ops', workorders: 'ops', assets: 'ops', inventory: 'ops', timetracker: 'ops',
       clientportal: 'admin', employees: 'admin', aar: 'admin', audit: 'admin', reports: 'admin',
-    }
-
-    function updateProgress() {
-      var count = STOPS.filter(function (s) { return visited[s] }).length
-      var fill = root.querySelector('[data-demo-progress-fill]')
-      if (fill) fill.style.width = Math.round((count / STOPS.length) * 100) + '%'
-      var counter = root.querySelector('[data-demo-progress-count]')
-      if (counter) counter.textContent = String(count)
     }
 
     // Small transient toast for illustrative-only clicks (non-Coach AI
@@ -383,9 +374,6 @@
       root.querySelectorAll('.pm-sidebar [data-demo-sidebar-target]').forEach(function (el) {
         el.classList.toggle('active', el.getAttribute('data-demo-sidebar-target') === name)
       })
-      root.querySelectorAll('.demo-quicklink').forEach(function (btn) {
-        btn.classList.toggle('active', btn.getAttribute('data-demo-goto') === name)
-      })
       var activeGroup = PANEL_TO_TABBAR_GROUP[name] || 'home'
       root.querySelectorAll('[data-demo-tabbar-group]').forEach(function (btn) {
         btn.classList.toggle('active', btn.getAttribute('data-demo-tabbar-group') === activeGroup)
@@ -394,9 +382,7 @@
       if (slideover) slideover.classList.remove('open')
       closeAiOverlay()
       closeDrawer()
-      visited[name] = true
       if (isChange) flashSkeleton()
-      updateProgress()
     }
 
     // Sidebar: every item now jumps straight to its matching panel.
@@ -415,6 +401,86 @@
         if (pm) pm.scrollIntoView({ behavior: 'smooth', block: 'start' })
       })
     })
+
+    // Role switcher — "View as" pills above the mock. Lets a visitor see
+    // the exact same sample workspace the way a different seat would: a
+    // narrower sidebar (only the groups that role's data-demo-role-groups
+    // lists survive the CSS filter in styles.css) and a different landing
+    // panel, matching the real product's role-based access model already
+    // documented on /product/admin and /roles. All data for each role
+    // lives on its own button (data-demo-role-groups/-landing/-name) so
+    // this file doesn't need to duplicate the roles list from the page.
+    ;(function bindDemoRoleSwitcher() {
+      if (!workspacePm) return
+      var pills = Array.prototype.slice.call(root.querySelectorAll('[data-demo-role-trigger]'))
+      if (!pills.length) return
+      var topbarName = root.querySelector('[data-demo-topbar-name]')
+      var footerName = root.querySelector('[data-demo-sidebar-footer-name]')
+      var footerRole = root.querySelector('[data-demo-sidebar-footer-role]')
+      var footerAvatar = root.querySelector('[data-demo-sidebar-avatar]')
+
+      pills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          var key = pill.getAttribute('data-demo-role-trigger')
+          var groups = pill.getAttribute('data-demo-role-groups') || ''
+          var landing = pill.getAttribute('data-demo-role-landing') || 'command'
+          var name = pill.getAttribute('data-demo-role-name') || 'Tyler'
+          var label = pill.getAttribute('data-demo-role-label') || 'Owner'
+
+          pills.forEach(function (p) {
+            var isActive = p === pill
+            p.classList.toggle('active', isActive)
+            p.setAttribute('aria-selected', isActive ? 'true' : 'false')
+          })
+
+          // "Owner" sees everything — omit the filter attribute entirely
+          // rather than listing all five groups, so it reads as "no
+          // filter" (the CSS rule only hides groups once the attribute
+          // is present at all).
+          if (key === 'owner') {
+            workspacePm.removeAttribute('data-demo-role-filter')
+          } else {
+            workspacePm.setAttribute('data-demo-role-filter', groups)
+          }
+          workspacePm.setAttribute('data-demo-role', key)
+
+          if (topbarName) topbarName.textContent = name
+          if (footerName) footerName.textContent = name
+          if (footerRole) footerRole.textContent = label
+          if (footerAvatar) footerAvatar.textContent = name.charAt(0)
+
+          showPanel(landing)
+          closeDrawer()
+        })
+      })
+    })()
+
+    // Full-screen mode — makes the sample workspace fill the viewport so
+    // it feels like you're genuinely inside the app rather than scrolling
+    // past a bigger embed of the marketing page. Mirrors the drawer's
+    // open/close/Escape pattern above, just toggling a different
+    // attribute (data-demo-fullscreen-active) on the same box.
+    ;(function bindDemoFullscreen() {
+      if (!workspacePm) return
+      var trigger = root.querySelector('[data-demo-fullscreen-trigger]')
+      var exitBtn = root.querySelector('[data-demo-fullscreen-exit]')
+      function enterFullscreen() {
+        workspacePm.setAttribute('data-demo-fullscreen-active', '')
+        document.body.classList.add('demo-fullscreen-lock')
+      }
+      function exitFullscreen() {
+        workspacePm.removeAttribute('data-demo-fullscreen-active')
+        closeDrawer()
+        document.body.classList.remove('demo-fullscreen-lock')
+      }
+      if (trigger) trigger.addEventListener('click', enterFullscreen)
+      if (exitBtn) exitBtn.addEventListener('click', exitFullscreen)
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && workspacePm.hasAttribute('data-demo-fullscreen-active')) {
+          exitFullscreen()
+        }
+      })
+    })()
 
     // Today (Command Center): click a task to toggle done
     root.querySelectorAll('[data-demo-task]').forEach(function (task) {
@@ -1235,114 +1301,6 @@
       }
     })()
 
-    // Command palette (Cmd/Ctrl+K) — jump to any sidebar panel or a named
-    // client/record. Opens from the topbar trigger or the Ctrl/Cmd+K
-    // shortcut from anywhere on the page; type to filter, arrow keys move
-    // the active row, Enter navigates (and opens the matching lead card's
-    // slide-over when the record carries one), Escape or an outside click
-    // closes it without navigating.
-    ;(function bindCommandPalette() {
-      var overlay = root.querySelector('[data-demo-cmdk-overlay]')
-      var trigger = root.querySelector('[data-demo-cmdk-trigger]')
-      var input = root.querySelector('[data-demo-cmdk-input]')
-      var list = root.querySelector('[data-demo-cmdk-list]')
-      var empty = root.querySelector('[data-demo-cmdk-empty]')
-      if (!overlay || !input || !list) return
-      var items = Array.prototype.slice.call(root.querySelectorAll('[data-demo-cmdk-item]'))
-
-      function setActive(el) {
-        items.forEach(function (i) { i.classList.remove('active') })
-        if (el) {
-          el.classList.add('active')
-          el.scrollIntoView({ block: 'nearest' })
-        }
-      }
-      function visibleItems() {
-        return items.filter(function (i) { return i.style.display !== 'none' })
-      }
-      function openPalette() {
-        overlay.classList.add('open')
-        closeAiOverlay()
-        closeBellDropdown()
-        closeDrawer()
-        input.value = ''
-        items.forEach(function (i) { i.style.display = '' })
-        root.querySelectorAll('[data-demo-cmdk-group]').forEach(function (g) { g.style.display = '' })
-        if (empty) empty.hidden = true
-        setActive(visibleItems()[0])
-        setTimeout(function () { input.focus() }, 10)
-      }
-      function closePalette() {
-        overlay.classList.remove('open')
-      }
-      function filterPalette() {
-        var term = input.value.trim().toLowerCase()
-        var anyVisible = false
-        items.forEach(function (i) {
-          var match = !term || (i.getAttribute('data-demo-cmdk-text') || '').indexOf(term) !== -1
-          i.style.display = match ? '' : 'none'
-          if (match) anyVisible = true
-        })
-        root.querySelectorAll('[data-demo-cmdk-group]').forEach(function (g) {
-          var hasVisible = Array.prototype.some.call(g.querySelectorAll('[data-demo-cmdk-item]'), function (i) { return i.style.display !== 'none' })
-          g.style.display = hasVisible ? '' : 'none'
-        })
-        if (empty) empty.hidden = anyVisible
-        setActive(visibleItems()[0])
-      }
-      function activate(item) {
-        if (!item) return
-        var goto = item.getAttribute('data-demo-cmdk-goto')
-        var lead = item.getAttribute('data-demo-cmdk-lead')
-        closePalette()
-        if (goto) {
-          showPanel(goto)
-          var pm = root.querySelector('.pm')
-          if (pm) pm.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-        if (lead && slideover) {
-          setTimeout(function () {
-            slideover.querySelectorAll('[data-lead-detail]').forEach(function (d) {
-              d.hidden = d.getAttribute('data-lead-detail') !== lead
-            })
-            slideover.classList.add('open')
-          }, 260)
-        }
-      }
-
-      if (trigger) trigger.addEventListener('click', openPalette)
-      document.addEventListener('keydown', function (e) {
-        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-          e.preventDefault()
-          overlay.classList.contains('open') ? closePalette() : openPalette()
-        } else if (e.key === 'Escape' && overlay.classList.contains('open')) {
-          closePalette()
-        }
-      })
-      overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) closePalette()
-      })
-      input.addEventListener('input', filterPalette)
-      input.addEventListener('keydown', function (e) {
-        var visible = visibleItems()
-        var idx = visible.indexOf(list.querySelector('.demo-cmdk-item.active'))
-        if (e.key === 'ArrowDown') {
-          e.preventDefault()
-          setActive(visible[Math.min(visible.length - 1, idx + 1)] || visible[0])
-        } else if (e.key === 'ArrowUp') {
-          e.preventDefault()
-          setActive(visible[Math.max(0, idx - 1)] || visible[0])
-        } else if (e.key === 'Enter') {
-          e.preventDefault()
-          activate(list.querySelector('.demo-cmdk-item.active') || visible[0])
-        }
-      })
-      items.forEach(function (item) {
-        item.addEventListener('click', function () { activate(item) })
-        item.addEventListener('mouseenter', function () { setActive(item) })
-      })
-    })()
-
     // Topbar: live search filters tasks, pipeline lead cards, and every
     // other data-demo-searchable row across whichever panel is visible
     // (client-side only — filtering doesn't change which panel is active).
@@ -1379,8 +1337,6 @@
       var targetPm = root.querySelector('.pm')
       if (targetPm) targetPm.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-
-    updateProgress()
   }
 
   function init() {

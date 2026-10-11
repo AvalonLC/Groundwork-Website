@@ -135,7 +135,17 @@ export function InteractiveDemoPage() {
               <div class="demo-role-switcher" data-demo-role-switcher role="tablist" aria-label="View as">
                 <span class="demo-role-switcher-label">View as</span>
                 {roles.map((r, i) => (
-                  <button type="button" class={`demo-role-pill${i === 0 ? ' active' : ''}`} data-demo-role-trigger={r.key} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+                  <button
+                    type="button"
+                    class={`demo-role-pill${i === 0 ? ' active' : ''}`}
+                    data-demo-role-trigger={r.key}
+                    data-demo-role-groups={r.groups.join(' ')}
+                    data-demo-role-landing={r.landing}
+                    data-demo-role-name={r.name}
+                    data-demo-role-label={r.label}
+                    role="tab"
+                    aria-selected={i === 0 ? 'true' : 'false'}
+                  >
                     {r.label}
                   </button>
                 ))}

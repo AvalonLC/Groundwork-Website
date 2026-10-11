@@ -71,7 +71,7 @@ export function PMSidebar({
         Command Center
       </div>
 
-      <div class="sb-group">
+      <div class="sb-group" data-group="sales">
         <div class="sb-label">Sales</div>
         <div class={cls('pipeline')} {...attr('pipeline')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -107,7 +107,7 @@ export function PMSidebar({
           Estimates
         </div>
       </div>
-      <div class="sb-group">
+      <div class="sb-group" data-group="financial">
         <div class="sb-label">Financial</div>
         <div class={cls('money')} {...attr('money')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -131,7 +131,7 @@ export function PMSidebar({
           Invoice Reporting
         </div>
       </div>
-      <div class="sb-group">
+      <div class="sb-group" data-group="insights">
         <div class="sb-label">Insights</div>
         <div class={cls('reports')} {...attr('reports')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -143,7 +143,7 @@ export function PMSidebar({
           Reports &amp; Analytics
         </div>
       </div>
-      <div class="sb-group">
+      <div class="sb-group" data-group="operations">
         <div class="sb-label">Operations</div>
         <div class={cls('schedule')} {...attr('schedule')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -202,7 +202,7 @@ export function PMSidebar({
           Time Tracker
         </div>
       </div>
-      <div class="sb-group">
+      <div class="sb-group" data-group="admin">
         <div class="sb-label">Admin</div>
         <div class={cls('clientportal')} {...attr('clientportal')}>
           <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -238,10 +238,10 @@ export function PMSidebar({
 
       {showMobileChrome && (
         <div class="pm-sidebar-footer">
-          <span class="pm-sidebar-avatar">T</span>
+          <span class="pm-sidebar-avatar" data-demo-sidebar-avatar>T</span>
           <span class="pm-sidebar-footer-text">
-            <strong>Tyler</strong>
-            <small>Owner / Admin</small>
+            <strong data-demo-sidebar-footer-name>Tyler</strong>
+            <small data-demo-sidebar-footer-role>Owner / Admin</small>
           </span>
         </div>
       )}
