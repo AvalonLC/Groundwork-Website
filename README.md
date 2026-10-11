@@ -36,7 +36,7 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 
 | Route | Page |
 |---|---|
-| `/` | Homepage — hero w/ "Today" dashboard mock, trust logos, problem section, "what is Groundwork" split, four pillars, role tabs, My Day spotlight, bento feature grid, testimonials, implementation timeline, FAQ, final CTA |
+| `/` | Homepage — redesigned hero (2026-10-11): one headline + lede, 2 CTAs ("Try the live demo" primary, "Book a call" secondary), a clickable hero tag and a clickable "Today" dashboard mock both linking into `/explore`, plus a dedicated mobile-only "Try it yourself" card right under the fold — replacing the old 3-button/longer-copy hero that gave mobile visitors no path into the live demo. Below the hero: trust logos, problem section, "what is Groundwork" split, four pillars, role tabs, My Day spotlight, bento feature grid, testimonials, implementation timeline, FAQ, final CTA |
 | `/product` | Product hub (8-tile bento) |
 | `/product/my-day` | My Day module |
 | `/product/sales` | Sales module (pipeline kanban mock, client detail mock) |
@@ -83,7 +83,7 @@ to take over the bare `groundwork-crm.com` domain. Do not "fix" links back to an
 | `/academy/financial-literacy` | Financial Literacy — 5 lessons on P&L, cash flow, and budget vs actual, real lesson notes |
 | `/academy/crm-guide` | CRM Guide — 7 module walkthroughs of the product's core workspaces, real lesson notes |
 | `/faq` | FAQ accordion |
-| `/explore` | Interactive Demo — click-around sample workspace covering all 17 real product nav sections (Command Center, Pipeline, Leads, Clients, Properties, Estimates, Money Loop, Budget & Rates, Invoice Reporting, Schedule, Dispatch, Work Orders, Assets, Time Tracker, Client Portal, Employees & Teams, AAR Reviews) plus a topbar Groundwork AI overlay, no signup required |
+| `/explore` | Interactive Demo — click-around sample workspace covering all 17 real product nav sections (Command Center, Pipeline, Leads, Clients, Properties, Estimates, Money Loop, Budget & Rates, Invoice Reporting, Schedule, Dispatch, Work Orders, Assets, Time Tracker, Client Portal, Employees & Teams, AAR Reviews) plus a topbar Groundwork AI overlay, no signup required. **Updated 2026-10-11**: added a "View as" role switcher (Owner/Sales Rep/Office Manager/Dispatcher/Foreman — filters the sidebar to that role's groups and jumps to its landing panel, mirroring the real product's role-based access model) and a full-screen mode (fills the viewport above the site nav so it feels like being inside the real app). Removed the old progress bar, 6-chip quicklink row, and Cmd/Ctrl+K command palette — redundant with the sidebar + topbar search. |
 | `/security` | Security & compliance |
 | `/about` | About / team / principles |
 | `/contact` | Contact channels + message form |
@@ -164,6 +164,15 @@ New shared components in `src/components/Academy.tsx`: `AcademyHero`, `TrackCard
 `resources.tsx`'s "Groundwork Academy" card now links to `/academy` (was `#academy`); the existing on-page Sales Academy mockup section was kept as a visual teaser, with an added "See all 4 tracks, with real lesson notes →" link into the real hub page.
 
 **Confidentiality note**: while drafting `/academy/sales`, a module was briefly titled "The Avalon Way of Selling" — a verbatim leak of the real customer tenant's name from the reconnaissance screenshots. This was caught and renamed to the generic "The Company Way of Selling" before committing. A repo-wide grep for the real tenant/user names confirms no leaks in the new Academy files.
+
+## /explore Role Switcher + Full-Screen Mode, Homepage Hero Redesign (2026-10-11)
+Per user request to make `/explore` "feel like you are truly in the app" and fix the homepage not driving mobile visitors to the live demo:
+
+- **Role switcher** — new "View as" pill row (Owner/Sales Rep/Office Manager/Dispatcher/Foreman) above the demo box. Each role carries its visible sidebar groups and a landing panel as data attributes on its button; clicking filters `PMSidebar`'s `.sb-group` sections (now tagged `data-group="sales|financial|insights|operations|admin"`) via a CSS attribute-selector rule, jumps to the role's landing panel, and updates the topbar/drawer-footer name — mirroring the role-based access model already documented on `/product/admin` and `/roles`.
+- **Full-screen mode** — new trigger in the controls row + exit button in the topbar put the sample workspace at `position:fixed; inset:0` above the site nav (z-index 400), with mobile keeping its drawer-sidebar pattern just at full viewport height. Exits via the button or Escape, mirroring the existing mobile-drawer open/close pattern in `site.js`.
+- **Removed clutter**: the old progress bar ("N of 14 sidebar areas"), the 6-chip quicklink row, and the Cmd/Ctrl+K command palette (trigger + overlay) — the sidebar nav and topbar search already cover "get to any panel." Deleted the now-dead `bindCommandPalette()`/`updateProgress()` JS and matching CSS.
+- **Homepage hero redesign** (`src/pages/home.tsx`) — cut from 3 CTAs + longer copy to 2 CTAs ("Try the live demo" primary, "Book a call" secondary) and a shorter headline/lede. The hero tag and the "Today" dashboard mock are now both links straight into `/explore` (badge: "This is the real app — click to try it"). Added a dedicated mobile-only "Try it yourself" card right under the CTAs so phone visitors get a one-tap path into the live demo instead of scrolling to a shrunken copy of the dashboard mock, which previously did nothing to surface it.
+- Verified via a 24-case Playwright pass (desktop + 390×844 mobile): role filtering/landing/name-sync across all 5 roles, fullscreen enter/exit via button and Escape, dead-element removal, a height-consistency regression check across 7 panels, and zero console errors on both `/explore` and the redesigned homepage.
 
 ## Interactive Demo (2026-09-19, expanded to full 14-panel sidebar 2026-09-22)
 Per user request for "a sort of click around space" to let visitors get a feel for the product without booking a call, added a new page at **`/explore`** — a self-contained, click-around sample workspace.

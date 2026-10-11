@@ -11,29 +11,34 @@ export function HomePage() {
       description="Groundwork CRM runs sales, operations, financials, and daily execution for landscape, home service, and field service businesses — in one system."
       path="/"
     >
-      {/* Hero */}
+      {/* Hero — tightened to one clear idea (run the business in one
+          place) and two CTAs instead of three, both built around getting
+          a visitor into /explore fast: the hero tag is itself a link to
+          it, "Try the live demo" leads the button row, and the whole
+          product mock below is wrapped as a clickable link into it too.
+          Mobile swaps that dense desktop mock for a short, dedicated
+          explore card instead of a scaled-down (and still scroll-heavy)
+          copy of it — the thing this page previously failed to do. */}
       <header class="hero" data-screen-label="Hero">
         <div class="hero-grid">
-          <div class="hero-tag">
-            <span class="pill">New</span>
-            Field Mode + AI Assistant now live for every workspace
-          </div>
+          <a href="/explore" class="hero-tag hero-tag-link">
+            <span class="pill">Live</span>
+            Click around the real app — no signup
+            <Icon name="arrow" size={12} />
+          </a>
           <h1>
-            Run sales, operations, and&nbsp;the daily work of your business <em>in one place.</em>
+            Run your service business <em>in one place,</em> not six.
           </h1>
           <p class="lede">
-            Groundwork is the CRM built for service companies that actually run — landscape crews, home service
-            teams, field operators. Give owners clarity, give teams direction, give crews a cleaner day.
+            Sales, scheduling, dispatch, invoicing, and the daily work of your crew — one connected system built for
+            landscape, home service, and field teams.
           </p>
           <div class="hero-ctas">
-            <Button href="/demo" variant="primary" arrow>
-              Book a demo
+            <Button href="/explore" variant="primary" arrow>
+              Try the live demo
             </Button>
-            <Button href="/features" variant="secondary">
-              See how it works
-            </Button>
-            <Button href="/explore" variant="ghost" arrow>
-              Explore it yourself
+            <Button href="/demo" variant="secondary">
+              Book a call
             </Button>
           </div>
           <div class="hero-meta">
@@ -44,13 +49,33 @@ export function HomePage() {
               Live in 2–3 weeks
             </span>
             <span class="dot"></span>
-            <span>Purpose-built for field &amp; service businesses</span>
-            <span class="dot"></span>
-            <span>Role-based access from owner to laborer</span>
+            <span>Role-based views from owner to laborer</span>
           </div>
 
-          {/* Hero product mock */}
+          {/* Mobile-only: a short, dedicated card that does what the full
+              dashboard mock below never did on a phone — put the live
+              demo one tap away instead of several scroll-screens down a
+              worded page. Hidden on desktop (see .hero-mobile-explore in
+              styles.css), where the clickable mock below does this job. */}
+          <a href="/explore" class="hero-mobile-explore">
+            <span class="hero-mobile-explore-icon">
+              <Icon name="sparkle" size={18} />
+            </span>
+            <span class="hero-mobile-explore-text">
+              <strong>Try it yourself — no signup</strong>
+              <span>Tap into a real, clickable Groundwork workspace</span>
+            </span>
+            <Icon name="arrow" size={16} />
+          </a>
+
+          {/* Hero product mock — now a link straight into /explore, with a
+              badge calling out that it's the real app, not a screenshot. */}
+          <a href="/explore" class="hero-mock-link" aria-label="Open the live interactive demo">
           <div class="hero-mock">
+            <span class="hero-mock-badge">
+              <Icon name="sparkle" size={13} />
+              This is the real app — click to try it
+            </span>
             <div class="pm pm-lg">
               <PMSidebar />
               <PMMain>
@@ -139,6 +164,7 @@ export function HomePage() {
               </PMMain>
             </div>
           </div>
+          </a>
         </div>
       </header>
 
