@@ -10,17 +10,22 @@ import { Icon } from './Icon'
 // used by /explore to tag its box `pm-workspace` so the mobile "phone
 // frame" + persistent bottom tab bar CSS (styles.css) applies only to the
 // interactive sample workspace, not every other page's smaller PM mock.
+// `rootAttrs` passes arbitrary data-* attributes straight onto the root
+// div — used by /explore for `data-demo-role` (role-switcher state) so
+// site.js and styles.css can read/target it without a second wrapper.
 export function PM({
   large = false,
   minHeight = 500,
   shadow,
   className,
+  rootAttrs,
   children,
-}: PropsWithChildren<{ large?: boolean; minHeight?: number; shadow?: string; className?: string }>) {
+}: PropsWithChildren<{ large?: boolean; minHeight?: number; shadow?: string; className?: string; rootAttrs?: Record<string, string> }>) {
   return (
     <div
       class={`pm${large ? ' pm-lg' : ''}${className ? ' ' + className : ''}`}
       style={!large ? `grid-template-columns: 1fr; min-height: ${minHeight}px;${shadow ? ` box-shadow: ${shadow};` : ''}` : undefined}
+      {...(rootAttrs ?? {})}
     >
       {children}
     </div>

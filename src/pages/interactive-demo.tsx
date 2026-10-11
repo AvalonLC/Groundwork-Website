@@ -74,55 +74,20 @@ export function InteractiveDemoPage() {
     { name: 'Sydney Lampard', detail: 'Deck lighting · $18,000 · missed follow-up', risk: '$18,000 at risk', action: 'Suggested action: send the "still thinking it over?" template — reps who follow up within 24 hours of a stall recover 4 in 10 of these deals.' },
   ]
 
-  // Quick-launch chips — a curated on-ramp into the full 14-item sidebar,
-  // not a replacement for it. Sits above the mock, same idea as the old
-  // 4-tab row, but doesn't pretend to be the only 4 things worth seeing.
-  const quickLinks = [
-    { key: 'command', label: 'Today' },
-    { key: 'pipeline', label: 'Pipeline' },
-    { key: 'money', label: 'Money Loop' },
-    { key: 'dispatch', label: 'Dispatch' },
-    { key: 'clientportal', label: 'Client Portal' },
-    { key: 'aar', label: 'AAR Reviews' },
+  // Role switcher — lets a visitor see the same sample workspace the way
+  // a different seat would: fewer sidebar groups, a different landing
+  // panel, matching the real product's role-based access model already
+  // documented on /product/admin and /roles. "owner" shows everything
+  // (no filtering) since Owner is the full-access role in that same model.
+  const roles: { key: string; label: string; name: string; groups: string[]; landing: string }[] = [
+    { key: 'owner', label: 'Owner', name: 'Tyler', groups: ['sales', 'financial', 'insights', 'operations', 'admin'], landing: 'command' },
+    { key: 'sales', label: 'Sales Rep', name: 'Marcus', groups: ['sales'], landing: 'pipeline' },
+    { key: 'office', label: 'Office Manager', name: 'Angela', groups: ['sales', 'financial', 'insights'], landing: 'money' },
+    { key: 'ops', label: 'Dispatcher', name: 'Jasmine', groups: ['operations'], landing: 'dispatch' },
+    { key: 'foreman', label: 'Foreman', name: 'N. Knesley', groups: ['operations'], landing: 'workorders' },
   ]
 
   const sidebarStops = ['command', 'pipeline', 'leads', 'clients', 'properties', 'estimates', 'money', 'budget', 'invoicing', 'reports', 'schedule', 'recurring', 'dispatch', 'workorders', 'assets', 'inventory', 'timetracker', 'clientportal', 'employees', 'aar', 'audit']
-
-  // Command palette (Cmd/Ctrl+K) — "jump to panel" covers all 21 sidebar
-  // stops; "clients & deals" / "records" let the search reach into specific
-  // entities (a lead, an estimate, a work order) rather than just a panel.
-  const cmdkPanels: { key: string; label: string; icon: string; sub: string }[] = [
-    { key: 'command', label: 'Command Center', icon: 'home', sub: "Today's tasks" },
-    { key: 'pipeline', label: 'Pipeline', icon: 'trending', sub: 'Sales · kanban board' },
-    { key: 'leads', label: 'Leads', icon: 'users', sub: 'Intake queue' },
-    { key: 'clients', label: 'Clients', icon: 'users', sub: 'Client roster' },
-    { key: 'properties', label: 'Properties', icon: 'home', sub: 'Every address serviced' },
-    { key: 'estimates', label: 'Estimates', icon: 'file-text', sub: 'Proposals out' },
-    { key: 'money', label: 'Money Loop', icon: 'dollar', sub: "What needs doing" },
-    { key: 'budget', label: 'Budget & Rates', icon: 'dollar', sub: 'Pricing engine' },
-    { key: 'invoicing', label: 'Invoice Reporting', icon: 'invoice', sub: 'Sent · paid · overdue' },
-    { key: 'reports', label: 'Reports & Analytics', icon: 'chart', sub: 'Company-wide numbers' },
-    { key: 'schedule', label: 'Schedule', icon: 'calendar', sub: 'Week view' },
-    { key: 'recurring', label: 'Recurring Services', icon: 'calendar', sub: 'Contracts on autopilot' },
-    { key: 'dispatch', label: 'Dispatch Board', icon: 'truck', sub: "Today's crews" },
-    { key: 'workorders', label: 'Work Orders', icon: 'clipboard', sub: 'Field checklist' },
-    { key: 'assets', label: 'Assets', icon: 'truck', sub: 'Vehicles · equipment' },
-    { key: 'inventory', label: 'Inventory & Tools', icon: 'clipboard', sub: 'Stock · reorder levels' },
-    { key: 'timetracker', label: 'Time Tracker', icon: 'clock', sub: 'Live clock' },
-    { key: 'clientportal', label: 'Client Portal', icon: 'users', sub: 'Portal access' },
-    { key: 'employees', label: 'Employees & Teams', icon: 'users', sub: 'Roster · approvals' },
-    { key: 'aar', label: 'AAR Reviews', icon: 'clipboard', sub: 'End-of-day reports' },
-    { key: 'audit', label: 'Audit Log', icon: 'shield-check', sub: 'Append-only activity' },
-  ]
-  const cmdkRecords: { label: string; sub: string; icon: string; goto: string; lead?: string }[] = [
-    { label: 'Nicole Knesley', sub: 'Client · Pool Coping · $58.2k', icon: 'user', goto: 'pipeline', lead: 'knesley' },
-    { label: 'Julie Grumley', sub: 'Client · Tree Removal · $8.2k', icon: 'user', goto: 'pipeline', lead: 'grumley' },
-    { label: 'Vijay Dhulipala', sub: 'Client · Backyard Redesign · $32k', icon: 'user', goto: 'pipeline', lead: 'dhulipala' },
-    { label: 'Sydney Lampard', sub: 'Client · Deck Lighting · $18k', icon: 'user', goto: 'pipeline', lead: 'lampard' },
-    { label: 'EST-1042', sub: 'Estimate · N. Knesley · Pool Coping Replacement', icon: 'file-text', goto: 'estimates' },
-    { label: 'EST-1039', sub: 'Estimate · V. Dhulipala · Backyard Redesign', icon: 'file-text', goto: 'estimates' },
-    { label: 'WO-2264', sub: 'Work Order · Knesley · Pool Coping · Crew A', icon: 'clipboard', goto: 'workorders' },
-  ]
 
   return (
     <Layout
@@ -157,21 +122,31 @@ export function InteractiveDemoPage() {
           </div>
 
           <div data-demo-root>
-            <div class="demo-progress" data-demo-progress>
-              <span class="demo-progress-label">Sample workspace explored</span>
-              <span class="demo-progress-bar"><span class="demo-progress-fill" data-demo-progress-fill></span></span>
-              <span class="demo-progress-count"><span data-demo-progress-count>1</span> of {sidebarStops.length} sidebar areas</span>
+            {/* Controls row: role switcher (see the exact same sample data
+                the way a different seat would — fewer sidebar groups, a
+                different landing panel) + full-screen toggle (fills the
+                viewport so it feels like you're actually inside the app,
+                not scrolling past a marketing-page embed of it). Replaces
+                the old progress bar + 6-chip quicklink row — the sidebar
+                itself (plus the topbar search) already covers "get to any
+                panel," so a second, redundant on-ramp above the box was
+                just more clutter before you even reach the demo. */}
+            <div class="demo-controls-row">
+              <div class="demo-role-switcher" data-demo-role-switcher role="tablist" aria-label="View as">
+                <span class="demo-role-switcher-label">View as</span>
+                {roles.map((r, i) => (
+                  <button type="button" class={`demo-role-pill${i === 0 ? ' active' : ''}`} data-demo-role-trigger={r.key} role="tab" aria-selected={i === 0 ? 'true' : 'false'}>
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+              <button type="button" class="demo-fullscreen-trigger" data-demo-fullscreen-trigger title="Open full screen">
+                <Icon name="expand" size={14} />
+                <span>Full screen</span>
+              </button>
             </div>
 
-            <div class="demo-quicklinks">
-              {quickLinks.map((q, i) => (
-                <button type="button" class={`demo-quicklink${i === 0 ? ' active' : ''}`} data-demo-goto={q.key}>
-                  {q.label}
-                </button>
-              ))}
-            </div>
-
-            <PM large minHeight={560} shadow="var(--shadow-lg)" className="pm-workspace">
+            <PM large minHeight={560} shadow="var(--shadow-lg)" className="pm-workspace" rootAttrs={{ 'data-demo-role': 'owner' }}>
               {/* Dimmed backdrop behind the mobile drawer — only ever visible
                   below the 720px breakpoint (CSS gates display:none above
                   it) and only when data-demo-drawer-open is toggled on the
@@ -203,11 +178,6 @@ export function InteractiveDemoPage() {
                       style="background: none; border: none; outline: none; font: inherit; color: inherit; width: 100%;"
                     />
                   </div>
-                  <span class="demo-cmdk-trigger" data-demo-cmdk-trigger title="Search anything (Ctrl/Cmd+K)">
-                    <Icon name="search" size={12} />
-                    <span class="demo-cmdk-trigger-label">Jump to…</span>
-                    <span class="demo-cmdk-kbd">⌘K</span>
-                  </span>
                   <span class="demo-new-wrap">
                     <span class="new-btn" data-demo-new-trigger>+ New</span>
                     <div class="demo-new-dropdown" data-demo-new-dropdown>
@@ -239,7 +209,14 @@ export function InteractiveDemoPage() {
                       <div class="demo-bell-dropdown-list" data-demo-bell-dropdown-list></div>
                     </div>
                   </span>
-                  <span style="opacity: 0.7;">Tyler</span>
+                  <span style="opacity: 0.7;" data-demo-topbar-name>Tyler</span>
+                  {/* Fullscreen-exit — only ever visible while the box is
+                      in full-screen mode (CSS-gated, see .pm-workspace
+                      .pm-fullscreen-exit in styles.css); the entry trigger
+                      lives above the box in the controls row instead. */}
+                  <button type="button" class="pm-fullscreen-exit" data-demo-fullscreen-exit title="Exit full screen" aria-label="Exit full screen">
+                    <Icon name="minimize" size={15} />
+                  </button>
                 </div>
                 <div class="demo-search-empty" data-demo-search-empty hidden>
                   No matches in this sample workspace for “<span data-demo-search-empty-term></span>”. Try “Knesley,”
@@ -1703,49 +1680,6 @@ export function InteractiveDemoPage() {
                 </button>
               </nav>
             </PM>
-
-            {/* Command palette (Cmd/Ctrl+K) — jump straight to any of the 19
-                sidebar panels or a named record (client, estimate, work
-                order) without touching the sidebar. Pure client-side filter
-                over the two lists below; Enter/click navigates and closes. */}
-            <div class="demo-cmdk-overlay" data-demo-cmdk-overlay>
-              <div class="demo-cmdk-modal">
-                <div class="demo-cmdk-inputwrap">
-                  <Icon name="search" size={14} style="opacity: 0.5; flex: none;" />
-                  <input type="text" data-demo-cmdk-input placeholder="Jump to a panel, client, estimate…" autocomplete="off" />
-                  <span class="demo-cmdk-esc">ESC</span>
-                </div>
-                <div class="demo-cmdk-list" data-demo-cmdk-list>
-                  <div data-demo-cmdk-group="panels">
-                    <div class="demo-cmdk-group-label">Panels</div>
-                    {cmdkPanels.map((p) => (
-                      <div class="demo-cmdk-item" data-demo-cmdk-item data-demo-cmdk-goto={p.key} data-demo-cmdk-text={`${p.label.toLowerCase()} ${p.sub.toLowerCase()}`}>
-                        <Icon name={p.icon} size={14} />
-                        <div class="demo-cmdk-item-main">
-                          <div class="demo-cmdk-item-label">{p.label}</div>
-                          <div class="demo-cmdk-item-sub">{p.sub}</div>
-                        </div>
-                        <span class="demo-cmdk-item-kbd">↵</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div data-demo-cmdk-group="records">
-                    <div class="demo-cmdk-group-label">Clients &amp; Records</div>
-                    {cmdkRecords.map((r) => (
-                      <div class="demo-cmdk-item" data-demo-cmdk-item data-demo-cmdk-goto={r.goto} data-demo-cmdk-lead={r.lead} data-demo-cmdk-text={`${r.label.toLowerCase()} ${r.sub.toLowerCase()}`}>
-                        <Icon name={r.icon} size={14} />
-                        <div class="demo-cmdk-item-main">
-                          <div class="demo-cmdk-item-label">{r.label}</div>
-                          <div class="demo-cmdk-item-sub">{r.sub}</div>
-                        </div>
-                        <span class="demo-cmdk-item-kbd">↵</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div class="demo-cmdk-empty" data-demo-cmdk-empty hidden>No matches. Try a panel name like “reports” or a client like “Knesley.”</div>
-                </div>
-              </div>
-            </div>
 
             <div class="demo-toast" data-demo-toast></div>
           </div>
