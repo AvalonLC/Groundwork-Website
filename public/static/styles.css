@@ -806,25 +806,25 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .problem-card p { color: var(--gw-ink-500); font-size: 15.5px; margin: 0; }
 
 /* ===========================================================
-   Pillars (Sales / Financial / Operations / Admin)
+   Platform — consolidated pillar rows (Sales / Financial /
+   Operations / Admin & Roles), each a <details>/<summary> that
+   expands in place. Replaces the old separate Pillars grid +
+   5-tab Roles section: one compact overview instead of three
+   repeats of the same four-part pitch.
    =========================================================== */
-.pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.pillar {
-  background: var(--gw-cream-100);
-  border: 1px solid var(--gw-line);
-  border-radius: var(--r-lg);
-  padding: 32px 32px 0;
-  overflow: hidden;
-  position: relative;
-}
-.pillar-top {
+.pillars-compact { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--gw-line); }
+.pillar-row { border-bottom: 1px solid var(--gw-line); }
+.pillar-row summary {
   display: flex;
-  gap: 12px;
   align-items: center;
-  margin-bottom: 14px;
+  gap: 16px;
+  padding: 22px 4px;
+  cursor: pointer;
+  list-style: none;
 }
-.pillar-icon {
-  width: 32px; height: 32px;
+.pillar-row summary::-webkit-details-marker { display: none; }
+.pillar-row-icon {
+  width: 34px; height: 34px;
   border-radius: 7px;
   background: var(--gw-forest-800);
   color: var(--gw-green-100);
@@ -833,101 +833,98 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.02em;
+  flex: none;
 }
-.pillar-eyebrow { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gw-ink-500); font-weight: 600; }
-.pillar h3 { font-family: var(--font-serif); font-weight: 400; margin-bottom: 12px; }
-.pillar p { color: var(--gw-ink-500); font-size: 15px; margin-bottom: 22px; }
-.pillar-list { list-style: none; padding: 0; margin: 0 0 24px; font-size: 14px; }
-.pillar-list li { display: flex; gap: 10px; padding: 6px 0; color: var(--gw-ink-700); align-items: center; }
-.pillar-list li::before {
+.pillar-row-head { flex: 1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; min-width: 0; }
+.pillar-row-head strong { font-family: var(--font-serif); font-size: 19px; font-weight: 500; color: var(--gw-ink-900); }
+.pillar-row-head span { color: var(--gw-ink-500); font-size: 14.5px; }
+.pillar-row-chevron {
+  flex: none;
+  color: var(--gw-ink-400);
+  display: grid;
+  place-items: center;
+  transition: transform .2s;
+}
+.pillar-row[open] .pillar-row-chevron { transform: rotate(90deg); }
+.pillar-row-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  padding: 0 4px 28px 50px;
+  align-items: start;
+}
+.pillar-row-list { list-style: none; padding: 0; margin: 0 0 16px; font-size: 14.5px; }
+.pillar-row-list li { display: flex; gap: 10px; padding: 5px 0; color: var(--gw-ink-700); align-items: center; }
+.pillar-row-list li::before {
   content: "";
   width: 5px; height: 5px;
   background: var(--gw-forest-600);
   border-radius: 50%;
   flex: none;
 }
-.pillar-visual {
-  margin: 0 -32px -1px;
-  padding: 20px 24px;
-  background: linear-gradient(180deg, transparent, rgba(20,40,30,0.02));
-  border-top: 1px solid var(--gw-cream-300);
-}
-
-/* ===========================================================
-   Roles section
-   =========================================================== */
-.roles-tabs {
-  display: flex;
-  gap: 6px;
-  padding: 6px;
+.pillar-row-para { color: var(--gw-ink-500); font-size: 15px; margin: 0 0 18px; }
+.pillar-role-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.pillar-role-chip {
   background: var(--gw-cream-100);
-  border: 1px solid var(--gw-line);
-  border-radius: 999px;
-  margin-bottom: 40px;
-  width: fit-content;
-  flex-wrap: wrap;
-}
-.roles-tab {
-  padding: 10px 20px;
-  border-radius: 999px;
-  font-size: 14px;
+  border: 1px solid var(--gw-cream-300);
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 11px;
   color: var(--gw-ink-700);
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  font-weight: 500;
-  transition: all .18s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
 }
-.roles-tab:hover { color: var(--gw-ink-900); }
-.roles-tab.active {
+.pillar-row-snip { display: flex; align-items: flex-start; justify-content: center; }
+.snip-card {
+  background: var(--gw-cream-100);
+  border: 1px solid var(--gw-cream-300);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  width: 100%;
+  max-width: 260px;
+  box-shadow: var(--shadow-sm);
+}
+.snip-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+.snip-label { font-size: 11.5px; color: var(--gw-ink-500); }
+.snip-badge {
   background: var(--gw-forest-800);
   color: white;
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 500;
 }
-.roles-tab .emoji { font-size: 15px; }
+.snip-value { font-family: var(--font-serif); font-size: 18px; color: var(--gw-ink-900); }
+.snip-sub { font-size: 11.5px; color: var(--gw-ink-500); margin-top: 2px; }
 
-.role-panel {
+/* ===========================================================
+   My Day — full-bleed dark band (breaks the repeating
+   eyebrow/serif-h2/cream-card formula used by the other sections)
+   =========================================================== */
+.myday-band {
+  background: var(--gw-forest-900);
+  padding: 72px 0;
+}
+.myday-head { text-align: center; max-width: 620px; margin: 0 auto 40px; }
+.myday-head .eyebrow { color: #7CC9A3; justify-content: center; }
+.myday-head h2 { color: white; margin: 16px 0 12px; }
+.myday-head .lede { color: #93AFA1; margin: 0; }
+.myday-beats {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 48px;
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 920px;
+  margin: 0 auto 44px;
 }
-.role-panel .role-copy h3 {
-  font-family: var(--font-serif);
-  font-size: 40px;
-  font-weight: 400;
-  margin-bottom: 20px;
-  letter-spacing: -0.015em;
-}
-.role-panel .role-copy .lede { font-size: 18px; margin-bottom: 28px; }
-.role-panel .role-copy ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 28px;
-}
-.role-panel .role-copy li {
-  padding: 10px 0;
-  border-top: 1px solid var(--gw-cream-300);
+.myday-beat {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  color: var(--gw-ink-700);
-  font-size: 15px;
+  color: #7CC9A3;
 }
-.role-panel .role-copy li:first-child { border-top: none; }
-.role-panel .role-copy li strong { color: var(--gw-ink-900); font-weight: 600; display: block; margin-bottom: 2px; }
-.role-panel .role-copy li .check {
-  width: 20px; height: 20px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--gw-green-050);
-  color: var(--gw-green-600);
-  display: grid;
-  place-items: center;
-  margin-top: 2px;
-}
+.myday-beat div { display: flex; flex-direction: column; gap: 2px; }
+.myday-beat strong { color: white; font-size: 14.5px; font-weight: 600; }
+.myday-beat span { color: #93AFA1; font-size: 13px; line-height: 1.5; }
+.myday-mock { display: flex; justify-content: center; }
+.myday-mock .pm { max-width: 760px; width: 100%; }
 
 /* ===========================================================
    Feature grid (bento)
@@ -979,6 +976,11 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .bento-card.dark h4 { color: var(--gw-cream-100); }
 .bento-card.dark p { color: #B7CFC1; }
 .bento-card.dark .b-icon { background: var(--gw-forest-700); color: var(--gw-green-100); }
+
+/* Trimmed 6-card Features grid: 3-per-row desktop (all .narrow, span 2 of
+   6 cols), tight 2-per-row on mobile instead of the default single column
+   the plain .bento rules fall back to. */
+.bento-tight.bento { grid-template-columns: repeat(6, 1fr); }
 
 /* ===========================================================
    Testimonials
@@ -1596,6 +1598,23 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 .footer-col li { padding: 5px 0; }
 .footer-col a { font-size: 14.5px; color: #B7CFC1; }
 .footer-col a:hover { color: white; }
+/* Footer columns are <details> elements so mobile can collapse them into
+   accordions (below). On desktop/tablet we neutralize the <details>/
+   <summary> box model so the columns render exactly as plain always-open
+   blocks, matching the original markup's look. */
+.footer-col summary {
+  cursor: default;
+  list-style: none;
+  color: white;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 0 0 18px;
+}
+.footer-col summary::-webkit-details-marker { display: none; }
+.footer-col summary::after { content: none; }
 .footer-bottom {
   padding-top: 32px;
   display: flex;
@@ -1728,10 +1747,12 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .section-head { margin-bottom: 40px; }
 
   .problems, .testimonials, .steps { grid-template-columns: 1fr; }
-  .pillars, .split, .role-panel, .cta-band { grid-template-columns: 1fr; gap: 32px; }
+  .split, .cta-band { grid-template-columns: 1fr; gap: 32px; }
   .cta-band { padding: 40px 32px; }
   .bento { grid-template-columns: 1fr; }
   .bento-card.wide, .bento-card.narrow, .bento-card.tiny { grid-column: span 1; min-height: 180px; }
+  .pillar-row-body { grid-template-columns: 1fr; }
+  .myday-beats { grid-template-columns: 1fr; max-width: 420px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .hero-mock { transform: none !important; }
 
@@ -1770,6 +1791,13 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   h2 { font-size: clamp(28px, 6vw, 40px); }
   h3 { font-size: clamp(20px, 4.5vw, 26px); }
   .lede { font-size: 17px; }
+
+  /* Trimmed Features grid: tight 2-per-row on mobile instead of 1-per-row */
+  .bento-tight.bento { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .bento-tight .bento-card { grid-column: span 1 !important; min-height: 150px; padding: 18px 16px; }
+  .bento-tight .bento-card h4 { font-size: 15.5px; margin-bottom: 6px; }
+  .bento-tight .bento-card p { font-size: 12.5px; line-height: 1.4; }
+  .bento-tight .bento-card .b-icon { width: 26px; height: 26px; font-size: 12px; margin-bottom: 10px; }
 
   /* Nav */
   .nav-inner { padding: 12px 20px; gap: 12px; }
@@ -1860,10 +1888,13 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .cta-band h2 { font-size: clamp(26px, 6vw, 36px); }
   .cta-band p { font-size: 15px; }
 
-  /* Roles section */
-  .roles-tabs { flex-wrap: wrap; padding: 5px; gap: 4px; }
-  .roles-tab { padding: 8px 14px; font-size: 13px; }
-  .role-panel .role-copy h3 { font-size: 30px; }
+  /* Platform pillar rows */
+  .pillar-row summary { padding: 18px 2px; gap: 12px; }
+  .pillar-row-head strong { font-size: 17px; }
+  .pillar-row-body { padding: 0 2px 22px 46px; }
+
+  /* My Day dark band */
+  .myday-band { padding: 56px 0; }
 
   /* Feature bento cards */
   .bento-card { padding: 22px 22px; min-height: 160px; }
@@ -1907,11 +1938,34 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   /* Feature block containers on features.html */
   .split { gap: 32px !important; }
 
-  /* Footer */
-  .footer { padding: 56px 0 24px; }
-  .footer-grid { grid-template-columns: 1fr; gap: 32px; padding-bottom: 40px; }
-  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+  /* Footer — link columns collapse into real <details> accordions on
+     mobile (desktop keeps them always-open via .footer-col summary above).
+     Target: whole footer under one mobile screen instead of ~2.3. */
+  .footer { padding: 48px 0 20px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 0; padding-bottom: 24px; border-bottom: none; }
+  .footer-brand-col { padding-bottom: 28px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 20px; }
   .footer .brand { font-size: 22px; }
+  .footer-col { border-bottom: 1px solid rgba(255,255,255,0.08); padding: 4px 0; }
+  .footer-col summary {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    margin: 0;
+  }
+  .footer-col summary::after {
+    content: "+";
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 300;
+    color: #7CC9A3;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  .footer-col[open] summary::after { content: "\2013"; }
+  .footer-col ul { padding-bottom: 14px; }
   .footer-col h5 { margin-bottom: 12px; }
   .footer-col li { padding: 4px 0; }
 
@@ -2016,8 +2070,9 @@ img, svg, video, canvas { max-width: 100%; height: auto; }
   .pm-task .tk-title { font-size: 12px; }
   .pm-task .tag { font-size: 9.5px; padding: 1px 6px; }
 
-  .roles-tab .emoji, .roles-tab [data-icon] { display: none; }
-  .roles-tab { padding: 7px 12px; font-size: 12.5px; }
+  .pillar-row-icon { width: 28px; height: 28px; font-size: 11px; }
+  .pillar-row-head span { font-size: 13.5px; }
+  .pillar-role-chip { font-size: 10px; padding: 4px 9px; }
 
   .cta-band { padding: 28px 22px; border-radius: var(--r-lg); }
   .cta-band .cta-side { gap: 10px; }

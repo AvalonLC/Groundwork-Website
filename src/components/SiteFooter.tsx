@@ -1,10 +1,16 @@
 // <SiteFooter /> — recreation of chrome.js renderFooter().
+//
+// Link columns are rendered as <details class="footer-col"> on every
+// viewport. Desktop CSS (>720px) neutralizes the <details>/<summary> box
+// model back into the original always-open column look; only the mobile
+// media query turns them into real collapsing accordions, so a phone
+// visitor sees five one-line headings instead of ~40 stacked links.
 export function SiteFooter() {
   return (
     <footer class="footer" data-screen-label="Footer">
       <div class="wrap">
         <div class="footer-grid">
-          <div>
+          <div class="footer-brand-col">
             <div class="brand">
               <span class="brand-mark"></span> Groundwork
             </div>
@@ -36,8 +42,8 @@ export function SiteFooter() {
               </a>
             </div>
           </div>
-          <div class="footer-col">
-            <h5>Product</h5>
+          <details class="footer-col" open>
+            <summary>Product</summary>
             <ul>
               <li><a href="/product">Overview</a></li>
               <li><a href="/product/my-day">My Day</a></li>
@@ -48,9 +54,9 @@ export function SiteFooter() {
               <li><a href="/product/mobile">Mobile &amp; Field Mode</a></li>
               <li><a href="/features">All features</a></li>
             </ul>
-          </div>
-          <div class="footer-col footer-col-trades">
-            <h5>Trades</h5>
+          </details>
+          <details class="footer-col footer-col-trades">
+            <summary>Trades</summary>
             <div class="footer-trades-cols">
               <ul>
                 <li><a href="/trades/hvac">HVAC</a></li>
@@ -68,9 +74,9 @@ export function SiteFooter() {
                 <li><a href="/trades/landscaping">Landscaping</a></li>
               </ul>
             </div>
-          </div>
-          <div class="footer-col">
-            <h5>Roles</h5>
+          </details>
+          <details class="footer-col">
+            <summary>Roles</summary>
             <ul>
               <li><a href="/roles/owners">Owners</a></li>
               <li><a href="/roles/office-managers">Office managers</a></li>
@@ -78,9 +84,9 @@ export function SiteFooter() {
               <li><a href="/roles/foremen">Foremen</a></li>
               <li><a href="/roles/laborers">Laborers</a></li>
             </ul>
-          </div>
-          <div class="footer-col">
-            <h5>Company</h5>
+          </details>
+          <details class="footer-col">
+            <summary>Company</summary>
             <ul>
               <li><a href="/about">About</a></li>
               <li><a href="/customers">Customers</a></li>
@@ -96,9 +102,9 @@ export function SiteFooter() {
               <li><a href="/signup">Sign up</a></li>
               <li><a href="/login">Log in</a></li>
             </ul>
-          </div>
-          <div class="footer-col">
-            <h5>Resources</h5>
+          </details>
+          <details class="footer-col">
+            <summary>Resources</summary>
             <ul>
               <li><a href="/resources">Resource hub</a></li>
               <li><a href="/resources#academy">Academy</a></li>
@@ -116,7 +122,7 @@ export function SiteFooter() {
                 </a>
               </li>
             </ul>
-          </div>
+          </details>
         </div>
         <div class="footer-bottom">
           <div>© 2026 Groundwork CRM · All rights reserved</div>
