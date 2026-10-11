@@ -22,18 +22,18 @@
     })
   }
 
-  function bindRoleTabs() {
-    var tabs = document.querySelectorAll('.roles-tab')
-    var panels = document.querySelectorAll('[data-role-panel]')
-    if (!tabs.length) return
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        var role = tab.dataset.role
-        tabs.forEach(function (t) {
-          t.classList.toggle('active', t === tab)
-        })
-        panels.forEach(function (p) {
-          p.style.display = p.dataset.rolePanel === role ? 'grid' : 'none'
+  // Platform section pillar rows (<details data-pillar-row>): native
+  // <details> doesn't enforce "only one open at a time" across a group
+  // (no reliable cross-browser `name=` support yet), so close siblings
+  // manually whenever one is opened.
+  function bindPillarRows() {
+    var rows = document.querySelectorAll('[data-pillar-row]')
+    if (!rows.length) return
+    rows.forEach(function (row) {
+      row.addEventListener('toggle', function () {
+        if (!row.open) return
+        rows.forEach(function (other) {
+          if (other !== row) other.open = false
         })
       })
     })
@@ -1341,7 +1341,7 @@
 
   function init() {
     bindMobileMenu()
-    bindRoleTabs()
+    bindPillarRows()
     bindSmoothScroll()
     bindForms()
     bindLiveForms()
