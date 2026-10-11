@@ -2264,11 +2264,49 @@ body.mobile-menu-open { overflow: hidden; }
   .pm-hamburger { display: inline-flex; }
   .pm-tabbar { display: flex; }
 
-  /* .pm-workspace needs room at the bottom for the fixed tab bar, and a
-     taller minimum height than the generic .pm mobile rule gives it so
-     panel content doesn't collide with the bar. */
-  .pm-workspace.pm { min-height: 620px; padding-bottom: 58px; }
-  .pm-workspace .pm-main { padding-bottom: 20px; }
+  /* THE FIX for "changes height per page" / "too much scrolling":
+     the box used to have only a min-height floor, so its on-screen size
+     was whatever each panel's content happened to need — short panels
+     left dead space down to the floor, tall ones (Pipeline's kanban,
+     Work Orders' ring+checklist) grew past it, and the only way to see
+     the rest of a tall panel was to scroll the WHOLE PAGE, past the tab
+     bar and into the next page section. Giving the box a fixed,
+     viewport-relative HEIGHT instead — with its own content scrolling
+     INSIDE it — makes every one of the 21 panels render inside an
+     identical, phone-sized footprint. clamp() keeps it from feeling
+     cramped on short viewports (420px floor) or oversized on tall ones
+     (620px ceiling, matching the old desktop-ish height), with 72dvh as
+     the fluid middle so it tracks the device's actual visible viewport
+     (dvh accounts for the mobile browser's address bar showing/hiding,
+     which plain vh does not). The flat 540px line is a fallback for the
+     handful of older engines that don't understand dvh — they simply
+     ignore the clamp() declaration that follows and keep this value.
+     display:flex replaces the desktop grid here because grid's implicit
+     row sizing fights a fixed container height; it's safe because the
+     sidebar and scrim are both position:absolute (already out of normal
+     flow), leaving PMMain as the only real flex child. */
+  .pm-workspace.pm {
+    display: flex;
+    flex-direction: column;
+    height: 540px;
+    height: clamp(420px, 72dvh, 620px);
+  }
+  .pm-workspace .pm-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0; /* lets this flex child shrink below its content size so demo-panels-wrap's own overflow:auto can actually kick in, instead of growing to fit content like flex items do by default */
+    padding-bottom: 0;
+  }
+  .pm-workspace .pm-topbar,
+  .pm-workspace .demo-search-empty { flex: none; }
+  .pm-workspace .demo-panels-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 70px; /* clears the fixed 58px tab bar so the last bit of a tall panel's content isn't hidden behind it */
+  }
 
   /* The core fix: instead of `.pm-sidebar { display: none }`, the sidebar
      becomes a real slide-in drawer — off-canvas by default, translated
