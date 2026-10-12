@@ -1615,6 +1615,26 @@ h4 { font-size: 18px; font-family: var(--font-sans); font-weight: 600; letter-sp
 }
 .footer-col summary::-webkit-details-marker { display: none; }
 .footer-col summary::after { content: none; }
+/* Browsers hide a <details> element's body when it lacks the `open`
+   attribute; only the "Product" column ships `open` in the markup (so a
+   first-time mobile visitor sees one example expanded). Force the body
+   back on above the mobile breakpoint regardless of the attribute, so
+   every column reads as a plain always-open list on desktop/tablet
+   (the >720px media query below hands this back to the native toggle). */
+@media (min-width: 721px) {
+  /* Root cause (found via Playwright getComputedStyle(el, '::details-content')):
+     Chromium wraps every <details> element's non-summary children in an
+     internal UA box, the ::details-content pseudo-element, and that box
+     itself carries `content-visibility: hidden; height: 0` when the
+     <details> lacks `open` — independent of any display/content-visibility
+     rule applied to the children. Overriding the children (as the previous
+     attempt did) has no effect; the pseudo-element itself must be targeted. */
+  .footer-col::details-content {
+    content-visibility: visible !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
 .footer-bottom {
   padding-top: 32px;
   display: flex;
