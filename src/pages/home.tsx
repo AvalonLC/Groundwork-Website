@@ -664,26 +664,6 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Final CTA */}
-      <section class="section" style="padding: 80px 0 40px;">
-        <div class="wrap" style="text-align: center;">
-          <span class="eyebrow" style="justify-content: center;">
-            Ready when you are
-          </span>
-          <h2 style="margin: 24px auto; max-width: 20ch;">
-            Give your business the operating system it should have had five years ago.
-          </h2>
-          <div style="display: flex; gap: 12px; justify-content: center; margin-top: 32px; flex-wrap: wrap;">
-            <Button href="/demo" variant="primary" arrow>
-              Book a demo
-            </Button>
-            <Button href="/product" variant="secondary">
-              Explore the platform
-            </Button>
-          </div>
-        </div>
-      </section>
     </Layout>
   )
 }
