@@ -49,8 +49,13 @@ import { WhatA3WeekRolloutLooksLikePost } from './pages/blog/what-a-3-week-rollo
 import { TheFollowUpGapPost } from './pages/blog/the-follow-up-gap'
 import { AiAssistedNotAutomatedPost } from './pages/blog/ai-assisted-not-automated'
 import { sendMail, esc, type Bindings } from './lib/sendgrid'
+import { chatRoutes } from './routes/chat'
+import { adminRoutes } from './routes/admin'
+import type { ChatEnvBindings } from './lib/chat/config'
 
-const app = new Hono<{ Bindings: Bindings }>()
+type AppBindings = Bindings & ChatEnvBindings
+
+const app = new Hono<{ Bindings: AppBindings }>()
 
 // Security headers — applied to every response. CSP allowlist is deliberately
 // narrow and hand-matched to this site's actual external resources (checked
@@ -395,6 +400,11 @@ app.get('/solutions/multi-crew-teams', (c) => c.redirect('/multi-crew-ops', 301)
 // Until that migration happens, send visitors to the real, live product.
 app.get('/app', (c) => c.redirect('https://groundwork-crm.com', 301))
 app.get('/workspace', (c) => c.redirect('https://groundwork-crm.com', 301))
+
+// Groundwork AI chat endpoint + internal metrics dashboard. See
+// docs/ai-chatbot-architecture.md and README "Groundwork AI" section.
+app.route('/', chatRoutes)
+app.route('/', adminRoutes)
 
 // Styled 404 — replaces Hono's bare default "404 Not Found" text response
 // for any route that doesn't match one of the app.get()s above (typos, old

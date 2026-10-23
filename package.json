@@ -3,10 +3,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "wrangler pages dev",
+    "build:pricing-bundle": "node scripts/build-pricing-bundle.mjs",
+    "build": "npm run build:pricing-bundle && vite build",
+    "preview": "wrangler pages dev dist --d1=DB --local",
     "deploy": "npm run build && wrangler pages deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:migrate:local": "wrangler d1 migrations apply groundwork-crm-marketing-production --local",
+    "db:migrate:prod": "wrangler d1 migrations apply groundwork-crm-marketing-production",
+    "test": "node --test tests/unit/",
+    "test:chat": "node --test tests/unit/ tests/integration/"
   },
   "dependencies": {
     "hono": "^4.12.30"
@@ -14,6 +19,7 @@
   "devDependencies": {
     "@hono/vite-build": "^1.11.1",
     "@hono/vite-dev-server": "^0.26.1",
+    "esbuild": "^0.25.0",
     "playwright": "^1.61.1",
     "vite": "^8.1.4",
     "wrangler": "^4.110.0"

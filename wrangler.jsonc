@@ -5,27 +5,35 @@
   "pages_build_output_dir": "./dist",
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  // Groundwork AI chat — first D1 database this project has (see
+  // docs/ai-chatbot-architecture.md and migrations/0001_chat_schema.sql).
+  //
+  // IMPORTANT — database_id below is a PLACEHOLDER. `--local` dev/preview
+  // mode (used by this sandbox and `npm run dev:d1`) never calls Cloudflare's
+  // API for D1 — it creates a local SQLite file under .wrangler/state keyed
+  // by the binding name, so the placeholder works fine for local testing.
+  // Before a REAL production deploy, replace database_id with the output of:
+  //   npx wrangler d1 create groundwork-crm-marketing-production
+  // (requires the Cloudflare credentials already configured as GitHub Actions
+  // secrets / in the Deploy panel — see README "Remaining credential
+  // requirements" section for the full list). Then run:
+  //   npx wrangler d1 migrations apply groundwork-crm-marketing-production
+  // before/alongside the next deploy.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "groundwork-crm-marketing-production",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
   ]
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
   // "r2_buckets": [
   //   {
   //     "binding": "MY_BUCKET",
   //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
   //   }
   // ],
   // "ai": {

@@ -178,23 +178,23 @@
       return n
     }
 
+    // The arithmetic itself lives in exactly one place: src/lib/pricing.ts,
+    // compiled to window.GroundworkPricing by scripts/build-pricing-bundle.mjs
+    // (loaded in Layout.tsx before this file). This function only reads the
+    // result and updates the DOM — it must never recompute a price itself,
+    // or the human calculator and Groundwork AI's pricing tool can drift
+    // apart again, which is exactly the bug this refactor removed.
     function recalc() {
       var totalUsers = usersInput ? clampCount(usersInput.value) : 1
-
-      // Company-wide AI add-on: a single flat cost applied once per company,
-      // never multiplied by user count.
       var aiOption = aiSelect ? aiSelect.options[aiSelect.selectedIndex] : null
-      var aiPriceRaw = aiOption ? aiOption.getAttribute('data-price') : '0'
-      var aiPrice = aiPriceRaw === '' || aiPriceRaw == null ? null : parseFloat(aiPriceRaw)
-      var aiLineLabel = aiOption ? aiOption.getAttribute('data-line-label') : 'Included AI'
+      var aiKey = aiOption ? aiOption.value : 'included'
+
+      if (!window.GroundworkPricing) return // bundle failed to load — fail silent, no stale math
 
       results.forEach(function (card) {
-        var basePrice = parseFloat(card.dataset.basePrice)
-        var includedUsers = parseInt(card.dataset.includedUsers, 10) || 1
-        var perUserPrice = parseFloat(card.dataset.perUserPrice)
-
-        var additionalUsers = Math.max(0, totalUsers - includedUsers)
-        var additionalUsersCost = additionalUsers * perUserPrice
+        var planKey = card.dataset.calcPlan
+        var result = window.GroundworkPricing.calculatePricing(planKey, totalUsers, aiKey)
+        if (!result.ok) return
 
         var baseLineEl = card.querySelector('[data-calc-base-line]')
         var usersLineEl = card.querySelector('[data-calc-users-line]')
@@ -203,30 +203,30 @@
         var totalEl = card.querySelector('[data-calc-total]')
         var noteEl = card.querySelector('[data-calc-note]')
 
-        if (baseLineEl) baseLineEl.textContent = '$' + Math.round(basePrice).toLocaleString() + '/mo'
+        if (baseLineEl) baseLineEl.textContent = '$' + Math.round(result.basePrice).toLocaleString() + '/mo'
         if (usersLineEl) {
           usersLineEl.textContent =
-            additionalUsers > 0 ? '$' + Math.round(additionalUsersCost).toLocaleString() + '/mo' : '$0/mo'
+            result.additionalUsers > 0 ? '$' + Math.round(result.additionalUsersCost).toLocaleString() + '/mo' : '$0/mo'
         }
-        if (aiLineLabelEl && aiLineLabel) aiLineLabelEl.textContent = aiLineLabel
+        if (aiLineLabelEl) aiLineLabelEl.textContent = result.aiPackageLabel
 
-        // Base platform fee + additional users + AI add-ons = estimated total.
-        var grandTotal = basePrice + additionalUsersCost
-        if (aiPrice === null) {
-          // "Custom" AI package — price unknown, always shown as its own line.
+        if (result.isCustomAi) {
           if (aiLineEl) aiLineEl.textContent = 'Contact sales'
         } else {
-          grandTotal += aiPrice
-          if (aiLineEl) aiLineEl.textContent = '$' + Math.round(aiPrice).toLocaleString() + '/mo'
+          if (aiLineEl) aiLineEl.textContent = '$' + Math.round(result.aiPrice).toLocaleString() + '/mo'
         }
 
-        if (totalEl) totalEl.textContent = '$' + Math.round(grandTotal).toLocaleString() + (aiPrice === null ? ' + AI' : '')
+        if (totalEl) {
+          totalEl.textContent = result.isCustomAi
+            ? '$' + Math.round(result.basePrice + result.additionalUsersCost).toLocaleString() + ' + AI'
+            : '$' + Math.round(result.grandTotal).toLocaleString()
+        }
 
         if (noteEl) {
-          if (additionalUsers === 0) {
-            noteEl.textContent = includedUsers + ' user' + (includedUsers === 1 ? '' : 's') + ' included · no additional users'
+          if (result.additionalUsers === 0) {
+            noteEl.textContent = result.includedUsers + ' user' + (result.includedUsers === 1 ? '' : 's') + ' included · no additional users'
           } else {
-            noteEl.textContent = totalUsers + ' users total · ' + includedUsers + ' included + ' + additionalUsers + ' additional user' + (additionalUsers === 1 ? '' : 's') + ' at $' + Math.round(perUserPrice) + '/mo each'
+            noteEl.textContent = result.totalUsers + ' users total · ' + result.includedUsers + ' included + ' + result.additionalUsers + ' additional user' + (result.additionalUsers === 1 ? '' : 's') + ' at $' + Math.round(result.perUserPrice) + '/mo each'
           }
         }
       })

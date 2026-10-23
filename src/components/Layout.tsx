@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from 'hono/jsx'
 import { SiteNav } from './SiteNav'
 import { SiteFooter } from './SiteFooter'
+import { ChatWidget } from './ChatWidget'
 
 interface LayoutProps {
   title: string
@@ -115,7 +116,14 @@ export function Layout({ title, description, path, structuredData, children }: P
         <SiteNav path={path} />
         {children}
         <SiteFooter />
+        <ChatWidget path={path} />
+        {/* Pricing math — compiled from src/lib/pricing.ts (see that file's
+            header comment). Loaded before site.js so bindPricingCalculator()
+            and Groundwork AI's chat widget can both read window.GroundworkPricing
+            without recomputing the formula themselves. */}
+        <script src="/static/pricing.js"></script>
         <script src="/static/site.js"></script>
+        <script src="/static/chat-widget.js"></script>
       </body>
     </html>
   )

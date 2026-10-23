@@ -6,42 +6,12 @@
 // Customer-portal / external users are free and are never counted here. The
 // AI add-on axis is untouched and priced per-company, layered on as its own
 // line item.
-
-interface CalcPlan {
-  key: string
-  name: string
-  basePrice: number
-  includedUsers: number
-  perUserPrice: number
-  badge?: string
-}
-
-interface AiPackage {
-  key: string
-  label: string
-  optionText: string
-  price: number | null // null = not a fixed number (Custom / contact sales)
-  lineLabel: string // shown in the per-plan AI line item
-}
-
-const CALC_PLANS: CalcPlan[] = [
-  { key: 'core', name: 'Core', basePrice: 259, includedUsers: 1, perUserPrice: 25 },
-  { key: 'growth', name: 'Growth', basePrice: 359, includedUsers: 5, perUserPrice: 25, badge: 'Most popular' },
-  { key: 'pro', name: 'Pro', basePrice: 459, includedUsers: 10, perUserPrice: 25 },
-]
-
-// Company-wide AI add-on, priced flat per company (never multiplied by user
-// count). "Included" is the $0 default that every plan already ships with;
-// the rest are optional packages layered on top. Mirrors the dedicated
-// Groundwork AI section below the calculator — this axis is unchanged.
-const AI_PACKAGES: AiPackage[] = [
-  { key: 'included', label: 'Included AI', optionText: 'Included AI — $0/mo (plan allowance)', price: 0, lineLabel: 'Included AI' },
-  { key: 'essentials', label: 'AI Essentials', optionText: 'AI Essentials — $12/mo (500 actions)', price: 12, lineLabel: 'AI Essentials' },
-  { key: 'plus', label: 'AI Plus', optionText: 'AI Plus — $29/mo (1,500 actions)', price: 29, lineLabel: 'AI Plus' },
-  { key: 'max', label: 'AI Max', optionText: 'AI Max — $59/mo (5,000 actions)', price: 59, lineLabel: 'AI Max' },
-  { key: 'byok', label: 'Use my own API key', optionText: 'Use my own API key — $0 Groundwork charge', price: 0, lineLabel: 'Your API key (BYOK)' },
-  { key: 'custom', label: 'Custom', optionText: 'Custom — contact sales', price: null, lineLabel: 'Custom' },
-]
+//
+// Constants moved to src/lib/pricing.ts — this is now the ONLY place they're
+// defined. site.js's recalc() and Groundwork AI's get_pricing_estimate tool
+// both consume the same module (see src/lib/pricing.ts header comment for
+// how site.js gets a compiled copy of the math itself, not just the data).
+import { CALC_PLANS, AI_PACKAGES } from '../lib/pricing'
 
 export function PricingCalculator() {
   return (
