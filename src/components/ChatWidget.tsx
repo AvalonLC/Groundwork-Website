@@ -45,9 +45,15 @@ export function ChatWidget({ path }: ChatWidgetProps) {
             <Icon name="sparkle" size={16} style="color: var(--gw-green-500);" />
             <span id="gw-chat-title">Groundwork AI</span>
           </div>
-          <button type="button" class="gw-chat-close" data-gw-chat-close aria-label="Close chat">
-            <Icon name="x" size={16} />
-          </button>
+          <div class="gw-chat-header-actions">
+            <a class="gw-chat-header-human" href="/demo" data-gw-chat-human-shortcut>
+              <Icon name="user" size={13} />
+              Talk to a human
+            </a>
+            <button type="button" class="gw-chat-close" data-gw-chat-close aria-label="Close chat">
+              <Icon name="x" size={16} />
+            </button>
+          </div>
         </div>
 
         <div class="gw-chat-disclosure">
@@ -61,6 +67,7 @@ export function ChatWidget({ path }: ChatWidgetProps) {
             Hi — I'm Groundwork AI. What's the main thing you're trying to figure out: pricing, a specific feature, or
             whether Groundwork fits your trade?
           </div>
+          <div class="gw-chat-quickreplies" data-gw-chat-quickreplies></div>
         </div>
 
         <div class="gw-chat-status" data-gw-chat-status hidden aria-live="polite"></div>

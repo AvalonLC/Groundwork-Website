@@ -23,8 +23,15 @@ var GroundworkPricing = (() => {
   __export(pricing_exports, {
     AI_PACKAGES: () => AI_PACKAGES,
     CALC_PLANS: () => CALC_PLANS,
+    PLAN_ADDED_FEATURES: () => PLAN_ADDED_FEATURES,
+    PLAN_AI_ALLOWANCE: () => PLAN_AI_ALLOWANCE,
+    PLAN_TIER_ORDER: () => PLAN_TIER_ORDER,
+    ROI_DEFAULT_HOURLY_COST_USD: () => ROI_DEFAULT_HOURLY_COST_USD,
+    ROI_TIME_SAVINGS_FRACTION: () => ROI_TIME_SAVINGS_FRACTION,
     calculatePricing: () => calculatePricing,
+    calculateRoi: () => calculateRoi,
     clampUserCount: () => clampUserCount,
+    comparePlans: () => comparePlans,
     getAiPackage: () => getAiPackage,
     getPlan: () => getPlan
   });
@@ -51,6 +58,125 @@ var GroundworkPricing = (() => {
   }
   function getAiPackage(aiKey) {
     return AI_PACKAGES.find((a) => a.key === aiKey);
+  }
+  var PLAN_TIER_ORDER = ["core", "growth", "pro"];
+  var PLAN_ADDED_FEATURES = {
+    core: [
+      "Pipeline, Leads, Clients & Properties",
+      "Estimates & proposals",
+      "Communications & templates",
+      "Schedule Board & Dispatch",
+      "Work Orders & Time Tracker",
+      "Invoices & Payments",
+      "Field Mode (mobile) & After Action Reports"
+    ],
+    growth: [
+      "Business Pulse, Money Loop & Operations Snapshot",
+      "Budget & Rates \u2014 burdened labor & equipment costing",
+      "Recurring services & asset/maintenance tracking",
+      "Deposits & statements",
+      "Approval queue",
+      "Academy \u2014 role-based training"
+    ],
+    pro: [
+      "Automation Center & workflow builder",
+      "Audit log",
+      "Client Portal \u2014 invite, activity log, preview as client",
+      "Groundwork AI Coach \u2014 owner-level at-risk deal alerts",
+      "System config, custom templates & AAR question builder",
+      "SSO / SAML",
+      "API access",
+      "Dedicated success manager",
+      "Bring your own OpenAI API key available"
+    ]
+  };
+  var PLAN_AI_ALLOWANCE = {
+    core: "100 AI actions/mo included",
+    growth: "250 AI actions/mo included",
+    pro: "500 AI actions/mo included"
+  };
+  function comparePlans(planKeyA, planKeyB) {
+    const planA = getPlan(planKeyA);
+    if (!planA) return { ok: false, error: `Unknown plan "${planKeyA}". Valid plans: ${CALC_PLANS.map((p) => p.key).join(", ")}.` };
+    const planB = getPlan(planKeyB);
+    if (!planB) return { ok: false, error: `Unknown plan "${planKeyB}". Valid plans: ${CALC_PLANS.map((p) => p.key).join(", ")}.` };
+    if (planA.key === planB.key) {
+      return { ok: false, error: "Pick two different plans to compare." };
+    }
+    const idxA = PLAN_TIER_ORDER.indexOf(planA.key);
+    const idxB = PLAN_TIER_ORDER.indexOf(planB.key);
+    const [lowIdx, highIdx] = idxA < idxB ? [idxA, idxB] : [idxB, idxA];
+    const addedGoingUp = [];
+    for (let i = lowIdx + 1; i <= highIdx; i++) {
+      addedGoingUp.push(...PLAN_ADDED_FEATURES[PLAN_TIER_ORDER[i]]);
+    }
+    const onlyInB = idxA < idxB ? addedGoingUp : [];
+    const onlyInA = idxA > idxB ? addedGoingUp : [];
+    const toSide = (p) => {
+      var _a;
+      return {
+        key: p.key,
+        name: p.name,
+        basePrice: p.basePrice,
+        includedUsers: p.includedUsers,
+        perUserPrice: p.perUserPrice,
+        aiAllowance: (_a = PLAN_AI_ALLOWANCE[p.key]) != null ? _a : "See plan details"
+      };
+    };
+    return {
+      ok: true,
+      planA: toSide(planA),
+      planB: toSide(planB),
+      onlyInB,
+      onlyInA,
+      assumptions: [
+        `${planA.name}: $${planA.basePrice}/mo base, includes ${planA.includedUsers} user${planA.includedUsers === 1 ? "" : "s"}, then $${planA.perUserPrice}/mo per additional user.`,
+        `${planB.name}: $${planB.basePrice}/mo base, includes ${planB.includedUsers} user${planB.includedUsers === 1 ? "" : "s"}, then $${planB.perUserPrice}/mo per additional user.`,
+        "Base prices shown here exclude any optional AI add-on package and any additional-user cost beyond what\u2019s included \u2014 use get_pricing_estimate for an exact total at a specific team size."
+      ]
+    };
+  }
+  var ROI_TIME_SAVINGS_FRACTION = 0.3;
+  var ROI_DEFAULT_HOURLY_COST_USD = 35;
+  var WEEKS_PER_MONTH = 4.33;
+  function calculateRoi(adminHoursPerWeekInput, hourlyCostUsdInput, planKey, totalUsersInput, aiPackageKey) {
+    if (!Number.isFinite(adminHoursPerWeekInput) || adminHoursPerWeekInput < 0) {
+      return { ok: false, error: 'Field "admin_hours_per_week" must be a non-negative number.' };
+    }
+    const adminHoursPerWeek = Math.min(adminHoursPerWeekInput, 168);
+    const hourlyCostUsd = Number.isFinite(hourlyCostUsdInput) && hourlyCostUsdInput > 0 ? hourlyCostUsdInput : ROI_DEFAULT_HOURLY_COST_USD;
+    const hoursSavedPerWeek = adminHoursPerWeek * ROI_TIME_SAVINGS_FRACTION;
+    const hoursSavedPerMonth = hoursSavedPerWeek * WEEKS_PER_MONTH;
+    const dollarsSavedPerMonth = hoursSavedPerMonth * hourlyCostUsd;
+    const assumptions = [
+      `Estimate assumes ~${Math.round(ROI_TIME_SAVINGS_FRACTION * 100)}% of current admin/scheduling/invoicing time is reclaimed by consolidating into one system \u2014 a planning estimate, not a guarantee, and it will vary by business.`,
+      `Based on ${adminHoursPerWeek} admin hour${adminHoursPerWeek === 1 ? "" : "s"}/week today at an assumed $${hourlyCostUsd}/hr loaded cost${Number.isFinite(hourlyCostUsdInput) && hourlyCostUsdInput > 0 ? "" : " (default \u2014 tell me your real number for a more accurate estimate)"}.`
+    ];
+    let subscriptionCostUsd = null;
+    let netMonthlyValueUsd = null;
+    if (planKey) {
+      const totalUsers = Number.isFinite(totalUsersInput) ? totalUsersInput : 1;
+      const pricing = calculatePricing(planKey, totalUsers, aiPackageKey || "included");
+      if (!pricing.ok) return pricing;
+      if (pricing.grandTotal !== null) {
+        subscriptionCostUsd = pricing.grandTotal;
+        netMonthlyValueUsd = dollarsSavedPerMonth - subscriptionCostUsd;
+        assumptions.push(`Compared against the ${pricing.planName} plan at $${pricing.grandTotal}/mo (see get_pricing_estimate for the full breakdown).`);
+      } else {
+        assumptions.push(`${pricing.planName} plan with a Custom AI package has no fixed number to net against \u2014 contact sales for that quote.`);
+      }
+    }
+    return {
+      ok: true,
+      adminHoursPerWeek,
+      hourlyCostUsd,
+      hoursSavedPerWeek: Math.round(hoursSavedPerWeek * 10) / 10,
+      hoursSavedPerMonth: Math.round(hoursSavedPerMonth * 10) / 10,
+      dollarsSavedPerMonth: Math.round(dollarsSavedPerMonth),
+      subscriptionCostUsd,
+      netMonthlyValueUsd: netMonthlyValueUsd !== null ? Math.round(netMonthlyValueUsd) : null,
+      assumptions
+    };
   }
   function calculatePricing(planKey, totalUsersInput, aiPackageKey) {
     const plan = getPlan(planKey);

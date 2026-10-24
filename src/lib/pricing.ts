@@ -90,6 +90,199 @@ export interface PricingError {
   error: string
 }
 
+// --- Plan comparison (compare_plans tool) ---------------------------------
+// Hand-curated, mirrors the feature lists on /pricing (src/pages/pricing.tsx).
+// This is NOT pricing math — it's descriptive feature-differentiator text,
+// same "hand-maintained, not re-derived" pattern as src/data/ai-knowledge.ts.
+// Kept here (not duplicated in pricing.tsx) so both the human-facing page
+// and the chat tool can eventually read from one place if pricing.tsx is
+// refactored to import it; for now it's a deliberately separate, bounded
+// summary — if /pricing's feature lists change, update PLAN_ADDED_FEATURES
+// to match.
+
+export const PLAN_TIER_ORDER = ['core', 'growth', 'pro'] as const
+
+// Features ADDED at each tier, over the tier below it (Enterprise is
+// intentionally excluded — it's "contact sales" custom pricing, not in
+// CALC_PLANS, and comparisons against it would require a number we don't have).
+export const PLAN_ADDED_FEATURES: Record<string, string[]> = {
+  core: [
+    'Pipeline, Leads, Clients & Properties',
+    'Estimates & proposals',
+    'Communications & templates',
+    'Schedule Board & Dispatch',
+    'Work Orders & Time Tracker',
+    'Invoices & Payments',
+    'Field Mode (mobile) & After Action Reports',
+  ],
+  growth: [
+    'Business Pulse, Money Loop & Operations Snapshot',
+    'Budget & Rates — burdened labor & equipment costing',
+    'Recurring services & asset/maintenance tracking',
+    'Deposits & statements',
+    'Approval queue',
+    'Academy — role-based training',
+  ],
+  pro: [
+    'Automation Center & workflow builder',
+    'Audit log',
+    'Client Portal — invite, activity log, preview as client',
+    'Groundwork AI Coach — owner-level at-risk deal alerts',
+    'System config, custom templates & AAR question builder',
+    'SSO / SAML',
+    'API access',
+    'Dedicated success manager',
+    'Bring your own OpenAI API key available',
+  ],
+}
+
+export const PLAN_AI_ALLOWANCE: Record<string, string> = {
+  core: '100 AI actions/mo included',
+  growth: '250 AI actions/mo included',
+  pro: '500 AI actions/mo included',
+}
+
+export interface PlanComparisonSide {
+  key: string
+  name: string
+  basePrice: number
+  includedUsers: number
+  perUserPrice: number
+  aiAllowance: string
+}
+
+export interface PlanComparisonResult {
+  ok: true
+  planA: PlanComparisonSide
+  planB: PlanComparisonSide
+  /** Features plan B has that plan A does not (empty if A is the higher tier). */
+  onlyInB: string[]
+  /** Features plan A has that plan B does not (empty if B is the higher tier). */
+  onlyInA: string[]
+  assumptions: string[]
+}
+
+export function comparePlans(planKeyA: string, planKeyB: string): PlanComparisonResult | PricingError {
+  const planA = getPlan(planKeyA)
+  if (!planA) return { ok: false, error: `Unknown plan "${planKeyA}". Valid plans: ${CALC_PLANS.map((p) => p.key).join(', ')}.` }
+  const planB = getPlan(planKeyB)
+  if (!planB) return { ok: false, error: `Unknown plan "${planKeyB}". Valid plans: ${CALC_PLANS.map((p) => p.key).join(', ')}.` }
+  if (planA.key === planB.key) {
+    return { ok: false, error: 'Pick two different plans to compare.' }
+  }
+
+  const idxA = PLAN_TIER_ORDER.indexOf(planA.key as (typeof PLAN_TIER_ORDER)[number])
+  const idxB = PLAN_TIER_ORDER.indexOf(planB.key as (typeof PLAN_TIER_ORDER)[number])
+  const [lowIdx, highIdx] = idxA < idxB ? [idxA, idxB] : [idxB, idxA]
+  const addedGoingUp: string[] = []
+  for (let i = lowIdx + 1; i <= highIdx; i++) {
+    addedGoingUp.push(...PLAN_ADDED_FEATURES[PLAN_TIER_ORDER[i]])
+  }
+  const onlyInB = idxA < idxB ? addedGoingUp : []
+  const onlyInA = idxA > idxB ? addedGoingUp : []
+
+  const toSide = (p: CalcPlan): PlanComparisonSide => ({
+    key: p.key,
+    name: p.name,
+    basePrice: p.basePrice,
+    includedUsers: p.includedUsers,
+    perUserPrice: p.perUserPrice,
+    aiAllowance: PLAN_AI_ALLOWANCE[p.key] ?? 'See plan details',
+  })
+
+  return {
+    ok: true,
+    planA: toSide(planA),
+    planB: toSide(planB),
+    onlyInB,
+    onlyInA,
+    assumptions: [
+      `${planA.name}: $${planA.basePrice}/mo base, includes ${planA.includedUsers} user${planA.includedUsers === 1 ? '' : 's'}, then $${planA.perUserPrice}/mo per additional user.`,
+      `${planB.name}: $${planB.basePrice}/mo base, includes ${planB.includedUsers} user${planB.includedUsers === 1 ? '' : 's'}, then $${planB.perUserPrice}/mo per additional user.`,
+      'Base prices shown here exclude any optional AI add-on package and any additional-user cost beyond what\u2019s included — use get_pricing_estimate for an exact total at a specific team size.',
+    ],
+  }
+}
+
+// --- ROI estimate (calculate_roi tool) ------------------------------------
+// A deliberately conservative, clearly-labeled ESTIMATE of admin time saved
+// by consolidating scheduling/invoicing/follow-up into one system — NOT a
+// guarantee, and never presented as one (assumptions array always ships
+// alongside the number, same pattern as calculatePricing).
+
+/** Estimated share of admin/scheduling/invoicing time reclaimed by
+ * consolidating previously-separate tools into one system. Intentionally
+ * conservative and the SAME figure across all plans/trades — we have no
+ * per-customer measured data to vary it by, so varying it would be guessing,
+ * not estimating. */
+export const ROI_TIME_SAVINGS_FRACTION = 0.3
+export const ROI_DEFAULT_HOURLY_COST_USD = 35
+const WEEKS_PER_MONTH = 4.33
+
+export interface RoiResult {
+  ok: true
+  adminHoursPerWeek: number
+  hourlyCostUsd: number
+  hoursSavedPerWeek: number
+  hoursSavedPerMonth: number
+  dollarsSavedPerMonth: number
+  /** Present only when a plan was supplied. */
+  subscriptionCostUsd: number | null
+  /** dollarsSavedPerMonth - subscriptionCostUsd, only when subscriptionCostUsd is known. */
+  netMonthlyValueUsd: number | null
+  assumptions: string[]
+}
+
+export function calculateRoi(
+  adminHoursPerWeekInput: number,
+  hourlyCostUsdInput?: number | null,
+  planKey?: string | null,
+  totalUsersInput?: number | null,
+  aiPackageKey?: string | null
+): RoiResult | PricingError {
+  if (!Number.isFinite(adminHoursPerWeekInput) || adminHoursPerWeekInput < 0) {
+    return { ok: false, error: 'Field "admin_hours_per_week" must be a non-negative number.' }
+  }
+  const adminHoursPerWeek = Math.min(adminHoursPerWeekInput, 168)
+  const hourlyCostUsd = Number.isFinite(hourlyCostUsdInput) && (hourlyCostUsdInput as number) > 0 ? (hourlyCostUsdInput as number) : ROI_DEFAULT_HOURLY_COST_USD
+
+  const hoursSavedPerWeek = adminHoursPerWeek * ROI_TIME_SAVINGS_FRACTION
+  const hoursSavedPerMonth = hoursSavedPerWeek * WEEKS_PER_MONTH
+  const dollarsSavedPerMonth = hoursSavedPerMonth * hourlyCostUsd
+
+  const assumptions: string[] = [
+    `Estimate assumes ~${Math.round(ROI_TIME_SAVINGS_FRACTION * 100)}% of current admin/scheduling/invoicing time is reclaimed by consolidating into one system — a planning estimate, not a guarantee, and it will vary by business.`,
+    `Based on ${adminHoursPerWeek} admin hour${adminHoursPerWeek === 1 ? '' : 's'}/week today at an assumed $${hourlyCostUsd}/hr loaded cost${Number.isFinite(hourlyCostUsdInput) && (hourlyCostUsdInput as number) > 0 ? '' : ' (default — tell me your real number for a more accurate estimate)'}.`,
+  ]
+
+  let subscriptionCostUsd: number | null = null
+  let netMonthlyValueUsd: number | null = null
+  if (planKey) {
+    const totalUsers = Number.isFinite(totalUsersInput) ? (totalUsersInput as number) : 1
+    const pricing = calculatePricing(planKey, totalUsers, aiPackageKey || 'included')
+    if (!pricing.ok) return pricing
+    if (pricing.grandTotal !== null) {
+      subscriptionCostUsd = pricing.grandTotal
+      netMonthlyValueUsd = dollarsSavedPerMonth - subscriptionCostUsd
+      assumptions.push(`Compared against the ${pricing.planName} plan at $${pricing.grandTotal}/mo (see get_pricing_estimate for the full breakdown).`)
+    } else {
+      assumptions.push(`${pricing.planName} plan with a Custom AI package has no fixed number to net against — contact sales for that quote.`)
+    }
+  }
+
+  return {
+    ok: true,
+    adminHoursPerWeek,
+    hourlyCostUsd,
+    hoursSavedPerWeek: Math.round(hoursSavedPerWeek * 10) / 10,
+    hoursSavedPerMonth: Math.round(hoursSavedPerMonth * 10) / 10,
+    dollarsSavedPerMonth: Math.round(dollarsSavedPerMonth),
+    subscriptionCostUsd,
+    netMonthlyValueUsd: netMonthlyValueUsd !== null ? Math.round(netMonthlyValueUsd) : null,
+    assumptions,
+  }
+}
+
 export function calculatePricing(planKey: string, totalUsersInput: number, aiPackageKey: string): PricingResult | PricingError {
   const plan = getPlan(planKey)
   if (!plan) {

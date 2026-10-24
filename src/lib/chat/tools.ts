@@ -9,7 +9,7 @@
 import type { ToolDefinition } from './provider'
 import type { ChatEnvBindings } from './config'
 import { LEAD_FIELD_MAX_LENGTHS, MAX_CHAT_EMAILS_PER_DAY } from './config'
-import { calculatePricing, CALC_PLANS, AI_PACKAGES } from '../pricing'
+import { calculatePricing, comparePlans, calculateRoi, CALC_PLANS, AI_PACKAGES } from '../pricing'
 import { TRADES, getTradeBySlug } from '../../data/trades'
 import { DEMO_PANELS, isAllowedUrl } from '../../data/ai-knowledge'
 import { sendMail, esc } from '../sendgrid'
@@ -43,6 +43,43 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
           ai_package: { type: 'string', enum: AI_PACKAGES.map((a) => a.key), description: 'Which Groundwork AI add-on package' },
         },
         required: ['plan', 'team_size', 'ai_package'],
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'compare_plans',
+      description:
+        "Compare two Groundwork plans side by side — base price, included users, and the real feature differences between them. Use this when a visitor asks what's different between two plans (e.g. \"what's the difference between Growth and Pro\") instead of describing it from memory.",
+      parameters: {
+        type: 'object',
+        properties: {
+          plan_a: { type: 'string', enum: CALC_PLANS.map((p) => p.key), description: 'First plan to compare' },
+          plan_b: { type: 'string', enum: CALC_PLANS.map((p) => p.key), description: 'Second plan to compare' },
+        },
+        required: ['plan_a', 'plan_b'],
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'calculate_roi',
+      description:
+        "Estimate time and cost savings from consolidating admin/scheduling/invoicing work into Groundwork. ALWAYS use this instead of estimating savings from memory — it returns the exact math, clearly labeled as an estimate. Ask the visitor how many hours a week they (or their office) currently spend on admin/scheduling/invoicing before calling this.",
+      parameters: {
+        type: 'object',
+        properties: {
+          admin_hours_per_week: { type: 'number', minimum: 0, maximum: 168, description: 'Current hours per week spent on admin, scheduling, dispatch, and invoicing' },
+          hourly_cost_usd: { type: 'number', minimum: 1, description: 'Optional — loaded hourly cost of the person(s) doing that admin work. Defaults to a conservative $35/hr if not given.' },
+          plan: { type: 'string', enum: CALC_PLANS.map((p) => p.key), description: 'Optional — a plan to net the savings against for a real monthly value number' },
+          team_size: { type: 'integer', minimum: 1, maximum: 999, description: 'Optional — only used if "plan" is given, to compute that plan\'s cost' },
+          ai_package: { type: 'string', enum: AI_PACKAGES.map((a) => a.key), description: 'Optional — only used if "plan" is given' },
+        },
+        required: ['admin_hours_per_week'],
         additionalProperties: false,
       },
     },
@@ -168,6 +205,10 @@ export async function executeTool(name: string, rawArgs: string, ctx: ToolExecut
     switch (name) {
       case 'get_pricing_estimate':
         return execGetPricingEstimate(args)
+      case 'compare_plans':
+        return execComparePlans(args)
+      case 'calculate_roi':
+        return execCalculateRoi(args)
       case 'recommend_trade_page':
         return execRecommendTradePage(args)
       case 'jump_to_demo_panel':
@@ -192,6 +233,27 @@ function execGetPricingEstimate(args: Record<string, unknown>): ToolResult {
     throw new ToolValidationError('Field "team_size" must be a number')
   }
   const result = calculatePricing(args.plan as string, args.team_size as number, args.ai_package as string)
+  if (!result.ok) return { ok: false, error: result.error }
+  return { ok: true, data: result as unknown as Record<string, unknown> }
+}
+
+function execComparePlans(args: Record<string, unknown>): ToolResult {
+  assertType(args.plan_a, 'string', 'plan_a')
+  assertType(args.plan_b, 'string', 'plan_b')
+  const result = comparePlans(args.plan_a as string, args.plan_b as string)
+  if (!result.ok) return { ok: false, error: result.error }
+  return { ok: true, data: result as unknown as Record<string, unknown> }
+}
+
+function execCalculateRoi(args: Record<string, unknown>): ToolResult {
+  if (typeof args.admin_hours_per_week !== 'number' || !Number.isFinite(args.admin_hours_per_week)) {
+    throw new ToolValidationError('Field "admin_hours_per_week" must be a number')
+  }
+  const hourlyCost = typeof args.hourly_cost_usd === 'number' && Number.isFinite(args.hourly_cost_usd) ? args.hourly_cost_usd : null
+  const plan = typeof args.plan === 'string' ? args.plan : null
+  const teamSize = typeof args.team_size === 'number' && Number.isFinite(args.team_size) ? args.team_size : null
+  const aiPackage = typeof args.ai_package === 'string' ? args.ai_package : null
+  const result = calculateRoi(args.admin_hours_per_week, hourlyCost, plan, teamSize, aiPackage)
   if (!result.ok) return { ok: false, error: result.error }
   return { ok: true, data: result as unknown as Record<string, unknown> }
 }

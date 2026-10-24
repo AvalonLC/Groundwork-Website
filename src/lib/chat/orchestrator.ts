@@ -20,6 +20,9 @@ export interface OrchestratorResult {
   totalCostUsd: number
   toolCallCount: number
   hitLoopLimit: boolean
+  /** D1 row id of the assistant's final message this turn — used by the
+   * frontend to submit a thumbs up/down rating against this specific reply. */
+  assistantMessageId: number
 }
 
 function rowsToModelMessages(rows: ChatMessageRow[]): ChatMessageForModel[] {
@@ -73,8 +76,8 @@ export async function runChatTurn(
           events.onToken(word + ' ')
         }
       }
-      await insertMessage(env.DB, sessionId, 'assistant', finalText)
-      return { finalText, totalCostUsd: totalCost, toolCallCount, hitLoopLimit }
+      const assistantMessageId = await insertMessage(env.DB, sessionId, 'assistant', finalText)
+      return { finalText, totalCostUsd: totalCost, toolCallCount, hitLoopLimit, assistantMessageId }
     }
 
     // Append the assistant's tool-call message, then each tool result.
@@ -119,6 +122,6 @@ export async function runChatTurn(
   hitLoopLimit = true
   const fallback = "I've gathered a few things here — let me simplify: would you like me to connect you with the team directly, or point you to a specific page?"
   events.onToken?.(fallback)
-  await insertMessage(env.DB, sessionId, 'assistant', fallback)
-  return { finalText: fallback, totalCostUsd: totalCost, toolCallCount, hitLoopLimit }
+  const assistantMessageId = await insertMessage(env.DB, sessionId, 'assistant', fallback)
+  return { finalText: fallback, totalCostUsd: totalCost, toolCallCount, hitLoopLimit, assistantMessageId }
 }

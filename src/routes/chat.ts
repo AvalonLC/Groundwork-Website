@@ -14,7 +14,7 @@ import {
 import { createProvider } from '../lib/chat/provider'
 import { runChatTurn } from '../lib/chat/orchestrator'
 import { tryReserveBudget, commitBudget } from '../lib/chat/budget'
-import { ensureSession, touchSessionMessageCount, checkAndIncrementRateLimit, logEvent } from '../lib/chat/db'
+import { ensureSession, touchSessionMessageCount, checkAndIncrementRateLimit, logEvent, rateMessage } from '../lib/chat/db'
 import { isAllowedUrl } from '../data/ai-knowledge'
 
 export const chatRoutes = new Hono<{ Bindings: ChatEnvBindings }>()
@@ -116,7 +116,7 @@ chatRoutes.post('/api/chat', async (c) => {
       actualCost = result.totalCostUsd
       await touchSessionMessageCount(env.DB, sessionId)
       await logEvent(env.DB, sessionId, 'message_sent', { toolCallCount: result.toolCallCount, hitLoopLimit: result.hitLoopLimit })
-      await stream.writeSSE({ event: 'done', data: JSON.stringify({ ok: true }) })
+      await stream.writeSSE({ event: 'done', data: JSON.stringify({ ok: true, messageId: result.assistantMessageId }) })
     } catch (err) {
       console.error('Groundwork AI chat turn failed', err)
       await logEvent(env.DB, sessionId, 'tool_error', { error: err instanceof Error ? err.message : String(err) })
@@ -128,4 +128,40 @@ chatRoutes.post('/api/chat', async (c) => {
       await commitBudget(env, reservation.reservedUsd, actualCost)
     }
   })
+})
+
+// Lightweight thumbs up/down rating for a specific assistant reply
+// (requirement: "measurement" — quality signal beyond lead conversion).
+// Does NOT touch the AI budget or tool loop; a tiny, idempotent D1 write.
+chatRoutes.post('/api/chat/rate', async (c) => {
+  const { env } = c
+  let body: Record<string, unknown>
+  try {
+    body = await c.req.json()
+  } catch {
+    return c.json({ ok: false, error: 'Invalid request body' }, 400)
+  }
+
+  const sessionId = body.sessionId
+  const messageId = body.messageId
+  const rating = body.rating
+
+  if (!isValidSessionId(sessionId)) {
+    return c.json({ ok: false, error: 'Missing or invalid sessionId' }, 400)
+  }
+  if (typeof messageId !== 'number' || !Number.isInteger(messageId) || messageId <= 0) {
+    return c.json({ ok: false, error: 'Missing or invalid messageId' }, 400)
+  }
+  if (rating !== 'up' && rating !== 'down') {
+    return c.json({ ok: false, error: 'rating must be "up" or "down"' }, 400)
+  }
+
+  const result = await rateMessage(env.DB, sessionId, messageId, rating)
+  if (!result.ok) {
+    return c.json({ ok: false, error: 'Message not found for this session' }, 404)
+  }
+  if (!result.wasAlreadyRated) {
+    await logEvent(env.DB, sessionId, 'response_rated', { messageId, rating })
+  }
+  return c.json({ ok: true })
 })

@@ -238,6 +238,34 @@ export class MockProvider implements ChatProvider {
       }
     }
 
+    if (hasTool('compare_plans') && /compare|difference between|vs\.?\s|versus|which plan/.test(text)) {
+      const plans = text.match(/core|growth|pro/g) || []
+      const planA = plans[0] || 'growth'
+      const planB = plans[1] || (planA === 'growth' ? 'pro' : 'growth')
+      return {
+        content: null,
+        toolCalls: [{ id: 'mock-call-compare-1', name: 'compare_plans', arguments: JSON.stringify({ plan_a: planA, plan_b: planB }) }],
+        usage: { promptTokens: 110, completionTokens: 25 },
+        estimatedCostUsd: 0.001,
+      }
+    }
+
+    if (hasTool('calculate_roi') && /roi|worth it|save (time|money)|how much time|pay for itself|payback/.test(text)) {
+      const hoursMatch = /(\d+(?:\.\d+)?)\s*(hour|hr)/.exec(text)
+      return {
+        content: null,
+        toolCalls: [
+          {
+            id: 'mock-call-roi-1',
+            name: 'calculate_roi',
+            arguments: JSON.stringify({ admin_hours_per_week: hoursMatch ? Number(hoursMatch[1]) : 10 }),
+          },
+        ],
+        usage: { promptTokens: 110, completionTokens: 25 },
+        estimatedCostUsd: 0.001,
+      }
+    }
+
     if (hasTool('recommend_trade_page') && /trade|hvac|plumb|roof|landscap|electric|chimney|septic|pest|irrigation|paint|garage/.test(text)) {
       const slugMatch = /hvac|plumbing|electrical|chimney|roofing|garage-door|septic|pest-control|irrigation|painting|landscaping/.exec(text)
       return {

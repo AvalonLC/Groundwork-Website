@@ -53,6 +53,32 @@
     }
   }
 
+  // Contextual per-page opening message + quick-reply chips. Matched by
+  // longest path-prefix. Kept intentionally small and hand-curated (same
+  // "no vector search / hand-maintained knowledge" posture as the rest of
+  // Groundwork AI) — client-side only, no extra network call, no effect on
+  // the tool loop or budget.
+  var PAGE_CONTEXT = [
+    { prefix: '/pricing', welcome: "Hi — I'm Groundwork AI. Looking at pricing? I can estimate a real total for your team, or compare two plans side by side.", chips: ['Compare Growth vs Pro', 'Estimate pricing for my team', 'Is there a free trial?'] },
+    { prefix: '/trades/', welcome: "Hi — I'm Groundwork AI. I can tell you how Groundwork fits this trade, or get you a pricing estimate.", chips: ['How does this fit my trade?', 'What does it cost?', 'Talk to the team'] },
+    { prefix: '/trades', welcome: "Hi — I'm Groundwork AI. Tell me your trade and I'll point you to the right page.", chips: ['I run a landscaping company', 'I run an HVAC company', 'See all trades'] },
+    { prefix: '/explore', welcome: "Hi — I'm Groundwork AI. This is our interactive sample workspace — ask me what any panel is showing, or where to look first.", chips: ['What am I looking at?', 'Show me the dispatch board', 'Is this real customer data?'] },
+    { prefix: '/demo', welcome: "Hi — I'm Groundwork AI. Ready to pick a time? I can hand you the real booking calendar, or answer questions first.", chips: ['What happens on the call?', 'I have questions first', 'Estimate pricing for my team'] },
+    { prefix: '/roles', welcome: "Hi — I'm Groundwork AI. I can explain how Groundwork works for a specific role — owner, office manager, sales rep, foreman, or laborer.", chips: ['What does the owner see?', 'What does field crew see?', 'Estimate pricing for my team'] },
+    { prefix: '/product', welcome: "Hi — I'm Groundwork AI. Ask me about any part of the platform, or I can get you a pricing estimate.", chips: ['What does this feature do?', 'Estimate pricing for my team', 'How long does setup take?'] },
+    { prefix: '/features', welcome: "Hi — I'm Groundwork AI. Ask about any feature, or see how much time it could save your team.", chips: ['Estimate my time savings', 'Estimate pricing for my team', 'How does this compare to what I use now?'] },
+  ]
+  var DEFAULT_CHIPS = ['Estimate pricing for my team', 'What trades do you support?', 'Talk to the team']
+
+  function getPageContext(path) {
+    var best = null
+    for (var i = 0; i < PAGE_CONTEXT.length; i++) {
+      var entry = PAGE_CONTEXT[i]
+      if (path.indexOf(entry.prefix) === 0 && (!best || entry.prefix.length > best.prefix.length)) best = entry
+    }
+    return best
+  }
+
   function bindChatWidget() {
     var root = document.querySelector('[data-gw-chat-root]')
     if (!root) return
@@ -66,6 +92,7 @@
     var form = root.querySelector('[data-gw-chat-form]')
     var input = root.querySelector('[data-gw-chat-input]')
     var sendBtn = root.querySelector('[data-gw-chat-send]')
+    var quickReplies = root.querySelector('[data-gw-chat-quickreplies]')
     var currentPath = root.getAttribute('data-gw-chat-path') || window.location.pathname
 
     var sessionId = getSessionId()
@@ -78,14 +105,49 @@
     // continuity via sessionId regardless — this just re-renders the UI.
     function restoreHistory() {
       var hist = loadHistory()
-      if (!hist.length) return
+      if (!hist.length) {
+        // Fresh conversation — apply a contextual welcome message + quick
+        // replies for the current page instead of the generic default.
+        var ctx = getPageContext(currentPath)
+        if (ctx) {
+          var welcomeEl = log.querySelector('[data-gw-chat-welcome]')
+          if (welcomeEl) welcomeEl.textContent = ctx.welcome
+        }
+        renderQuickReplies(ctx ? ctx.chips : DEFAULT_CHIPS)
+        return
+      }
       var welcome = log.querySelector('[data-gw-chat-welcome]')
       if (welcome) welcome.remove()
+      if (quickReplies) quickReplies.remove()
       hist.forEach(function (entry) {
         if (entry.kind === 'bubble') appendBubble(entry.role, entry.text, false)
         else if (entry.kind === 'card') appendCardHtml(entry.html, false)
       })
       scrollToBottom()
+    }
+
+    // Quick-reply suggestion chips — shown only on a fresh conversation (no
+    // prior history) to help a visitor get started without typing. Clicking
+    // one sends it exactly like typed input; chips are cleared once the
+    // visitor sends their first message.
+    function renderQuickReplies(suggestions) {
+      if (!quickReplies || !suggestions || !suggestions.length) return
+      quickReplies.innerHTML = ''
+      suggestions.forEach(function (text) {
+        var btn = document.createElement('button')
+        btn.type = 'button'
+        btn.className = 'gw-chat-quickreply-chip'
+        btn.textContent = text
+        btn.addEventListener('click', function () {
+          clearQuickReplies()
+          sendMessage(text)
+        })
+        quickReplies.appendChild(btn)
+      })
+    }
+
+    function clearQuickReplies() {
+      if (quickReplies) quickReplies.innerHTML = ''
     }
 
     function scrollToBottom() {
@@ -147,6 +209,43 @@
           '<div class="gw-chat-card-title">' + escapeHtml(data.planName || '') + ' plan estimate</div>' +
           '<div class="gw-chat-card-total"><span>Estimated total</span><span>' + totalLine + '</span></div>' +
           '<div class="gw-chat-card-assumptions">' + assumptionsHtml + '</div>'
+        )
+      } else if (name === 'compare_plans') {
+        var featureListHtml = function (features) {
+          if (!features || !features.length) return '<div class="gw-chat-card-line"><span>No additional features at this tier.</span></div>'
+          return features.map(function (f) { return '<div class="gw-chat-compare-feature">+ ' + escapeHtml(f) + '</div>' }).join('')
+        }
+        appendCardHtml(
+          '<div class="gw-chat-card-title">' + escapeHtml(data.planA.name) + ' vs ' + escapeHtml(data.planB.name) + '</div>' +
+          '<div class="gw-chat-compare-grid">' +
+            '<div class="gw-chat-compare-col">' +
+              '<div class="gw-chat-compare-col-title">' + escapeHtml(data.planA.name) + '</div>' +
+              '<div class="gw-chat-compare-col-price">$' + Number(data.planA.basePrice).toLocaleString() + '/mo</div>' +
+              '<div class="gw-chat-compare-col-sub">' + data.planA.includedUsers + ' user' + (data.planA.includedUsers === 1 ? '' : 's') + ' included \u00b7 $' + data.planA.perUserPrice + '/mo each after</div>' +
+              '<div class="gw-chat-compare-col-sub">' + escapeHtml(data.planA.aiAllowance) + '</div>' +
+              featureListHtml(data.onlyInA) +
+            '</div>' +
+            '<div class="gw-chat-compare-col">' +
+              '<div class="gw-chat-compare-col-title">' + escapeHtml(data.planB.name) + '</div>' +
+              '<div class="gw-chat-compare-col-price">$' + Number(data.planB.basePrice).toLocaleString() + '/mo</div>' +
+              '<div class="gw-chat-compare-col-sub">' + data.planB.includedUsers + ' user' + (data.planB.includedUsers === 1 ? '' : 's') + ' included \u00b7 $' + data.planB.perUserPrice + '/mo each after</div>' +
+              '<div class="gw-chat-compare-col-sub">' + escapeHtml(data.planB.aiAllowance) + '</div>' +
+              featureListHtml(data.onlyInB) +
+            '</div>' +
+          '</div>' +
+          '<div class="gw-chat-card-assumptions">' + (data.assumptions || []).map(function (a) { return '<div>' + escapeHtml(a) + '</div>' }).join('') + '</div>'
+        )
+      } else if (name === 'calculate_roi') {
+        var netLine = data.netMonthlyValueUsd !== null && data.netMonthlyValueUsd !== undefined
+          ? '<div class="gw-chat-card-total"><span>Net monthly value</span><span>' + (data.netMonthlyValueUsd >= 0 ? '+' : '') + '$' + Number(data.netMonthlyValueUsd).toLocaleString() + '/mo</span></div>'
+          : ''
+        appendCardHtml(
+          '<div class="gw-chat-card-title">Estimated time &amp; cost savings</div>' +
+          '<div class="gw-chat-card-line"><span>Hours saved</span><strong>' + data.hoursSavedPerWeek + ' hrs/week</strong></div>' +
+          '<div class="gw-chat-card-line"><span>Estimated value</span><strong>$' + Number(data.dollarsSavedPerMonth).toLocaleString() + '/mo</strong></div>' +
+          (data.subscriptionCostUsd !== null && data.subscriptionCostUsd !== undefined ? '<div class="gw-chat-card-line"><span>Plan cost</span><strong>-$' + Number(data.subscriptionCostUsd).toLocaleString() + '/mo</strong></div>' : '') +
+          netLine +
+          '<div class="gw-chat-card-assumptions">' + (data.assumptions || []).map(function (a) { return '<div>' + escapeHtml(a) + '</div>' }).join('') + '</div>'
         )
       } else if (name === 'recommend_trade_page') {
         appendCardHtml(
@@ -263,6 +362,49 @@
         return assistantBubble
       }
 
+      // Thumbs up/down on the finished reply. Rendered once the turn is
+      // "done" and we have the server-side message id to rate against.
+      // Not persisted into the history cache (ratings don't survive a page
+      // reload — acceptable for Phase 1; the server-side vote itself does).
+      function renderRating(messageId) {
+        if (!messageId) return
+        var wrap = document.createElement('div')
+        wrap.className = 'gw-chat-rating'
+        var upBtn = document.createElement('button')
+        upBtn.type = 'button'
+        upBtn.className = 'gw-chat-rating-btn'
+        upBtn.setAttribute('aria-label', 'Helpful')
+        upBtn.innerHTML = '\u{1F44D}'
+        var downBtn = document.createElement('button')
+        downBtn.type = 'button'
+        downBtn.className = 'gw-chat-rating-btn'
+        downBtn.setAttribute('aria-label', 'Not helpful')
+        downBtn.innerHTML = '\u{1F44E}'
+
+        function submitRating(value) {
+          upBtn.disabled = true
+          downBtn.disabled = true
+          upBtn.classList.toggle('is-active-up', value === 'up')
+          downBtn.classList.toggle('is-active-down', value === 'down')
+          var thanks = document.createElement('span')
+          thanks.className = 'gw-chat-rating-thanks'
+          thanks.textContent = 'Thanks for the feedback'
+          wrap.appendChild(thanks)
+          fetch('/api/chat/rate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId: sessionId, messageId: messageId, rating: value }),
+          }).catch(function () { /* best-effort — UI already reflects the vote */ })
+        }
+
+        upBtn.addEventListener('click', function () { submitRating('up') })
+        downBtn.addEventListener('click', function () { submitRating('down') })
+        wrap.appendChild(upBtn)
+        wrap.appendChild(downBtn)
+        log.appendChild(wrap)
+        scrollToBottom()
+      }
+
       try {
         var res = await fetch('/api/chat', {
           method: 'POST',
@@ -337,6 +479,10 @@
               }
             } else if (eventType === 'done') {
               if (assistantText) saveHistoryEntry({ kind: 'bubble', role: 'ai', text: assistantText })
+              try {
+                var doneData = JSON.parse(data)
+                if (assistantText && doneData && doneData.messageId) renderRating(doneData.messageId)
+              } catch (e) { /* ignore malformed */ }
             }
           }
         }
@@ -356,6 +502,7 @@
       var text = input.value.trim()
       if (!text) return
       input.value = ''
+      clearQuickReplies()
       sendMessage(text)
     })
 

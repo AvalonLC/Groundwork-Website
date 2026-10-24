@@ -56,6 +56,8 @@ export async function markSessionLeadCaptured(db: D1Database, sessionId: string)
 
 // --- Messages ------------------------------------------------------------
 
+/** Returns the inserted row's id — used so the assistant's final message in
+ * a turn can be referenced later (e.g. for thumbs up/down rating). */
 export async function insertMessage(
   db: D1Database,
   sessionId: string,
@@ -64,14 +66,15 @@ export async function insertMessage(
   toolName?: string | null,
   toolArgs?: string | null,
   toolResult?: string | null
-): Promise<void> {
-  await db
+): Promise<number> {
+  const result = await db
     .prepare(
       `INSERT INTO chat_messages (session_id, role, content, tool_name, tool_args, tool_result, created_at)
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)`
     )
     .bind(sessionId, role, content ?? null, toolName ?? null, toolArgs ?? null, toolResult ?? null, nowIso())
     .run()
+  return result.meta.last_row_id as number
 }
 
 export async function getRecentMessages(db: D1Database, sessionId: string, limit: number): Promise<ChatMessageRow[]> {
@@ -292,10 +295,46 @@ export type ChatEventType =
   | 'rate_limited'
   | 'budget_capped'
   | 'prompt_injection_suspected'
+  | 'response_rated'
 
 export async function logEvent(db: D1Database, sessionId: string | null, eventType: ChatEventType, meta?: Record<string, unknown>): Promise<void> {
   await db
     .prepare(`INSERT INTO chat_events (session_id, event_type, event_meta, created_at) VALUES (?1, ?2, ?3, ?4)`)
     .bind(sessionId, eventType, meta ? JSON.stringify(meta) : null, nowIso())
     .run()
+}
+
+// --- Response rating (thumbs up/down) ---------------------------------------
+
+export type MessageRating = 'up' | 'down'
+
+export interface RateMessageResult {
+  ok: boolean
+  /** True if this (messageId) already had a rating recorded — the caller
+   * still treats this as success (idempotent, last-write-wins via REPLACE)
+   * but the event log only needs one 'response_rated' per first vote. */
+  wasAlreadyRated: boolean
+}
+
+/** Record (or change) a thumbs up/down vote on a specific assistant message.
+ * Verifies the message belongs to the given session (defense against a
+ * visitor rating another session's message id) and is an assistant message. */
+export async function rateMessage(db: D1Database, sessionId: string, messageId: number, rating: MessageRating): Promise<RateMessageResult> {
+  const msg = await db
+    .prepare(`SELECT id FROM chat_messages WHERE id = ?1 AND session_id = ?2 AND role = 'assistant'`)
+    .bind(messageId, sessionId)
+    .first<{ id: number }>()
+  if (!msg) return { ok: false, wasAlreadyRated: false }
+
+  const existing = await db.prepare(`SELECT message_id FROM chat_message_ratings WHERE message_id = ?1`).bind(messageId).first<{ message_id: number }>()
+
+  await db
+    .prepare(
+      `INSERT INTO chat_message_ratings (message_id, session_id, rating, created_at) VALUES (?1, ?2, ?3, ?4)
+       ON CONFLICT(message_id) DO UPDATE SET rating = ?3, created_at = ?4`
+    )
+    .bind(messageId, sessionId, rating, nowIso())
+    .run()
+
+  return { ok: true, wasAlreadyRated: !!existing }
 }
