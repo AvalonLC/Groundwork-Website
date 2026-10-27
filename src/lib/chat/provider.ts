@@ -60,7 +60,10 @@ function estimateCost(env: ChatEnvBindings, promptTokens: number, completionToke
 }
 
 export class OpenAiProvider implements ChatProvider {
-  constructor(private env: ChatEnvBindings) {}
+  private env: ChatEnvBindings
+  constructor(env: ChatEnvBindings) {
+    this.env = env
+  }
 
   modelName(): string {
     return getModel(this.env)

@@ -10,7 +10,7 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "db:migrate:local": "wrangler d1 migrations apply DB --local --persist-to=.wrangler/state",
     "db:migrate:prod": "wrangler d1 migrations apply groundwork-crm-marketing-production",
-    "test": "node --experimental-strip-types --test tests/unit/*.ts",
+    "test": "node --experimental-strip-types --experimental-loader ./tests/helpers/ts-resolve-hook.mjs --test tests/unit/*.ts",
     "test:chat": "node --test tests/unit/ tests/integration/"
   },
   "dependencies": {

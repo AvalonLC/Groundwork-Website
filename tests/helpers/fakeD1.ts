@@ -136,9 +136,14 @@ export class FakeD1Database {
   }
 
   /** Direct passthrough for test setup/assertions that want raw rows without
-   * going through the D1Database-shaped prepare()/bind() dance. */
+   * going through the D1Database-shaped prepare()/bind() dance. Accepts the
+   * SAME D1-style `?N` placeholders as prepare()/bind() (translated via
+   * translatePlaceholders), so callers don't need to remember a different
+   * param-naming convention for this helper vs. the main path. */
   raw(sql: string, params: Record<string, unknown> = {}): any[] {
-    return this.sqlite.prepare(sql).all(params)
+    const { sql: translated, maxIndex } = translatePlaceholders(sql)
+    if (maxIndex === 0) return this.sqlite.prepare(translated).all()
+    return this.sqlite.prepare(translated).all(params)
   }
 
   close(): void {
