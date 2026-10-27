@@ -359,6 +359,76 @@ Follow-on to the Real-Product-Parity pass above: the 3 brand-new `/explore` pane
 - **`roles/owners.tsx`** — the page's "Team View" bullet ("Every rep's pipeline, every crew's status — filterable") had no matching mock; added a new **Team View** section (`panel="employees"`) using the Employees & Teams mock, framed as the roster Team View sits on top of.
 - All 5 new sections follow the exact pre-existing `SplitContent` + `MockFrameWithLink`/`WithTryItLink` pattern — no new components, no new CSS. Verified `npm run build` clean; confirmed via curl that `panel=assets`/`panel=timetracker`/`panel=employees` all resolve on `/explore` and each new "Try X yourself →" caption renders with the correctly-encoded link; Playwright screenshots (1400px desktop + 390px mobile) of all 4 touched pages + AI-vision review found no layout bugs, no overflow, all stat cards/tables/tags legible at both widths; zero console/page errors on all 4 pages.
 
+## Groundwork AI — Site-Wide Chat Assistant (2026-10-23 → 2026-10-27)
+A site-wide AI chat widget (launcher bottom-right on every page) that answers pricing/feature/trade-fit questions, hands qualified visitors to the demo-booking flow, and captures leads directly into D1 — built per `docs/ai-chatbot-architecture.md`'s v2 plan. **Branch**: `feature/groundwork-ai-chatbot` (not yet merged to `main` / deployed — see "Status" below).
+
+### Persona & scope
+"Groundwork AI" — identifies itself as an AI assistant (never pretends to be a person), uses the site's existing fictional-cast confidentiality posture (no real customer data), and is explicit that a captured lead "isn't a confirmed appointment" unless the visitor uses the real Google Calendar booking widget on `/demo`. Knowledge is a small, hand-curated dataset (`src/data/ai-knowledge.ts`) — **no vector search / RAG** (explicitly deferred, see "Deferred scope" below).
+
+### Tool catalog (7 tools, server-enforced allowlist)
+| Tool | Purpose |
+|---|---|
+| `get_pricing_estimate` | Exact monthly total for a plan + team size + AI package, using the same `calculatePricing()` the `/pricing` page's calculator uses — single source of truth, no duplicated math. |
+| `compare_plans` | Side-by-side base price, included users, AI allowance, and real feature differences between two plans. |
+| `calculate_roi` | Estimated admin-hours-saved / dollar-value from consolidating into Groundwork, optionally netted against a real plan cost via `get_pricing_estimate`'s calc. |
+| `recommend_trade_page` | Points a visitor to their `/trades/:slug` page by trade keyword match. |
+| `jump_to_demo_panel` | Deep-links into a specific `/explore` sandbox panel. |
+| `get_booking_link` | Hands over the real `/demo` booking URL for self-service scheduling. |
+| `capture_lead` | Validates + saves a lead to `chat_leads` (bounded field lengths, dedupe on `(session_id, email)`), then attempts a SendGrid notification with save-before-notify semantics (see "Reliability" below). |
+
+Every tool's arguments are server-validated against fixed schemas in `src/lib/chat/tools.ts`; any URL a tool result returns to the browser is checked against a server-side allowlist (`isAllowedUrl()` in `src/data/ai-knowledge.ts`) as a last line of defense before it reaches the client — the model cannot cause the widget to link anywhere off-allowlist.
+
+### UX
+- **Launcher + panel** (`src/components/ChatWidget.tsx` + `public/static/chat-widget.js`) — desktop renders a slide-over, mobile (≤720px) renders full-screen; same markup, CSS-media-query switched. Focus trap while open, `Escape` to close, focus returns to the launcher on close.
+- **Session continuity** — a `sessionStorage`-backed session id persists the conversation across page navigation within the browser tab; the server has full continuity via that id regardless of what the client-side transcript cache shows.
+- **Contextual welcome + quick-reply chips** — per-page opening message and 3 suggested questions (keyed by path prefix, e.g. `/pricing` vs `/trades/*`), shown only on a fresh conversation; clicking a chip sends it like typed input.
+- **Thumbs up/down rating** — `POST /api/chat/rate` records a vote on a specific assistant reply (idempotent per message, session-scoped — a visitor cannot rate another session's message).
+- **Persistent "Talk to a human" shortcut** — a header link to `/demo`, always visible regardless of conversation state.
+- **Streaming** — `/api/chat` streams via SSE (`event: token|tool_call|tool_result|done|error`); the widget renders tool results as rich cards (pricing estimate, plan comparison, ROI, trade-page link, lead-confirmation card) rather than raw JSON.
+
+### Server-side enforcement (not just prompt wording)
+- **Fixed tool allowlist + URL allowlist** — the model can only invoke the 7 tools above, and any link surfaced to the browser is allowlist-checked server-side.
+- **Rate limiting** — independent per-session (20/hour) and per-IP (40/hour) rolling-window limits (`checkAndIncrementRateLimit`); exceeding either returns a graceful degraded response (still offers `/demo` + direct email), not a bare error.
+- **Budget circuit breaker** — a reserve-before-call / reconcile-after-call pattern (`tryReserveBudget`/`commitBudget` in `src/lib/chat/budget.ts`) against independent daily ($5 default) and monthly ($50 default) USD caps, both env-overridable. When the cap is hit, the chat degrades gracefully with a `/demo` + email fallback — the rest of the site is unaffected.
+- **Bounded inputs/outputs** — 2,000-char user message cap, 700 max output tokens, 4 max tool-loop iterations per turn, 16-message history window, bounded `capture_lead` field lengths — all centralized in `src/lib/chat/config.ts`, nothing hardcoded elsewhere.
+- **Idempotent lead capture** — a D1 `UNIQUE(session_id, email)` constraint plus a select-before-insert makes repeated `capture_lead` calls in one session a no-op (`status: "already_received"`) rather than a duplicate row or a re-sent notification.
+- **Save-before-notify + durable retry** — a lead is written to D1 *before* the SendGrid call; if notification fails, the lead is still safely saved (`notify_attempts`/`notify_last_error` recorded, a `notify_failed` event logged), with an internal `/api/admin/chat-leads/:id/retry-notify` endpoint to retry later. The visitor-facing confirmation message always avoids implying a confirmed appointment.
+- **Independent email-send throttle** — `chat_email_sends` caps outbound lead-notification emails per day (default 50), separate from the AI cost budget, so a scripted-duplicate-submission scenario can't spam the team even if it dodges the per-session dedupe.
+- **Separate internal metrics dashboard** — `/admin/chat-metrics?key=...` (gated by the `ADMIN_METRICS_KEY` secret, not a real login system) surfaces usage/cost, qualified-lead counts (defined explicitly in `src/routes/admin.ts`), notification failures, and event activity for requirement #7 ("review usage, costs, errors, leads, and conversion activity").
+
+### Data model (D1 — `migrations/0001_chat_schema.sql`, `0002_add_response_rated_event.sql`)
+`chat_sessions` (one row per browser session) · `chat_messages` (every turn, the authoritative verbatim-visitor-words source) · `chat_leads` (captured leads, `ai_summary` always labeled AI-generated, `verbatim_answers` JSON of the visitor's own words, dedupe + notify-retry columns) · `chat_rate_limits` (per-session/per-IP windows) · `chat_usage` (daily/monthly cost + in-flight `reserved_usd`) · `chat_email_sends` (daily notification-email throttle) · `chat_events` (instrumentation: `session_started`, `message_sent`, `lead_captured`, `lead_duplicate_blocked`, `notify_failed`, `budget_capped`, `prompt_injection_suspected`, `response_rated`, etc.) · `chat_message_ratings` (thumbs up/down, added in migration 0002).
+
+### Provider / model configuration
+The LLM provider is fully configurable, never hardcoded (`src/lib/chat/provider.ts` + `getProviderMode()`/`getModel()` in `config.ts`):
+- `CHAT_PROVIDER=openai` (or unset + `OPENAI_API_KEY` present) → real model calls via an OpenAI-compatible endpoint. Local dev points `OPENAI_BASE_URL` at GenSpark's dev proxy with model `gpt-5-mini` as the configurable pilot default — **production must use the site owner's own OpenAI API key** as a Cloudflare secret, not this dev proxy.
+- `CHAT_PROVIDER=mock` → a deterministic keyword-triggered `MockProvider`, no network calls, no cost — used for CI/automated tests and for exercising the full tool catalog without burning budget. (Known limitation: `MockProvider` has no memory of prior tool calls within a turn, so it can re-trigger the same keyword match across multiple tool-loop iterations before `MAX_TOOL_LOOP_ITERATIONS` forces a final answer — a mock-only artifact, not an orchestrator bug, confirmed harmless by the token-cost/placement logic which only cares about the final answer.)
+- Placeholder per-1K-token pricing (`OPENAI_PRICE_INPUT_PER_1K`/`OPENAI_PRICE_OUTPUT_PER_1K`) is deliberately conservative (slightly overestimates cost) until real OpenAI billing numbers are confirmed for whichever model goes to production — override via Cloudflare secrets.
+
+### Testing
+- **Unit tests** (`npm test` → `node --experimental-strip-types --experimental-loader ./tests/helpers/ts-resolve-hook.mjs --test tests/unit/*.ts`) — **32/32 passing**: 11 pricing-calculation tests, 5 duplicate-lead idempotency tests, 3 notification-failure/save-before-notify tests, 6 prompt-injection-refusal tests (run the real orchestrator against `MockProvider`), 7 concurrent-budget tests (atomic-write correctness + the TOCTOU finding below + realistic-staggering correctness + cap-denial + independent monthly-cap + reconcile/release behavior). Backed by an in-memory D1 test fake (`tests/helpers/fakeD1.ts`, built on Node's `node:sqlite`) and a custom ESM loader hook (`tests/helpers/ts-resolve-hook.mjs`) that lets plain Node resolve this project's intentionally-extensionless `src/` imports (correct for Vite/Wrangler bundling, not resolvable by bare Node without the hook).
+- **Mock-provider live-server verification** — beyond the unit tests, all 7 tools were curl-tested against the actual running SSE route (`/api/chat` with `CHAT_PROVIDER=mock`), not just the orchestrator in isolation: `get_pricing_estimate`, `compare_plans`, `calculate_roi`, and `capture_lead` (confirmed saved-to-D1, `already_received` idempotency on repeat, correct non-"confirmed appointment" wording) all verified end-to-end through the real route handler.
+- **Real-model verification** (prior session) — `compare_plans`, `calculate_roi`, multi-trade handling, and `/api/chat/rate` were separately verified end-to-end against the real `gpt-5-mini` GenSpark dev-proxy model, distinct from the mock-provider pass above.
+- **Mobile Playwright test** (`tests/e2e/mobile-chat.test.mjs`, run via `node tests/e2e/mobile-chat.test.mjs` against a `CHAT_PROVIDER=mock` local server, iPhone 13 viewport emulation) — **7/7 passing**: icon-only launcher on mobile, full-screen (not slide-over) panel on open + focus moves to input, contextual welcome + quick-reply chips render, sending a message streams a reply and renders a tool-result card, Tab-cycles focus trap, Escape closes + returns focus to the launcher.
+
+### Known finding: concurrent-budget TOCTOU (not yet fixed — Phase 2 hardening candidate)
+`tryReserveBudget()`'s read-then-write pattern is less bounded than its own code comment claims: under **perfectly-simultaneous** concurrent requests (every call's first `await` is the budget-status read before any write), **all** requests can be granted — empirically verified 30/30 granted against a cap sized for ~10, a full bypass, not a small overshoot. The atomic `UPDATE reserved_usd = reserved_usd + ?` write itself has **no lost updates** (D1's recorded total exactly matches `grantedCount × cost` in every scenario tested). Critically, under **realistic** request arrival (even a single macrotask tick of staggering between calls), the cap correctly binds to the theoretical max — this is a narrow, provable TOCTOU window under adversarial-grade simultaneity, not a general leak. A stricter guarantee would need a D1 transaction or a Durable Object serializing reservations — flagging as an honest finding for a deliberate Phase 2 decision, consistent with the existing code comment's own acknowledgment of this tradeoff.
+
+### Deferred scope (explicitly NOT built — requires new approval before starting)
+- Vector search / RAG knowledge grounding (knowledge is intentionally a small curated dataset for a pilot).
+- Transcript emailing (`email_transcript` tool).
+- Confirmed calendar-booking integration (Google Calendar API/webhook) — `capture_lead` hands off to the existing `/demo` page's embedded booking widget instead; the chatbot itself never claims to have booked anything.
+
+### Remaining credential / configuration requirements before a real production deploy
+- A real OpenAI API key (or other OpenAI-compatible provider) as a Cloudflare secret — the dev-proxy config in `.dev.vars` is local-testing-only.
+- Confirmed real per-1K-token pricing for whichever model goes to production (`OPENAI_PRICE_INPUT_PER_1K`/`OPENAI_PRICE_OUTPUT_PER_1K`), replacing the conservative placeholder defaults.
+- A real `ADMIN_METRICS_KEY` secret (the `/admin/chat-metrics` dashboard refuses all access if unset).
+- Review/confirm the default daily ($5) / monthly ($50) budget caps are right for the pilot's expected traffic before launch.
+- A production D1 database (`npx wrangler d1 create groundwork-crm-marketing-production`, replacing the placeholder `database_id` in `wrangler.jsonc`) and running `npx wrangler d1 migrations apply groundwork-crm-marketing-production`.
+
+### Status
+Fully built and tested on `feature/groundwork-ai-chatbot` (not yet merged to `main` / not yet deployed — per the standing "nothing merges/deploys without explicit review and approval" workflow for this project). See the PR for the full diff once opened.
+
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
 - Component classes/CSS selectors were kept identical to the design's `styles.css` (e.g. `.pm`, `.bento-card`, `.split-list`) so the ported stylesheet drives visuals unchanged — no Tailwind rewrite was done, matching the "recreate in framework, keep visuals authoritative" instruction from the handoff README.
@@ -374,10 +444,12 @@ Follow-on to the Real-Product-Parity pass above: the 3 brand-new `/explore` pane
 - App Store / Google Play download links on `/download` are placeholder `#` hrefs pending real app store listings.
 - Domain consolidation: moving the real product to `login.groundwork-crm.com` and this marketing site to the bare `groundwork-crm.com` (see "Domain status" above) — not started.
 - Groundwork AI billing enforcement (usage metering, live tenant usage bar, self-service package upgrades/downgrades, BYOK key storage, DB schema for AI actions) is product/backend work — out of scope for this marketing repo. The `/pricing` page presents the AI pricing model; it does not implement it.
-- Production deployment — ✅ deployed (see "Deployment" below).
+- Production deployment — ✅ deployed (see "Deployment" below). **Note**: this refers to the marketing site's existing pages; the Groundwork AI chatbot (see dedicated section above) lives on an unmerged branch and has not been deployed to production yet.
+- Groundwork AI chatbot remaining credential/config requirements, deferred scope (vector search/RAG, transcript emailing, confirmed calendar-booking integration), and the concurrent-budget TOCTOU finding — see the dedicated "Groundwork AI — Site-Wide Chat Assistant" section above.
 
 ## Data / Storage
-No database. Purely static marketing content rendered server-side per request via Hono.
+- **Marketing pages**: no database — purely static content rendered server-side per request via Hono.
+- **Groundwork AI chatbot** (on `feature/groundwork-ai-chatbot`, not yet merged): Cloudflare D1, this project's first database. See the "Data model" subsection under "Groundwork AI — Site-Wide Chat Assistant" above for the full schema.
 
 ## Local Development
 ```
