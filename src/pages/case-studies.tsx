@@ -1,27 +1,9 @@
 import { Layout } from '../components/Layout'
 import { CTABand } from '../components/Blocks'
+import { CASE_STUDIES } from '../data/case-studies'
 
 export function CaseStudiesPage() {
-  const studies = [
-    {
-      tag: 'Meridian Landscape · 24 employees · Northern VA',
-      title: 'From spreadsheet chaos to $186k month.',
-      desc: 'The 6-week story of migrating a design-build landscape company off a Rolodex of tools.',
-      metrics: ['Pipeline value up 42%', 'Follow-ups 0 slipped in first quarter', 'Office admin time down 8 hrs/week'],
-    },
-    {
-      tag: 'Northline HVAC · 3 branches · DC Metro',
-      title: 'Same-day dispatch, callbacks under 4%.',
-      desc: 'How one regional HVAC operator dropped their callback rate and doubled tune-up renewals.',
-      metrics: ['Callback rate 12% → 3.8%', 'Membership renewals +2.1x', 'Invoice-to-payment 22 → 9 days'],
-    },
-    {
-      tag: 'Ridgeline Exteriors · Insurance-driven',
-      title: 'One system for adjusters, PMs, and crews.',
-      desc: 'What changed when the paperwork problem restoration teams face lived in Groundwork.',
-      metrics: ['Claim-to-schedule 18 → 6 days', 'Change order revenue +$140k/qtr', 'Client NPS 42 → 71'],
-    },
-  ]
+  const studies = CASE_STUDIES
 
   return (
     <Layout

@@ -218,6 +218,77 @@ export const ROUTE_ALLOWLIST: string[] = [
   '/contact',
 ]
 
+// --- Feature lookup for the check_feature_availability tool ----------------
+// Deliberately simple keyword/substring matching over the SAME hand-curated
+// knowledge already above — NOT vector search/RAG (that remains an
+// explicitly deferred item; see docs/ai-chatbot-architecture.md §5). This
+// just lets a single tool call answer "does it do X" grounded in real data
+// instead of the model guessing, while staying consistent with the project's
+// "hand-maintained knowledge, no embeddings" posture.
+
+export interface KnowledgeFeatureEntry {
+  key: string
+  label: string
+  status: FeatureStatus
+  summary: string
+  searchText: string
+}
+
+export function getAllFeatureEntries(): KnowledgeFeatureEntry[] {
+  const pillarEntries: KnowledgeFeatureEntry[] = PILLARS.map((p) => ({
+    key: p.key,
+    label: p.name,
+    status: p.status,
+    summary: p.summary,
+    searchText: `${p.name} ${p.summary} ${p.bullets.join(' ')}`.toLowerCase(),
+  }))
+  const productAiEntry: KnowledgeFeatureEntry = {
+    key: PRODUCT_AI_FEATURE.key,
+    label: PRODUCT_AI_FEATURE.name,
+    status: PRODUCT_AI_FEATURE.status,
+    summary: PRODUCT_AI_FEATURE.summary,
+    searchText: `${PRODUCT_AI_FEATURE.name} ${PRODUCT_AI_FEATURE.summary} ${PRODUCT_AI_FEATURE.bullets.join(' ')}`.toLowerCase(),
+  }
+  const demoEntries: KnowledgeFeatureEntry[] = DEMO_PANELS.map((d) => ({
+    key: d.key,
+    label: d.label,
+    status: d.status,
+    summary: d.description,
+    searchText: `${d.label} ${d.description}`.toLowerCase(),
+  }))
+  const roadmapEntries: KnowledgeFeatureEntry[] = ROADMAP_ITEMS.map((r) => ({
+    key: r.key,
+    label: r.name,
+    status: r.status,
+    summary: r.summary,
+    searchText: `${r.name} ${r.summary} ${r.bullets.join(' ')}`.toLowerCase(),
+  }))
+  return [...pillarEntries, productAiEntry, ...demoEntries, ...roadmapEntries]
+}
+
+/** Best-effort keyword match — returns null if nothing scores above zero
+ * (the tool caller must then say "don't know" rather than guess, per HARD
+ * RULE #5 in systemPrompt.ts). */
+export function findFeatureByQuery(query: string): KnowledgeFeatureEntry | null {
+  const q = query.toLowerCase().trim()
+  if (!q) return null
+  const words = q.split(/[^a-z0-9]+/).filter((w) => w.length > 2)
+  let best: KnowledgeFeatureEntry | null = null
+  let bestScore = 0
+  for (const entry of getAllFeatureEntries()) {
+    let score = 0
+    if (entry.searchText.includes(q)) score += 5
+    for (const w of words) {
+      if (entry.searchText.includes(w)) score += 1
+    }
+    if (score > bestScore) {
+      bestScore = score
+      best = entry
+    }
+  }
+  return bestScore > 0 ? best : null
+}
+
 export function isAllowedUrl(path: string): boolean {
   // Only ever compares relative paths — the model/tools must never be asked
   // to validate or emit absolute/external URLs.

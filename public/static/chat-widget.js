@@ -83,7 +83,20 @@
     jump_to_demo_panel: ['Show me another panel', 'Estimate pricing for my team'],
     get_booking_link: ['Estimate pricing for my team', 'I have more questions first'],
     capture_lead: ['What happens next?', 'Talk to the team'],
+    get_customer_story: ['Estimate pricing for my team', 'Talk to the team'],
+    check_feature_availability: ['Estimate pricing for my team', 'Show me a customer story'],
+    summarize_conversation_so_far: ['Estimate pricing for my team', 'Talk to the team'],
   }
+
+  // Smarter chip suggestions tied to conversation depth: once a visitor has
+  // sent several messages without a lead ever being captured, surface a
+  // direct "connect me with sales" chip alongside whatever the tool-specific
+  // follow-ups are, so the path to a human doesn't require the visitor to
+  // think of it themselves. Purely a client-side nudge — the server-side
+  // capture_lead flow and its rules are unaffected.
+  var CONNECT_SALES_CHIP = 'Connect me with sales'
+  var MIN_TURNS_BEFORE_SALES_NUDGE = 2
+  var leadCaptured = false
 
   function getPageContext(path) {
     var best = null
@@ -113,6 +126,7 @@
     var sessionId = getSessionId()
     var isStreaming = false
     var lastFocusedBeforeOpen = null
+    var turnCount = 0
 
     // Restore prior transcript on page load for visual continuity across
     // navigation within the same browser session (requirement: "conversation
@@ -488,6 +502,7 @@
                 var parsed = JSON.parse(data)
                 renderToolResultCard(parsed.name, parsed.result)
                 lastToolName = parsed.name
+                if (parsed.name === 'capture_lead' && parsed.result && parsed.result.ok) leadCaptured = true
               } catch (e) { /* ignore malformed */ }
             } else if (eventType === 'error') {
               if (typingEl.parentNode) typingEl.remove()
@@ -506,11 +521,18 @@
                 var doneData = JSON.parse(data)
                 if (assistantText && doneData && doneData.messageId) renderRating(doneData.messageId)
               } catch (e) { /* ignore malformed */ }
+              turnCount++
               // Offer fresh, contextually relevant quick replies after every
               // completed turn (not just the very first message) so the
               // visitor always has an easy next step instead of having to
-              // type from scratch.
+              // type from scratch. Once a visitor has had a few turns
+              // without ever capturing a lead, also surface a direct
+              // "connect me with sales" chip so reaching a human doesn't
+              // depend on them thinking to ask for it themselves.
               var nextChips = (lastToolName && FOLLOWUP_CHIPS[lastToolName]) || (getPageContext(currentPath) || {}).chips || DEFAULT_CHIPS
+              if (!leadCaptured && turnCount >= MIN_TURNS_BEFORE_SALES_NUDGE && nextChips.indexOf(CONNECT_SALES_CHIP) === -1) {
+                nextChips = nextChips.concat([CONNECT_SALES_CHIP])
+              }
               renderQuickReplies(nextChips)
             }
           }

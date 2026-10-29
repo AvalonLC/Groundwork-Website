@@ -249,6 +249,12 @@ export class MockProvider implements ChatProvider {
         return `Here's the link to pick your own time: ${data.url}. ${data.note || ''} Anything else I can help with first?`
       case 'capture_lead':
         return data.message || "Got it — I've passed this along to the team."
+      case 'get_customer_story':
+        return `${data.tag} — ${data.title} ${data.desc} (${(data.metrics || []).join(', ')}). Note: ${data.disclosure} Want to see another story, or get a pricing estimate?`
+      case 'check_feature_availability':
+        return data.found ? `${data.label} [${data.statusLabel}]: ${data.summary}` : data.message || "I couldn't confirm that — want me to connect you with the team?"
+      case 'summarize_conversation_so_far':
+        return data.transcript && data.transcript.length ? `Quick recap:\n${(data.transcript as string[]).join('\n')}` : data.summary || "We haven't talked about much yet."
       default:
         return "Here's what I found — let me know if you'd like more detail."
     }
@@ -389,6 +395,34 @@ export class MockProvider implements ChatProvider {
         ],
         usage: { promptTokens: 150, completionTokens: 60 },
         estimatedCostUsd: 0.0015,
+      }
+    }
+
+    if (hasTool('get_customer_story') && /case study|customer story|success story|example|proof|anyone like me|someone like me|testimonial/.test(text)) {
+      const slugMatch = /hvac|plumbing|electrical|chimney|roofing|garage-door|septic|pest-control|irrigation|painting|landscaping/.exec(text)
+      return {
+        content: null,
+        toolCalls: [{ id: 'mock-call-story-1', name: 'get_customer_story', arguments: JSON.stringify(slugMatch ? { trade: slugMatch[0] } : {}) }],
+        usage: { promptTokens: 100, completionTokens: 20 },
+        estimatedCostUsd: 0.001,
+      }
+    }
+
+    if (hasTool('check_feature_availability') && /does (it|groundwork)|can it|is there a|do you (have|support)|feature/.test(text)) {
+      return {
+        content: null,
+        toolCalls: [{ id: 'mock-call-feature-1', name: 'check_feature_availability', arguments: JSON.stringify({ query: text.slice(0, 300) }) }],
+        usage: { promptTokens: 100, completionTokens: 20 },
+        estimatedCostUsd: 0.001,
+      }
+    }
+
+    if (hasTool('summarize_conversation_so_far') && /what were we talking about|recap|summarize (this|our|the) conversation|lost track|where were we/.test(text)) {
+      return {
+        content: null,
+        toolCalls: [{ id: 'mock-call-summary-1', name: 'summarize_conversation_so_far', arguments: '{}' }],
+        usage: { promptTokens: 80, completionTokens: 15 },
+        estimatedCostUsd: 0.0008,
       }
     }
 

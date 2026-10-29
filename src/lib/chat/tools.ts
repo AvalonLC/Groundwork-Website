@@ -11,7 +11,8 @@ import type { ChatEnvBindings } from './config'
 import { LEAD_FIELD_MAX_LENGTHS, MAX_CHAT_EMAILS_PER_DAY } from './config'
 import { calculatePricing, comparePlans, calculateRoi, CALC_PLANS, AI_PACKAGES } from '../pricing'
 import { TRADES, getTradeBySlug } from '../../data/trades'
-import { DEMO_PANELS, isAllowedUrl } from '../../data/ai-knowledge'
+import { DEMO_PANELS, isAllowedUrl, findFeatureByQuery } from '../../data/ai-knowledge'
+import { CASE_STUDIES, findCaseStudyForTrade } from '../../data/case-studies'
 import { sendMail, esc } from '../sendgrid'
 import {
   insertLeadIfNew,
@@ -19,6 +20,7 @@ import {
   recordLeadNotifyFailure,
   markSessionLeadCaptured,
   getVerbatimUserMessages,
+  getRecentMessages,
   checkAndIncrementEmailThrottle,
   logEvent,
 } from './db'
@@ -152,6 +154,46 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'get_customer_story',
+      description:
+        'Get a relevant customer story/case study, optionally matched to a trade. Use when a visitor asks for proof, examples, "has anyone like me used this", or similar social-proof questions. IMPORTANT: these are illustrative, fictional example stories, not yet real published case studies — always say so, exactly as returned.',
+      parameters: {
+        type: 'object',
+        properties: {
+          trade: { type: 'string', enum: TRADES.map((t) => t.slug), description: 'Optional — the visitor\'s trade, to find the most relevant story' },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'check_feature_availability',
+      description:
+        'Check whether Groundwork has a specific feature or capability, and its real status (live/demo-only/roadmap). ALWAYS use this for "does it do X" / "can it X" questions instead of answering from memory — it is grounded in the real knowledge base and will say "not found" rather than let you guess.',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', maxLength: 300, description: 'The feature or capability the visitor is asking about, in their own words' },
+        },
+        required: ['query'],
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'summarize_conversation_so_far',
+      description:
+        'Recap this conversation in a short, plain summary. Use when a visitor seems lost, asks "what were we talking about", or a long conversation would benefit from a checkpoint before moving on.',
+      parameters: { type: 'object', properties: {}, additionalProperties: false },
+    },
+  },
 ]
 
 // --- Validation helpers ---------------------------------------------------
@@ -217,6 +259,12 @@ export async function executeTool(name: string, rawArgs: string, ctx: ToolExecut
         return execGetBookingLink()
       case 'capture_lead':
         return await execCaptureLead(args, ctx)
+      case 'get_customer_story':
+        return execGetCustomerStory(args)
+      case 'check_feature_availability':
+        return execCheckFeatureAvailability(args)
+      case 'summarize_conversation_so_far':
+        return await execSummarizeConversation(ctx)
       default:
         return { ok: false, error: `Unknown tool "${name}" — not in the allowed tool set.` }
     }
@@ -282,6 +330,53 @@ function execJumpToDemoPanel(args: Record<string, unknown>): ToolResult {
     data: { url, label: panel.label, description: panel.description, status: panel.status },
     event: { type: 'demo_panel_clicked', meta: { panel: panel.key } },
   }
+}
+
+function execGetCustomerStory(args: Record<string, unknown>): ToolResult {
+  const trade = typeof args.trade === 'string' ? args.trade : null
+  const story = findCaseStudyForTrade(trade)
+  const url = '/case-studies'
+  if (!isAllowedUrl(url)) return { ok: false, error: 'Resolved URL failed the route allowlist check (unexpected).' }
+  return {
+    ok: true,
+    data: {
+      url,
+      tag: story.tag,
+      title: story.title,
+      desc: story.desc,
+      metrics: story.metrics,
+      disclosure: 'This is an illustrative, fictional example story — not yet a real published customer case study.',
+    },
+  }
+}
+
+function execCheckFeatureAvailability(args: Record<string, unknown>): ToolResult {
+  assertType(args.query, 'string', 'query')
+  const found = findFeatureByQuery(args.query as string)
+  if (!found) {
+    return {
+      ok: true,
+      data: {
+        found: false,
+        message: "I couldn't find anything matching that in the knowledge base — I don't want to guess. Want me to connect you with the team to check?",
+      },
+    }
+  }
+  const statusLabel = found.status === 'live' ? 'LIVE — real, shipped product' : found.status === 'demo_only' ? 'DEMO-ONLY — illustrated in the interactive demo, not live for customers' : 'ROADMAP — not built yet'
+  return {
+    ok: true,
+    data: { found: true, label: found.label, status: found.status, statusLabel, summary: found.summary },
+  }
+}
+
+async function execSummarizeConversation(ctx: ToolExecutionContext): Promise<ToolResult> {
+  const rows = await getRecentMessages(ctx.env.DB, ctx.sessionId, 40)
+  const turns = rows.filter((r) => r.role === 'user' || r.role === 'assistant')
+  if (turns.length === 0) {
+    return { ok: true, data: { summary: "We haven't talked about anything yet — this is the start of our conversation." } }
+  }
+  const lines = turns.map((r) => `${r.role === 'user' ? 'Visitor' : 'Assistant'}: ${(r.content ?? '').slice(0, 240)}`)
+  return { ok: true, data: { summary: 'Here is the raw conversation so far, oldest first:', transcript: lines } }
 }
 
 function execGetBookingLink(): ToolResult {
