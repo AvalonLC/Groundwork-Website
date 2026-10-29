@@ -70,6 +70,21 @@
   ]
   var DEFAULT_CHIPS = ['Estimate pricing for my team', 'What trades do you support?', 'Talk to the team']
 
+  // Follow-up quick-reply suggestions shown AFTER an assistant reply that
+  // used a given tool — keyed by tool name so the chips stay relevant to
+  // what just happened (e.g. after a pricing estimate, offer to compare
+  // plans or talk to the team) instead of only ever appearing once on a
+  // fresh conversation. Hand-curated, same posture as PAGE_CONTEXT above.
+  var FOLLOWUP_CHIPS = {
+    get_pricing_estimate: ['Compare to another plan', 'Estimate my time savings', 'Talk to the team'],
+    compare_plans: ['Estimate pricing for my team', 'Talk to the team'],
+    calculate_roi: ['Estimate pricing for my team', 'Compare plans'],
+    recommend_trade_page: ['Estimate pricing for my team', 'Talk to the team'],
+    jump_to_demo_panel: ['Show me another panel', 'Estimate pricing for my team'],
+    get_booking_link: ['Estimate pricing for my team', 'I have more questions first'],
+    capture_lead: ['What happens next?', 'Talk to the team'],
+  }
+
   function getPageContext(path) {
     var best = null
     for (var i = 0; i < PAGE_CONTEXT.length; i++) {
@@ -351,6 +366,7 @@
 
       var assistantBubble = null
       var assistantText = ''
+      var lastToolName = null
 
       function ensureAssistantBubble() {
         if (!assistantBubble) {
@@ -451,7 +467,13 @@
             var dataLines = []
             block.split('\n').forEach(function (line) {
               if (line.indexOf('event:') === 0) eventType = line.slice(6).trim()
-              else if (line.indexOf('data:') === 0) dataLines.push(line.slice(5).trim())
+              // Per the SSE spec, only a single leading space after "data:"
+              // is stripped — NOT a blanket .trim(). The server sends each
+              // word-token with a meaningful trailing space (e.g. "Hi ")
+              // that simple concatenation on the client relies on for
+              // spacing; a blanket .trim() here silently glues every word
+              // together with no separator.
+              else if (line.indexOf('data:') === 0) dataLines.push(line.slice(5).replace(/^ /, ''))
             })
             var data = dataLines.join('\n')
             if (eventType === 'token') {
@@ -465,6 +487,7 @@
               try {
                 var parsed = JSON.parse(data)
                 renderToolResultCard(parsed.name, parsed.result)
+                lastToolName = parsed.name
               } catch (e) { /* ignore malformed */ }
             } else if (eventType === 'error') {
               if (typingEl.parentNode) typingEl.remove()
@@ -483,6 +506,12 @@
                 var doneData = JSON.parse(data)
                 if (assistantText && doneData && doneData.messageId) renderRating(doneData.messageId)
               } catch (e) { /* ignore malformed */ }
+              // Offer fresh, contextually relevant quick replies after every
+              // completed turn (not just the very first message) so the
+              // visitor always has an easy next step instead of having to
+              // type from scratch.
+              var nextChips = (lastToolName && FOLLOWUP_CHIPS[lastToolName]) || (getPageContext(currentPath) || {}).chips || DEFAULT_CHIPS
+              renderQuickReplies(nextChips)
             }
           }
         }

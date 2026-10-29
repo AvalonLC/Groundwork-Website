@@ -203,9 +203,75 @@ export class MockProvider implements ChatProvider {
     return ''
   }
 
+  // Find the most recent tool result appended earlier in THIS turn's loop
+  // (rowsToModelMessages in orchestrator.ts never replays tool messages from
+  // prior turns' history, so any 'tool' role message present here was
+  // produced by this turn's own tool-call loop). Used to (a) stop the mock
+  // from re-triggering the same tool every iteration and (b) surface the
+  // real computed data in the final answer instead of a generic fallback.
+  private findLastToolResult(messages: ChatMessageForModel[]): { name: string; result: any } | null {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i]
+      if (m.role === 'tool' && m.name && m.content) {
+        try {
+          return { name: m.name, result: JSON.parse(m.content) }
+        } catch {
+          return null
+        }
+      }
+    }
+    return null
+  }
+
+  private summarizeToolResult(name: string, result: any): string {
+    if (!result || result.ok === false) {
+      return "I ran into an issue computing that — want me to connect you with the team directly instead?"
+    }
+    const data = result.data || {}
+    switch (name) {
+      case 'get_pricing_estimate': {
+        const firstAssumption = Array.isArray(data.assumptions) && data.assumptions.length ? ` (${data.assumptions[0]})` : ''
+        if (data.isCustomAi) {
+          const subtotal = (Number(data.basePrice) || 0) + (Number(data.additionalUsersCost) || 0)
+          return `For the ${data.planName} plan with ${data.totalUsers} users, the platform comes to $${subtotal.toLocaleString()}/mo${firstAssumption} — the AI add-on you picked is custom-priced, so our team will quote that part directly. Want me to compare this to another plan, or connect you with the team?`
+        }
+        return `For the ${data.planName} plan with ${data.totalUsers} users, that's an estimated $${Number(data.grandTotal).toLocaleString()}/mo total${firstAssumption}. Want me to compare this to another plan, estimate your time savings, or connect you with the team?`
+      }
+      case 'compare_plans':
+        return `${data.planA.name} starts at $${Number(data.planA.basePrice).toLocaleString()}/mo (${data.planA.includedUsers} users included) and ${data.planB.name} starts at $${Number(data.planB.basePrice).toLocaleString()}/mo (${data.planB.includedUsers} users included). Want a pricing estimate for your actual team size?`
+      case 'calculate_roi':
+        return `Based on what you shared, that's roughly ${data.hoursSavedPerWeek} hours/week saved — worth about $${Number(data.dollarsSavedPerMonth).toLocaleString()}/mo. Want me to net that against a specific plan's cost, or get a pricing estimate?`
+      case 'recommend_trade_page':
+        return `${data.name} is a great fit — ${data.summary} You can see it at ${data.url}. Want a pricing estimate too?`
+      case 'jump_to_demo_panel':
+        return `Here's the ${data.label} panel — ${data.description} Want to see another panel, or get a pricing estimate?`
+      case 'get_booking_link':
+        return `Here's the link to pick your own time: ${data.url}. ${data.note || ''} Anything else I can help with first?`
+      case 'capture_lead':
+        return data.message || "Got it — I've passed this along to the team."
+      default:
+        return "Here's what I found — let me know if you'd like more detail."
+    }
+  }
+
   async completeTurn(messages: ChatMessageForModel[], tools: ToolDefinition[]): Promise<ModelTurnResult> {
     const text = this.lastUserText(messages)
     const hasTool = (name: string) => tools.some((t) => t.function.name === name)
+
+    // A tool already ran earlier in this turn's loop — don't re-trigger it
+    // (the real keyword-match below has no memory and would fire again on
+    // every remaining iteration); instead give a final answer that actually
+    // uses the computed result, same as a real model would on its next turn
+    // once it sees the tool's output in context.
+    const priorToolResult = this.findLastToolResult(messages)
+    if (priorToolResult) {
+      return {
+        content: this.summarizeToolResult(priorToolResult.name, priorToolResult.result),
+        toolCalls: [],
+        usage: { promptTokens: 60, completionTokens: 50 },
+        estimatedCostUsd: 0.0008,
+      }
+    }
 
     // Prompt-injection style probes: the mock deliberately REFUSES to treat
     // embedded instructions as commands, to exercise the "ignore
