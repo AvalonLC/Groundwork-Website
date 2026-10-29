@@ -437,7 +437,7 @@ The LLM provider is fully configurable, never hardcoded (`src/lib/chat/provider.
 - A production D1 database (`npx wrangler d1 create groundwork-crm-marketing-production`, replacing the placeholder `database_id` in `wrangler.jsonc`) and running `npx wrangler d1 migrations apply groundwork-crm-marketing-production`.
 
 ### Status
-Base chatbot (7 tools, widget UX, reliability/enforcement) is merged to `main` and deployed to production. The 2026-10-29 "advanced capabilities" pass (3 new tools, true streaming, personalization, smarter conversation flow) is built and tested on `feat/chat-advanced-capabilities` — **not yet merged to `main` / not yet deployed**, per the standing "nothing merges/deploys without explicit review and approval" workflow for this project. See the PR for the full diff once opened.
+Base chatbot (7 tools, widget UX, reliability/enforcement) **and** the 2026-10-29 "advanced capabilities" pass (3 new tools, true streaming, personalization, smarter conversation flow) are both merged to `main` and deployed to production (user-approved merge, GitHub Actions run succeeded, `check_feature_availability` spot-verified live against `https://groundwork-crm.info/api/chat`).
 
 ## Key Implementation Notes
 - **Icon rendering gotcha**: Hono JSX's SSR renderer treats `<svg>` as a namespace-context node, which throws when combined with `dangerouslySetInnerHTML` directly on the `<svg>` element. Fixed by building the icon's SVG markup as a raw HTML string and injecting it via a wrapping `<span dangerouslySetInnerHTML>` instead (see `src/components/Icon.tsx`).
